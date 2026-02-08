@@ -69,6 +69,15 @@ spotbugs {
     showProgress = true
     effort = com.github.spotbugs.snom.Effort.MAX
     reportLevel = com.github.spotbugs.snom.Confidence.LOW
+    excludeFilter.set(file("config/spotbugs/exclude.xml"))
+}
+
+tasks.checkstyleMain {
+    exclude("**/model/**")
+}
+
+tasks.pmdMain {
+    exclude("**/model/**")
 }
 
 tasks.withType<SpotBugsTask>().configureEach {
