@@ -1,75 +1,36 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
-import java.util.*;
+import jakarta.persistence.Entity;
 
-// line 18 "../../../../../../model.ump"
-// line 84 "../../../../../../model.ump"
-public class Owner extends Account {
+// line 11 "../../../../../../model.ump"
+// line 72 "../../../../../../model.ump"
+@Entity
+public class Owner extends Account
+{
 
-    // ------------------------
-    // MEMBER VARIABLES
-    // ------------------------
+  //------------------------
+  // MEMBER VARIABLES
+  //------------------------
 
-    // Owner Associations
-    private FashionStore fashionStore;
+  //------------------------
+  // CONSTRUCTOR
+  //------------------------
 
-    // ------------------------
-    // CONSTRUCTOR
-    // ------------------------
+  public Owner(String aEmail, String aPassword)
+  {
+    super(aEmail, aPassword);
+  }
 
-    public Owner(String aEmail, String aPassword, FashionStore aFashionStore) {
-        super(aEmail, aPassword);
-        boolean didAddFashionStore = setFashionStore(aFashionStore);
-        if (!didAddFashionStore) {
-            throw new RuntimeException(
-                    "Unable to create owner due to fashionStore. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-        }
-    }
+  //------------------------
+  // INTERFACE
+  //------------------------
 
-    // ------------------------
-    // INTERFACE
-    // ------------------------
-    /* Code from template association_GetOne */
-    public FashionStore getFashionStore() {
-        return fashionStore;
-    }
+  public void delete()
+  {
+    super.delete();
+  }
 
-    /* Code from template association_SetOneToOptionalOne */
-    public boolean setFashionStore(FashionStore aNewFashionStore) {
-        boolean wasSet = false;
-        if (aNewFashionStore == null) {
-            // Unable to setFashionStore to null, as owner must always be associated to a
-            // fashionStore
-            return wasSet;
-        }
-
-        Owner existingOwner = aNewFashionStore.getOwner();
-        if (existingOwner != null && !equals(existingOwner)) {
-            // Unable to setFashionStore, the current fashionStore already has a owner, which would
-            // be orphaned if it were re-assigned
-            return wasSet;
-        }
-
-        FashionStore anOldFashionStore = fashionStore;
-        fashionStore = aNewFashionStore;
-        fashionStore.setOwner(this);
-
-        if (anOldFashionStore != null) {
-            anOldFashionStore.setOwner(null);
-        }
-        wasSet = true;
-        return wasSet;
-    }
-
-    public void delete() {
-        FashionStore existingFashionStore = fashionStore;
-        fashionStore = null;
-        if (existingFashionStore != null) {
-            existingFashionStore.setOwner(null);
-        }
-        super.delete();
-    }
 }

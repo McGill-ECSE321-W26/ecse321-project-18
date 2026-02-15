@@ -1,10 +1,19 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
-// line 60 "../../../../../../model.ump"
-// line 109 "../../../../../../model.ump"
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
+// line 53 "../../../../../../model.ump"
+// line 97 "../../../../../../model.ump"
+@Entity
 public class ClothingItem {
 
     // ------------------------
@@ -12,68 +21,57 @@ public class ClothingItem {
     // ------------------------
 
     public enum Size {
-        XS,
-        S,
-        M,
-        L,
-        XL
+        XS, S, M, L, XL
     }
 
     public enum Colour {
-        RED,
-        ORANGE,
-        YELLOW,
-        GREEN,
-        BLUE,
-        PURPLE,
-        PINK,
-        BLACK,
-        GREY,
-        WHITE,
-        BROWN
+        RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, BLACK, GREY, WHITE, BROWN
     }
-
-    // ------------------------
-    // STATIC VARIABLES
-    // ------------------------
-
-    private static int nextId = 1;
 
     // ------------------------
     // MEMBER VARIABLES
     // ------------------------
 
     // ClothingItem Attributes
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    @Enumerated(EnumType.STRING)
     private Size size;
+    @Enumerated(EnumType.STRING)
     private Colour colour;
     private int numInStock;
 
-    // Autounique Attributes
-    private int id;
-
     // ClothingItem Associations
+    @ManyToOne
     private ClothingProduct clothingProduct;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public ClothingItem(
-            Size aSize, Colour aColour, int aNumInStock, ClothingProduct aClothingProduct) {
+    public ClothingItem(Size aSize, Colour aColour, int aNumInStock, ClothingProduct aClothingProduct) {
+        id = 0;
         size = aSize;
         colour = aColour;
         numInStock = aNumInStock;
-        id = nextId++;
         boolean didAddClothingProduct = setClothingProduct(aClothingProduct);
         if (!didAddClothingProduct) {
             throw new RuntimeException(
-                    "Unable to create item due to clothingProduct. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+                "Unable to create item due to clothingProduct. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
         }
     }
 
     // ------------------------
     // INTERFACE
     // ------------------------
+
+    public boolean setId(int aId) {
+        boolean wasSet = false;
+        id = aId;
+        wasSet = true;
+        return wasSet;
+    }
 
     public boolean setSize(Size aSize) {
         boolean wasSet = false;
@@ -96,6 +94,10 @@ public class ClothingItem {
         return wasSet;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Size getSize() {
         return size;
     }
@@ -106,10 +108,6 @@ public class ClothingItem {
 
     public int getNumInStock() {
         return numInStock;
-    }
-
-    public int getId() {
-        return id;
     }
 
     /* Code from template association_GetOne */
@@ -143,39 +141,20 @@ public class ClothingItem {
     }
 
     public String toString() {
-        return super.toString()
-                + "["
-                + "id"
-                + ":"
-                + getId()
-                + ","
-                + "numInStock"
-                + ":"
-                + getNumInStock()
-                + "]"
-                + System.getProperties().getProperty("line.separator")
-                + "  "
-                + "size"
-                + "="
-                + (getSize() != null
-                        ? !getSize().equals(this)
-                                ? getSize().toString().replaceAll("  ", "    ")
-                                : "this"
-                        : "null")
-                + System.getProperties().getProperty("line.separator")
-                + "  "
-                + "colour"
-                + "="
-                + (getColour() != null
-                        ? !getColour().equals(this)
-                                ? getColour().toString().replaceAll("  ", "    ")
-                                : "this"
-                        : "null")
-                + System.getProperties().getProperty("line.separator")
-                + "  "
-                + "clothingProduct = "
-                + (getClothingProduct() != null
-                        ? Integer.toHexString(System.identityHashCode(getClothingProduct()))
-                        : "null");
+        return super.toString() + "[" +
+        "id" + ":" + getId() + "," +
+        "numInStock" + ":" + getNumInStock() + "]" + System.getProperties().getProperty("line.separator") +
+        "  " + "size" + "="
+        + (getSize() != null ? !getSize().equals(this) ? getSize().toString().replaceAll("  ", "    ") : "this"
+        : "null")
+        + System.getProperties().getProperty("line.separator") +
+        "  " + "colour" + "="
+        + (getColour() != null
+        ? !getColour().equals(this) ? getColour().toString().replaceAll("  ", "    ") : "this"
+        : "null")
+        + System.getProperties().getProperty("line.separator") +
+        "  " + "clothingProduct = "
+        + (getClothingProduct() != null ? Integer.toHexString(System.identityHashCode(getClothingProduct()))
+        : "null");
     }
 }

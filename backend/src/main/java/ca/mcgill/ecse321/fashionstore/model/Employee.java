@@ -1,12 +1,16 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
 import java.util.*;
 
-// line 32 "../../../../../../model.ump"
-// line 94 "../../../../../../model.ump"
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+
+// line 25 "../../../../../../model.ump"
+// line 82 "../../../../../../model.ump"
+@Entity
 public class Employee extends Customer {
 
     // ------------------------
@@ -14,19 +18,15 @@ public class Employee extends Customer {
     // ------------------------
 
     // Employee Associations
+    @OneToMany(mappedBy = "employee")
     private List<Order> assignedOrders;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public Employee(
-            String aEmail,
-            String aPassword,
-            String aAddress,
-            int aNumLoyaltyPoints,
-            FashionStore aFashionStore) {
-        super(aEmail, aPassword, aAddress, aNumLoyaltyPoints, aFashionStore);
+    public Employee(String aEmail, String aPassword, String aAddress, int aNumLoyaltyPoints) {
+        super(aEmail, aPassword, aAddress, aNumLoyaltyPoints);
         assignedOrders = new ArrayList<Order>();
     }
 
@@ -134,4 +134,5 @@ public class Employee extends Customer {
         }
         super.delete();
     }
+
 }
