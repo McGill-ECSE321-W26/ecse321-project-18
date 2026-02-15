@@ -14,10 +14,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 // line 31 "../../../../../../model.ump"
 // line 87 "../../../../../../model.ump"
 @Entity
+@Table(name = "store_order") // ORDER is a reserved word in PostgreSQL
 public class Order {
 
     // ------------------------
