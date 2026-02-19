@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -22,18 +22,32 @@ public abstract class Account {
     @Id private String email;
     private String password;
 
+    // Helper Variables
+    private boolean canSetEmail;
+
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public Account(String aEmail, String aPassword) {
-        email = aEmail;
-        password = aPassword;
+    public Account() {
+        canSetEmail = true;
+        password = null;
     }
 
     // ------------------------
     // INTERFACE
     // ------------------------
+    /* Code from template attribute_SetImmutable */
+    public boolean setEmail(String aEmail) {
+        boolean wasSet = false;
+        if (!canSetEmail) {
+            return false;
+        }
+        canSetEmail = false;
+        email = aEmail;
+        wasSet = true;
+        return wasSet;
+    }
 
     public boolean setPassword(String aPassword) {
         boolean wasSet = false;
@@ -42,6 +56,7 @@ public abstract class Account {
         return wasSet;
     }
 
+    /** unique */
     public String getEmail() {
         return email;
     }

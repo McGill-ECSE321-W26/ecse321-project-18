@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -59,18 +59,12 @@ public class Order {
     // CONSTRUCTOR
     // ------------------------
 
-    public Order(
-            State aState,
-            Date aOrderDate,
-            Date aDeliveryDate,
-            String aDeliveryAddress,
-            float aPrice) {
+    public Order() {
         id = 0;
-        state = aState;
-        orderDate = aOrderDate;
-        deliveryDate = aDeliveryDate;
-        deliveryAddress = aDeliveryAddress;
-        price = aPrice;
+        orderDate = null;
+        deliveryDate = null;
+        deliveryAddress = null;
+        price = 0.0f;
         items = new ArrayList<ClothingItem>();
     }
 

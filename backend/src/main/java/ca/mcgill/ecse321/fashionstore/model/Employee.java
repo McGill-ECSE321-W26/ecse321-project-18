@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -24,8 +24,8 @@ public class Employee extends Customer {
     // CONSTRUCTOR
     // ------------------------
 
-    public Employee(String aEmail, String aPassword, String aAddress, int aNumLoyaltyPoints) {
-        super(aEmail, aPassword, aAddress, aNumLoyaltyPoints);
+    public Employee() {
+        super();
         assignedOrders = new ArrayList<Order>();
     }
 

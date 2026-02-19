@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -37,12 +37,11 @@ public class ClothingProduct {
     @OneToMany(mappedBy = "clothingProduct")
     private List<ClothingItem> items;
 
-    //------------------------
+    // ------------------------
     // CONSTRUCTOR
-    //------------------------
+    // ------------------------
 
-    public ClothingProduct()
-    {
+    public ClothingProduct() {
         id = 0;
         name = null;
         price = 0.0f;
@@ -50,142 +49,128 @@ public class ClothingProduct {
         items = new ArrayList<ClothingItem>();
     }
 
-    //------------------------
+    // ------------------------
     // INTERFACE
-    //------------------------
+    // ------------------------
 
-    public boolean setId(int aId)
-    {
+    public boolean setId(int aId) {
         boolean wasSet = false;
         id = aId;
         wasSet = true;
         return wasSet;
     }
 
-    public boolean setName(String aName)
-    {
+    public boolean setName(String aName) {
         boolean wasSet = false;
         name = aName;
         wasSet = true;
         return wasSet;
     }
 
-    public boolean setPrice(float aPrice)
-    {
+    public boolean setPrice(float aPrice) {
         boolean wasSet = false;
         price = aPrice;
         wasSet = true;
         return wasSet;
     }
 
-    public boolean setImage(String aImage)
-    {
+    public boolean setImage(String aImage) {
         boolean wasSet = false;
         image = aImage;
         wasSet = true;
         return wasSet;
     }
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public float getPrice()
-    {
+    public float getPrice() {
         return price;
     }
 
-    /**
-     * image stored as String
-     */
-    public String getImage()
-    {
+    /** image stored as String */
+    public String getImage() {
         return image;
     }
+
     /* Code from template association_GetMany */
-    public ClothingItem getItem(int index)
-    {
+    public ClothingItem getItem(int index) {
         ClothingItem aItem = items.get(index);
         return aItem;
     }
 
-    public List<ClothingItem> getItems()
-    {
+    public List<ClothingItem> getItems() {
         List<ClothingItem> newItems = Collections.unmodifiableList(items);
         return newItems;
     }
 
-    public int numberOfItems()
-    {
+    public int numberOfItems() {
         int number = items.size();
         return number;
     }
 
-    public boolean hasItems()
-    {
+    public boolean hasItems() {
         boolean has = items.size() > 0;
         return has;
     }
 
-    public int indexOfItem(ClothingItem aItem)
-    {
+    public int indexOfItem(ClothingItem aItem) {
         int index = items.indexOf(aItem);
         return index;
     }
+
     /* Code from template association_MinimumNumberOfMethod */
-    public static int minimumNumberOfItems()
-    {
+    public static int minimumNumberOfItems() {
         return 0;
     }
+
     /* Code from template association_AddManyToOne */
-    public ClothingItem addItem(ClothingItem.Size aSize, ClothingItem.Colour aColour, int aNumInStock)
-    {
-        return new ClothingItem(aSize, aColour, aNumInStock, this);
+    public ClothingItem addItem() {
+        return new ClothingItem(this);
     }
 
-    public boolean addItem(ClothingItem aItem)
-    {
+    public boolean addItem(ClothingItem aItem) {
         boolean wasAdded = false;
-        if (items.contains(aItem)) { return false; }
-        ClothingProduct existingClothingProduct = aItem.getClothingProduct();
-        boolean isNewClothingProduct = existingClothingProduct != null && !this.equals(existingClothingProduct);
-        if (isNewClothingProduct)
-        {
-            aItem.setClothingProduct(this);
+        if (items.contains(aItem)) {
+            return false;
         }
-        else
-        {
+        ClothingProduct existingClothingProduct = aItem.getClothingProduct();
+        boolean isNewClothingProduct =
+                existingClothingProduct != null && !this.equals(existingClothingProduct);
+        if (isNewClothingProduct) {
+            aItem.setClothingProduct(this);
+        } else {
             items.add(aItem);
         }
         wasAdded = true;
         return wasAdded;
     }
 
-    public boolean removeItem(ClothingItem aItem)
-    {
+    public boolean removeItem(ClothingItem aItem) {
         boolean wasRemoved = false;
-        //Unable to remove aItem, as it must always have a clothingProduct
-        if (!this.equals(aItem.getClothingProduct()))
-        {
+        // Unable to remove aItem, as it must always have a clothingProduct
+        if (!this.equals(aItem.getClothingProduct())) {
             items.remove(aItem);
             wasRemoved = true;
         }
         return wasRemoved;
     }
+
     /* Code from template association_AddIndexControlFunctions */
-    public boolean addItemAt(ClothingItem aItem, int index)
-    {
+    public boolean addItemAt(ClothingItem aItem, int index) {
         boolean wasAdded = false;
-        if(addItem(aItem))
-        {
-            if(index < 0 ) { index = 0; }
-            if(index > numberOfItems()) { index = numberOfItems() - 1; }
+        if (addItem(aItem)) {
+            if (index < 0) {
+                index = 0;
+            }
+            if (index > numberOfItems()) {
+                index = numberOfItems() - 1;
+            }
             items.remove(aItem);
             items.add(index, aItem);
             wasAdded = true;
@@ -193,43 +178,50 @@ public class ClothingProduct {
         return wasAdded;
     }
 
-    public boolean addOrMoveItemAt(ClothingItem aItem, int index)
-    {
+    public boolean addOrMoveItemAt(ClothingItem aItem, int index) {
         boolean wasAdded = false;
-        if(items.contains(aItem))
-        {
-            if(index < 0 ) { index = 0; }
-            if(index > numberOfItems()) { index = numberOfItems() - 1; }
+        if (items.contains(aItem)) {
+            if (index < 0) {
+                index = 0;
+            }
+            if (index > numberOfItems()) {
+                index = numberOfItems() - 1;
+            }
             items.remove(aItem);
             items.add(index, aItem);
             wasAdded = true;
-        }
-        else
-        {
+        } else {
             wasAdded = addItemAt(aItem, index);
         }
         return wasAdded;
     }
 
-    public void delete()
-    {
-        while (items.size() > 0)
-        {
+    public void delete() {
+        while (items.size() > 0) {
             ClothingItem aItem = items.get(items.size() - 1);
             aItem.delete();
             items.remove(aItem);
         }
-
     }
 
-
-    public String toString()
-    {
-        return super.toString() + "["+
-                "id" + ":" + getId()+ "," +
-                "name" + ":" + getName()+ "," +
-                "price" + ":" + getPrice()+ "," +
-                "image" + ":" + getImage()+ "]";
+    public String toString() {
+        return super.toString()
+                + "["
+                + "id"
+                + ":"
+                + getId()
+                + ","
+                + "name"
+                + ":"
+                + getName()
+                + ","
+                + "price"
+                + ":"
+                + getPrice()
+                + ","
+                + "image"
+                + ":"
+                + getImage()
+                + "]";
     }
 }
-

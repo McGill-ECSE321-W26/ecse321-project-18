@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -31,10 +31,10 @@ public class Customer extends Account {
     // CONSTRUCTOR
     // ------------------------
 
-    public Customer(String aEmail, String aPassword, String aAddress, int aNumLoyaltyPoints) {
-        super(aEmail, aPassword);
-        address = aAddress;
-        numLoyaltyPoints = aNumLoyaltyPoints;
+    public Customer() {
+        super();
+        address = null;
+        numLoyaltyPoints = 0;
         shoppingCart = new ArrayList<ClothingItem>();
         purchasedOrders = new ArrayList<Order>();
     }
