@@ -21,11 +21,25 @@ public class ClothingItem {
     // ------------------------
 
     public enum Size {
-        XS, S, M, L, XL
+        XS,
+        S,
+        M,
+        L,
+        XL
     }
 
     public enum Colour {
-        RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, BLACK, GREY, WHITE, BROWN
+        RED,
+        ORANGE,
+        YELLOW,
+        GREEN,
+        BLUE,
+        PURPLE,
+        PINK,
+        BLACK,
+        GREY,
+        WHITE,
+        BROWN
     }
 
     // ------------------------
@@ -36,21 +50,24 @@ public class ClothingItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
     @Enumerated(EnumType.STRING)
     private Size size;
+
     @Enumerated(EnumType.STRING)
     private Colour colour;
+
     private int numInStock;
 
     // ClothingItem Associations
-    @ManyToOne
-    private ClothingProduct clothingProduct;
+    @ManyToOne private ClothingProduct clothingProduct;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public ClothingItem(Size aSize, Colour aColour, int aNumInStock, ClothingProduct aClothingProduct) {
+    public ClothingItem(
+            Size aSize, Colour aColour, int aNumInStock, ClothingProduct aClothingProduct) {
         id = 0;
         size = aSize;
         colour = aColour;
@@ -58,7 +75,7 @@ public class ClothingItem {
         boolean didAddClothingProduct = setClothingProduct(aClothingProduct);
         if (!didAddClothingProduct) {
             throw new RuntimeException(
-                "Unable to create item due to clothingProduct. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+                    "Unable to create item due to clothingProduct. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
         }
     }
 
@@ -141,20 +158,39 @@ public class ClothingItem {
     }
 
     public String toString() {
-        return super.toString() + "[" +
-        "id" + ":" + getId() + "," +
-        "numInStock" + ":" + getNumInStock() + "]" + System.getProperties().getProperty("line.separator") +
-        "  " + "size" + "="
-        + (getSize() != null ? !getSize().equals(this) ? getSize().toString().replaceAll("  ", "    ") : "this"
-        : "null")
-        + System.getProperties().getProperty("line.separator") +
-        "  " + "colour" + "="
-        + (getColour() != null
-        ? !getColour().equals(this) ? getColour().toString().replaceAll("  ", "    ") : "this"
-        : "null")
-        + System.getProperties().getProperty("line.separator") +
-        "  " + "clothingProduct = "
-        + (getClothingProduct() != null ? Integer.toHexString(System.identityHashCode(getClothingProduct()))
-        : "null");
+        return super.toString()
+                + "["
+                + "id"
+                + ":"
+                + getId()
+                + ","
+                + "numInStock"
+                + ":"
+                + getNumInStock()
+                + "]"
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "size"
+                + "="
+                + (getSize() != null
+                        ? !getSize().equals(this)
+                                ? getSize().toString().replaceAll("  ", "    ")
+                                : "this"
+                        : "null")
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "colour"
+                + "="
+                + (getColour() != null
+                        ? !getColour().equals(this)
+                                ? getColour().toString().replaceAll("  ", "    ")
+                                : "this"
+                        : "null")
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "clothingProduct = "
+                + (getClothingProduct() != null
+                        ? Integer.toHexString(System.identityHashCode(getClothingProduct()))
+                        : "null");
     }
 }

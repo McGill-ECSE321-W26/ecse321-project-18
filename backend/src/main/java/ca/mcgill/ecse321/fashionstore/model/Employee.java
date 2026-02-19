@@ -3,10 +3,9 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
-import java.util.*;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import java.util.*;
 
 // line 25 "../../../../../../model.ump"
 // line 82 "../../../../../../model.ump"
@@ -134,5 +133,4 @@ public class Employee extends Customer {
         }
         super.delete();
     }
-
 }

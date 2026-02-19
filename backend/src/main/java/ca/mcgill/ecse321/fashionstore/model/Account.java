@@ -19,8 +19,7 @@ public abstract class Account {
     // ------------------------
 
     // Account Attributes
-    @Id
-    private String email;
+    @Id private String email;
     private String password;
 
     // ------------------------
@@ -51,12 +50,18 @@ public abstract class Account {
         return password;
     }
 
-    public void delete() {
-    }
+    public void delete() {}
 
     public String toString() {
-        return super.toString() + "[" +
-        "email" + ":" + getEmail() + "," +
-        "password" + ":" + getPassword() + "]";
+        return super.toString()
+                + "["
+                + "email"
+                + ":"
+                + getEmail()
+                + ","
+                + "password"
+                + ":"
+                + getPassword()
+                + "]";
     }
 }

@@ -3,8 +3,6 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
-import java.util.*;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
+import java.util.*;
 
 // line 44 "../../../../../../model.ump"
 // line 92 "../../../../../../model.ump"
@@ -26,8 +25,10 @@ public class ClothingProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
     private String name;
     private float price;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String image;
@@ -92,9 +93,7 @@ public class ClothingProduct {
         return price;
     }
 
-    /**
-     * image stored as String
-     */
+    /** image stored as String */
     public String getImage() {
         return image;
     }
@@ -131,7 +130,8 @@ public class ClothingProduct {
     }
 
     /* Code from template association_AddManyToOne */
-    public ClothingItem addItem(ClothingItem.Size aSize, ClothingItem.Colour aColour, int aNumInStock) {
+    public ClothingItem addItem(
+            ClothingItem.Size aSize, ClothingItem.Colour aColour, int aNumInStock) {
         return new ClothingItem(aSize, aColour, aNumInStock, this);
     }
 
@@ -141,7 +141,8 @@ public class ClothingProduct {
             return false;
         }
         ClothingProduct existingClothingProduct = aItem.getClothingProduct();
-        boolean isNewClothingProduct = existingClothingProduct != null && !this.equals(existingClothingProduct);
+        boolean isNewClothingProduct =
+                existingClothingProduct != null && !this.equals(existingClothingProduct);
         if (isNewClothingProduct) {
             aItem.setClothingProduct(this);
         } else {
@@ -202,14 +203,26 @@ public class ClothingProduct {
             aItem.delete();
             items.remove(aItem);
         }
-
     }
 
     public String toString() {
-        return super.toString() + "[" +
-        "id" + ":" + getId() + "," +
-        "name" + ":" + getName() + "," +
-        "price" + ":" + getPrice() + "," +
-        "image" + ":" + getImage() + "]";
+        return super.toString()
+                + "["
+                + "id"
+                + ":"
+                + getId()
+                + ","
+                + "name"
+                + ":"
+                + getName()
+                + ","
+                + "price"
+                + ":"
+                + getPrice()
+                + ","
+                + "image"
+                + ":"
+                + getImage()
+                + "]";
     }
 }

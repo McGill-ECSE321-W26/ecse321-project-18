@@ -3,9 +3,6 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
-import java.sql.Date;
-import java.util.*;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.sql.Date;
+import java.util.*;
 
 // line 31 "../../../../../../model.ump"
 // line 87 "../../../../../../model.ump"
@@ -27,7 +26,11 @@ public class Order {
     // ------------------------
 
     public enum State {
-        PURCHASED, ASSIGNED, PREPARED, DELIVERED, CANCELLED
+        PURCHASED,
+        ASSIGNED,
+        PREPARED,
+        DELIVERED,
+        CANCELLED
     }
 
     // ------------------------
@@ -38,26 +41,30 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
     @Enumerated(EnumType.STRING)
     private State state;
+
     private Date orderDate;
     private Date deliveryDate;
     private String deliveryAddress;
     private float price;
 
     // Order Associations
-    @ManyToMany
-    private List<ClothingItem> items;
-    @ManyToOne
-    private Customer customer;
-    @ManyToOne
-    private Employee employee;
+    @ManyToMany private List<ClothingItem> items;
+    @ManyToOne private Customer customer;
+    @ManyToOne private Employee employee;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public Order(State aState, Date aOrderDate, Date aDeliveryDate, String aDeliveryAddress, float aPrice) {
+    public Order(
+            State aState,
+            Date aOrderDate,
+            Date aDeliveryDate,
+            String aDeliveryAddress,
+            float aPrice) {
         id = 0;
         state = aState;
         orderDate = aOrderDate;
@@ -288,30 +295,58 @@ public class Order {
     }
 
     public String toString() {
-        return super.toString() + "[" +
-        "id" + ":" + getId() + "," +
-        "deliveryAddress" + ":" + getDeliveryAddress() + "," +
-        "price" + ":" + getPrice() + "]" + System.getProperties().getProperty("line.separator") +
-        "  " + "state" + "="
-        + (getState() != null
-        ? !getState().equals(this) ? getState().toString().replaceAll("  ", "    ") : "this"
-        : "null")
-        + System.getProperties().getProperty("line.separator") +
-        "  " + "orderDate" + "="
-        + (getOrderDate() != null
-        ? !getOrderDate().equals(this) ? getOrderDate().toString().replaceAll("  ", "    ") : "this"
-        : "null")
-        + System.getProperties().getProperty("line.separator") +
-        "  " + "deliveryDate" + "="
-        + (getDeliveryDate() != null
-        ? !getDeliveryDate().equals(this) ? getDeliveryDate().toString().replaceAll("  ", "    ")
-        : "this"
-        : "null")
-        + System.getProperties().getProperty("line.separator") +
-        "  " + "customer = "
-        + (getCustomer() != null ? Integer.toHexString(System.identityHashCode(getCustomer())) : "null")
-        + System.getProperties().getProperty("line.separator") +
-        "  " + "employee = "
-        + (getEmployee() != null ? Integer.toHexString(System.identityHashCode(getEmployee())) : "null");
+        return super.toString()
+                + "["
+                + "id"
+                + ":"
+                + getId()
+                + ","
+                + "deliveryAddress"
+                + ":"
+                + getDeliveryAddress()
+                + ","
+                + "price"
+                + ":"
+                + getPrice()
+                + "]"
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "state"
+                + "="
+                + (getState() != null
+                        ? !getState().equals(this)
+                                ? getState().toString().replaceAll("  ", "    ")
+                                : "this"
+                        : "null")
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "orderDate"
+                + "="
+                + (getOrderDate() != null
+                        ? !getOrderDate().equals(this)
+                                ? getOrderDate().toString().replaceAll("  ", "    ")
+                                : "this"
+                        : "null")
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "deliveryDate"
+                + "="
+                + (getDeliveryDate() != null
+                        ? !getDeliveryDate().equals(this)
+                                ? getDeliveryDate().toString().replaceAll("  ", "    ")
+                                : "this"
+                        : "null")
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "customer = "
+                + (getCustomer() != null
+                        ? Integer.toHexString(System.identityHashCode(getCustomer()))
+                        : "null")
+                + System.getProperties().getProperty("line.separator")
+                + "  "
+                + "employee = "
+                + (getEmployee() != null
+                        ? Integer.toHexString(System.identityHashCode(getEmployee()))
+                        : "null");
     }
 }

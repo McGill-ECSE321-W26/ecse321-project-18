@@ -8,29 +8,25 @@ import jakarta.persistence.Entity;
 // line 11 "../../../../../../model.ump"
 // line 72 "../../../../../../model.ump"
 @Entity
-public class Owner extends Account
-{
+public class Owner extends Account {
 
-  //------------------------
-  // MEMBER VARIABLES
-  //------------------------
+    // ------------------------
+    // MEMBER VARIABLES
+    // ------------------------
 
-  //------------------------
-  // CONSTRUCTOR
-  //------------------------
+    // ------------------------
+    // CONSTRUCTOR
+    // ------------------------
 
-  public Owner(String aEmail, String aPassword)
-  {
-    super(aEmail, aPassword);
-  }
+    public Owner(String aEmail, String aPassword) {
+        super(aEmail, aPassword);
+    }
 
-  //------------------------
-  // INTERFACE
-  //------------------------
+    // ------------------------
+    // INTERFACE
+    // ------------------------
 
-  public void delete()
-  {
-    super.delete();
-  }
-
+    public void delete() {
+        super.delete();
+    }
 }
