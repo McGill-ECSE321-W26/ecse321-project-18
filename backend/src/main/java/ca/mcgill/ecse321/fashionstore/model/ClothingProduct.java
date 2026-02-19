@@ -40,7 +40,6 @@ public class ClothingProduct {
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
-
     public ClothingProduct() {
         id = 0;
         name = null;
@@ -129,21 +128,18 @@ public class ClothingProduct {
         return 0;
     }
 
-    /* Code from template association_AddManyToOne */
-    public ClothingItem addItem() {
-        return new ClothingItem(this);
-    }
-
+    /* Code from template association_AddManyToOptionalOne */
     public boolean addItem(ClothingItem aItem) {
         boolean wasAdded = false;
         if (items.contains(aItem)) {
             return false;
         }
         ClothingProduct existingClothingProduct = aItem.getClothingProduct();
-        boolean isNewClothingProduct =
-                existingClothingProduct != null && !this.equals(existingClothingProduct);
-        if (isNewClothingProduct) {
+        if (existingClothingProduct == null) {
             aItem.setClothingProduct(this);
+        } else if (!this.equals(existingClothingProduct)) {
+            existingClothingProduct.removeItem(aItem);
+            addItem(aItem);
         } else {
             items.add(aItem);
         }
@@ -153,9 +149,9 @@ public class ClothingProduct {
 
     public boolean removeItem(ClothingItem aItem) {
         boolean wasRemoved = false;
-        // Unable to remove aItem, as it must always have a clothingProduct
-        if (!this.equals(aItem.getClothingProduct())) {
+        if (items.contains(aItem)) {
             items.remove(aItem);
+            aItem.setClothingProduct(null);
             wasRemoved = true;
         }
         return wasRemoved;

@@ -66,14 +66,9 @@ public class ClothingItem {
     // CONSTRUCTOR
     // ------------------------
 
-    public ClothingItem(ClothingProduct aClothingProduct) {
+    public ClothingItem() {
         id = 0;
         numInStock = 0;
-        boolean didAddClothingProduct = setClothingProduct(aClothingProduct);
-        if (!didAddClothingProduct) {
-            throw new RuntimeException(
-                    "Unable to create item due to clothingProduct. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-        }
     }
 
     // ------------------------
@@ -129,27 +124,30 @@ public class ClothingItem {
         return clothingProduct;
     }
 
-    /* Code from template association_SetOneToMany */
+    public boolean hasClothingProduct() {
+        boolean has = clothingProduct != null;
+        return has;
+    }
+
+    /* Code from template association_SetOptionalOneToMany */
     public boolean setClothingProduct(ClothingProduct aClothingProduct) {
         boolean wasSet = false;
-        if (aClothingProduct == null) {
-            return wasSet;
-        }
-
         ClothingProduct existingClothingProduct = clothingProduct;
         clothingProduct = aClothingProduct;
         if (existingClothingProduct != null && !existingClothingProduct.equals(aClothingProduct)) {
             existingClothingProduct.removeItem(this);
         }
-        clothingProduct.addItem(this);
+        if (aClothingProduct != null) {
+            aClothingProduct.addItem(this);
+        }
         wasSet = true;
         return wasSet;
     }
 
     public void delete() {
-        ClothingProduct placeholderClothingProduct = clothingProduct;
-        this.clothingProduct = null;
-        if (placeholderClothingProduct != null) {
+        if (clothingProduct != null) {
+            ClothingProduct placeholderClothingProduct = clothingProduct;
+            this.clothingProduct = null;
             placeholderClothingProduct.removeItem(this);
         }
     }

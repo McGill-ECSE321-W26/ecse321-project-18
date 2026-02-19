@@ -46,7 +46,7 @@ class ClothingProduct {
   lazy Float price;
   lazy String image;           // image stored as String
 
-  1 <@>- * ClothingItem items;
+  0..1 <@>- * ClothingItem items;
 }
 
 class ClothingItem {
