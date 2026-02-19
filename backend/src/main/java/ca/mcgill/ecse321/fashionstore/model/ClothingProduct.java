@@ -1,56 +1,64 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import java.util.*;
 
-// line 51 "../../../../../../model.ump"
-// line 104 "../../../../../../model.ump"
+// line 44 "../../../../../../model.ump"
+// line 92 "../../../../../../model.ump"
+@Entity
 public class ClothingProduct {
-
-    // ------------------------
-    // STATIC VARIABLES
-    // ------------------------
-
-    private static int nextId = 1;
 
     // ------------------------
     // MEMBER VARIABLES
     // ------------------------
 
     // ClothingProduct Attributes
-    private String name;
-    private float price;
-    private String image;
-
-    // Autounique Attributes
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    private String name;
+    private float price;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String image;
+
     // ClothingProduct Associations
+    @OneToMany(mappedBy = "clothingProduct")
     private List<ClothingItem> items;
-    private FashionStore fashionStore;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public ClothingProduct(String aName, float aPrice, FashionStore aFashionStore) {
+    public ClothingProduct(String aName, float aPrice) {
+        id = 0;
         name = aName;
         price = aPrice;
         image = null;
-        id = nextId++;
         items = new ArrayList<ClothingItem>();
-        boolean didAddFashionStore = setFashionStore(aFashionStore);
-        if (!didAddFashionStore) {
-            throw new RuntimeException(
-                    "Unable to create product due to fashionStore. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-        }
     }
 
     // ------------------------
     // INTERFACE
     // ------------------------
+
+    public boolean setId(int aId) {
+        boolean wasSet = false;
+        id = aId;
+        wasSet = true;
+        return wasSet;
+    }
 
     public boolean setName(String aName) {
         boolean wasSet = false;
@@ -73,6 +81,10 @@ public class ClothingProduct {
         return wasSet;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -84,10 +96,6 @@ public class ClothingProduct {
     /** image stored as String */
     public String getImage() {
         return image;
-    }
-
-    public int getId() {
-        return id;
     }
 
     /* Code from template association_GetMany */
@@ -114,11 +122,6 @@ public class ClothingProduct {
     public int indexOfItem(ClothingItem aItem) {
         int index = items.indexOf(aItem);
         return index;
-    }
-
-    /* Code from template association_GetOne */
-    public FashionStore getFashionStore() {
-        return fashionStore;
     }
 
     /* Code from template association_MinimumNumberOfMethod */
@@ -194,34 +197,11 @@ public class ClothingProduct {
         return wasAdded;
     }
 
-    /* Code from template association_SetOneToMany */
-    public boolean setFashionStore(FashionStore aFashionStore) {
-        boolean wasSet = false;
-        if (aFashionStore == null) {
-            return wasSet;
-        }
-
-        FashionStore existingFashionStore = fashionStore;
-        fashionStore = aFashionStore;
-        if (existingFashionStore != null && !existingFashionStore.equals(aFashionStore)) {
-            existingFashionStore.removeProduct(this);
-        }
-        fashionStore.addProduct(this);
-        wasSet = true;
-        return wasSet;
-    }
-
     public void delete() {
         while (items.size() > 0) {
             ClothingItem aItem = items.get(items.size() - 1);
             aItem.delete();
             items.remove(aItem);
-        }
-
-        FashionStore placeholderFashionStore = fashionStore;
-        this.fashionStore = null;
-        if (placeholderFashionStore != null) {
-            placeholderFashionStore.removeProduct(this);
         }
     }
 
@@ -243,12 +223,6 @@ public class ClothingProduct {
                 + "image"
                 + ":"
                 + getImage()
-                + "]"
-                + System.getProperties().getProperty("line.separator")
-                + "  "
-                + "fashionStore = "
-                + (getFashionStore() != null
-                        ? Integer.toHexString(System.identityHashCode(getFashionStore()))
-                        : "null");
+                + "]";
     }
 }

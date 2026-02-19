@@ -1,10 +1,19 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
-// line 60 "../../../../../../model.ump"
-// line 109 "../../../../../../model.ump"
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
+// line 53 "../../../../../../model.ump"
+// line 97 "../../../../../../model.ump"
+@Entity
 public class ClothingItem {
 
     // ------------------------
@@ -34,25 +43,24 @@ public class ClothingItem {
     }
 
     // ------------------------
-    // STATIC VARIABLES
-    // ------------------------
-
-    private static int nextId = 1;
-
-    // ------------------------
     // MEMBER VARIABLES
     // ------------------------
 
     // ClothingItem Attributes
-    private Size size;
-    private Colour colour;
-    private int numInStock;
-
-    // Autounique Attributes
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @Enumerated(EnumType.STRING)
+    private Size size;
+
+    @Enumerated(EnumType.STRING)
+    private Colour colour;
+
+    private int numInStock;
+
     // ClothingItem Associations
-    private ClothingProduct clothingProduct;
+    @ManyToOne private ClothingProduct clothingProduct;
 
     // ------------------------
     // CONSTRUCTOR
@@ -60,10 +68,10 @@ public class ClothingItem {
 
     public ClothingItem(
             Size aSize, Colour aColour, int aNumInStock, ClothingProduct aClothingProduct) {
+        id = 0;
         size = aSize;
         colour = aColour;
         numInStock = aNumInStock;
-        id = nextId++;
         boolean didAddClothingProduct = setClothingProduct(aClothingProduct);
         if (!didAddClothingProduct) {
             throw new RuntimeException(
@@ -74,6 +82,13 @@ public class ClothingItem {
     // ------------------------
     // INTERFACE
     // ------------------------
+
+    public boolean setId(int aId) {
+        boolean wasSet = false;
+        id = aId;
+        wasSet = true;
+        return wasSet;
+    }
 
     public boolean setSize(Size aSize) {
         boolean wasSet = false;
@@ -96,6 +111,10 @@ public class ClothingItem {
         return wasSet;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Size getSize() {
         return size;
     }
@@ -106,10 +125,6 @@ public class ClothingItem {
 
     public int getNumInStock() {
         return numInStock;
-    }
-
-    public int getId() {
-        return id;
     }
 
     /* Code from template association_GetOne */

@@ -1,16 +1,9 @@
 namespace ca.mcgill.ecse321.fashionstore.model;
 
-class FashionStore {
-  1 <@>- 0..1 Owner;
-  1 <@>- * Customer customers;
-  1 <@>- * Order orders;
-  1 <@>- * ClothingProduct products;
-}
-
 class Account {
   abstract;
 
-  unique immutable email;
+  immutable email; // unique
   password;
 }
 
@@ -37,7 +30,7 @@ class Employee {
 class Order {
   enum State { PURCHASED, ASSIGNED, PREPARED, DELIVERED, CANCELLED }
 
-  autounique id;
+  lazy Integer id;
   State state;
   Date orderDate;
   Date deliveryDate;
@@ -48,7 +41,7 @@ class Order {
 }
 
 class ClothingProduct {
-  autounique id;
+  lazy Integer id;
   name;
   Float price;
   lazy image;           // image stored as String
@@ -60,7 +53,7 @@ class ClothingItem {
   enum Size { XS, S, M, L, XL }
   enum Colour { RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, BLACK, GREY, WHITE, BROWN }
 
-  autounique id;
+  lazy Integer id;
   Size size;
   Colour colour;
   Integer numInStock;

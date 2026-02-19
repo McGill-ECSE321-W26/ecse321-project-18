@@ -1,12 +1,16 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.*;
 
-// line 22 "../../../../../../model.ump"
-// line 89 "../../../../../../model.ump"
+// line 15 "../../../../../../model.ump"
+// line 77 "../../../../../../model.ump"
+@Entity
 public class Customer extends Account {
 
     // ------------------------
@@ -18,30 +22,21 @@ public class Customer extends Account {
     private int numLoyaltyPoints;
 
     // Customer Associations
-    private List<ClothingItem> shoppingCart;
+    @ManyToMany private List<ClothingItem> shoppingCart;
+
+    @OneToMany(mappedBy = "customer")
     private List<Order> purchasedOrders;
-    private FashionStore fashionStore;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
-    public Customer(
-            String aEmail,
-            String aPassword,
-            String aAddress,
-            int aNumLoyaltyPoints,
-            FashionStore aFashionStore) {
+    public Customer(String aEmail, String aPassword, String aAddress, int aNumLoyaltyPoints) {
         super(aEmail, aPassword);
         address = aAddress;
         numLoyaltyPoints = aNumLoyaltyPoints;
         shoppingCart = new ArrayList<ClothingItem>();
         purchasedOrders = new ArrayList<Order>();
-        boolean didAddFashionStore = setFashionStore(aFashionStore);
-        if (!didAddFashionStore) {
-            throw new RuntimeException(
-                    "Unable to create customer due to fashionStore. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-        }
     }
 
     // ------------------------
@@ -121,11 +116,6 @@ public class Customer extends Account {
     public int indexOfPurchasedOrder(Order aPurchasedOrder) {
         int index = purchasedOrders.indexOf(aPurchasedOrder);
         return index;
-    }
-
-    /* Code from template association_GetOne */
-    public FashionStore getFashionStore() {
-        return fashionStore;
     }
 
     /* Code from template association_MinimumNumberOfMethod */
@@ -257,32 +247,10 @@ public class Customer extends Account {
         return wasAdded;
     }
 
-    /* Code from template association_SetOneToMany */
-    public boolean setFashionStore(FashionStore aFashionStore) {
-        boolean wasSet = false;
-        if (aFashionStore == null) {
-            return wasSet;
-        }
-
-        FashionStore existingFashionStore = fashionStore;
-        fashionStore = aFashionStore;
-        if (existingFashionStore != null && !existingFashionStore.equals(aFashionStore)) {
-            existingFashionStore.removeCustomer(this);
-        }
-        fashionStore.addCustomer(this);
-        wasSet = true;
-        return wasSet;
-    }
-
     public void delete() {
         shoppingCart.clear();
         while (!purchasedOrders.isEmpty()) {
             purchasedOrders.get(0).setCustomer(null);
-        }
-        FashionStore placeholderFashionStore = fashionStore;
-        this.fashionStore = null;
-        if (placeholderFashionStore != null) {
-            placeholderFashionStore.removeCustomer(this);
         }
         super.delete();
     }
@@ -297,12 +265,6 @@ public class Customer extends Account {
                 + "numLoyaltyPoints"
                 + ":"
                 + getNumLoyaltyPoints()
-                + "]"
-                + System.getProperties().getProperty("line.separator")
-                + "  "
-                + "fashionStore = "
-                + (getFashionStore() != null
-                        ? Integer.toHexString(System.identityHashCode(getFashionStore()))
-                        : "null");
+                + "]";
     }
 }

@@ -1,13 +1,24 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.35.0.8043.819096d90 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.sql.Date;
 import java.util.*;
 
-// line 38 "../../../../../../model.ump"
-// line 99 "../../../../../../model.ump"
+// line 31 "../../../../../../model.ump"
+// line 87 "../../../../../../model.ump"
+@Entity
+@Table(name = "store_order") // ORDER is a reserved word in PostgreSQL
 public class Order {
 
     // ------------------------
@@ -23,30 +34,26 @@ public class Order {
     }
 
     // ------------------------
-    // STATIC VARIABLES
-    // ------------------------
-
-    private static int nextId = 1;
-
-    // ------------------------
     // MEMBER VARIABLES
     // ------------------------
 
     // Order Attributes
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Enumerated(EnumType.STRING)
     private State state;
+
     private Date orderDate;
     private Date deliveryDate;
     private String deliveryAddress;
     private float price;
 
-    // Autounique Attributes
-    private int id;
-
     // Order Associations
-    private List<ClothingItem> items;
-    private FashionStore fashionStore;
-    private Customer customer;
-    private Employee employee;
+    @ManyToMany private List<ClothingItem> items;
+    @ManyToOne private Customer customer;
+    @ManyToOne private Employee employee;
 
     // ------------------------
     // CONSTRUCTOR
@@ -57,25 +64,26 @@ public class Order {
             Date aOrderDate,
             Date aDeliveryDate,
             String aDeliveryAddress,
-            float aPrice,
-            FashionStore aFashionStore) {
+            float aPrice) {
+        id = 0;
         state = aState;
         orderDate = aOrderDate;
         deliveryDate = aDeliveryDate;
         deliveryAddress = aDeliveryAddress;
         price = aPrice;
-        id = nextId++;
         items = new ArrayList<ClothingItem>();
-        boolean didAddFashionStore = setFashionStore(aFashionStore);
-        if (!didAddFashionStore) {
-            throw new RuntimeException(
-                    "Unable to create order due to fashionStore. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-        }
     }
 
     // ------------------------
     // INTERFACE
     // ------------------------
+
+    public boolean setId(int aId) {
+        boolean wasSet = false;
+        id = aId;
+        wasSet = true;
+        return wasSet;
+    }
 
     public boolean setState(State aState) {
         boolean wasSet = false;
@@ -112,6 +120,10 @@ public class Order {
         return wasSet;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public State getState() {
         return state;
     }
@@ -130,10 +142,6 @@ public class Order {
 
     public float getPrice() {
         return price;
-    }
-
-    public int getId() {
-        return id;
     }
 
     /* Code from template association_GetMany */
@@ -160,11 +168,6 @@ public class Order {
     public int indexOfItem(ClothingItem aItem) {
         int index = items.indexOf(aItem);
         return index;
-    }
-
-    /* Code from template association_GetOne */
-    public FashionStore getFashionStore() {
-        return fashionStore;
     }
 
     /* Code from template association_GetOne */
@@ -247,23 +250,6 @@ public class Order {
         return wasAdded;
     }
 
-    /* Code from template association_SetOneToMany */
-    public boolean setFashionStore(FashionStore aFashionStore) {
-        boolean wasSet = false;
-        if (aFashionStore == null) {
-            return wasSet;
-        }
-
-        FashionStore existingFashionStore = fashionStore;
-        fashionStore = aFashionStore;
-        if (existingFashionStore != null && !existingFashionStore.equals(aFashionStore)) {
-            existingFashionStore.removeOrder(this);
-        }
-        fashionStore.addOrder(this);
-        wasSet = true;
-        return wasSet;
-    }
-
     /* Code from template association_SetOptionalOneToMany */
     public boolean setCustomer(Customer aCustomer) {
         boolean wasSet = false;
@@ -296,11 +282,6 @@ public class Order {
 
     public void delete() {
         items.clear();
-        FashionStore placeholderFashionStore = fashionStore;
-        this.fashionStore = null;
-        if (placeholderFashionStore != null) {
-            placeholderFashionStore.removeOrder(this);
-        }
         if (customer != null) {
             Customer placeholderCustomer = customer;
             this.customer = null;
@@ -354,12 +335,6 @@ public class Order {
                         ? !getDeliveryDate().equals(this)
                                 ? getDeliveryDate().toString().replaceAll("  ", "    ")
                                 : "this"
-                        : "null")
-                + System.getProperties().getProperty("line.separator")
-                + "  "
-                + "fashionStore = "
-                + (getFashionStore() != null
-                        ? Integer.toHexString(System.identityHashCode(getFashionStore()))
                         : "null")
                 + System.getProperties().getProperty("line.separator")
                 + "  "
