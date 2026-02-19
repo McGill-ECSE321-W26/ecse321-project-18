@@ -14,4 +14,6 @@ class FashionStoreApplicationTests {
     void contextLoads() {
         assertDoesNotThrow(() -> {});
     }
+
+
 }
