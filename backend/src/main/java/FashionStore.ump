@@ -42,9 +42,9 @@ class Order {
 
 class ClothingProduct {
   lazy Integer id;
-  name;
-  Float price;
-  lazy image;           // image stored as String
+  lazy name;
+  lazy Float price;
+  lazy String image;           // image stored as String
 
   1 <@>- * ClothingItem items;
 }
