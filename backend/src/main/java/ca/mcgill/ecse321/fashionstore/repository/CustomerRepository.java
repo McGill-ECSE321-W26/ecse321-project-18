@@ -8,4 +8,7 @@ public interface CustomerRepository extends CrudRepository<Customer, String> {
 
     /** Find by ID method for Customer. */
     Customer findCustomerByEmail(String email);
+
+    /** Delete by ID method for Customer. */
+    void deleteCustomerByEmail(String email);
 }

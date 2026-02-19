@@ -8,4 +8,10 @@ public interface ClothingItemRepository extends CrudRepository<ClothingItem, Int
 
     /** Find by ID method for ClothingItem. */
     ClothingItem findClothingItemById(int id);
+
+    /** Delete by ID method for ClothingItem. */
+    void deleteClothingItemById(int id);
+
+    /** Remove all items that have zero stock. */
+    void deleteByNumInStock(int amount);
 }

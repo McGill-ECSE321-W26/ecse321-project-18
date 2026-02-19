@@ -8,4 +8,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, String> {
 
     /** Find by ID method for Employee. */
     Employee findEmployeeByEmail(String email);
+
+    /** Delete by ID method for Employee. */
+    void deleteEmployeeByEmail(String email);
 }
