@@ -9,7 +9,7 @@ The system being developed supports multiple user roles, including customers, em
 - **Employees** prepare customer orders
 - The **manager** oversees the delivery preparations and maintains the product catalog
 
-The web application will have a Spring Boot backend (Java) and a PostgresSQL database.
+The web application will have a Spring Boot backend (Java) and a PostgreSQL database.
 
 For more information about the platform and/or the development process, please consult the [wiki](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki) or a deliverable below.
 
@@ -34,3 +34,4 @@ Each team member and their role are presented in the table below.
 | Qiuyu Huang  | redacted24      | Testing lead       |
 | Kenneth Wang | KennethWang6    | Software developer |
 | Aurore Zhang | ororio0         | Software developer |
+
