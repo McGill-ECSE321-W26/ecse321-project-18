@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -18,8 +18,8 @@ public class Owner extends Account {
     // CONSTRUCTOR
     // ------------------------
 
-    public Owner(String aEmail, String aPassword) {
-        super(aEmail, aPassword);
+    public Owner() {
+        super();
     }
 
     // ------------------------
