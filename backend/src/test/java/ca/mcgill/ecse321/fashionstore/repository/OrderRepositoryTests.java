@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 /**
  * Test suite for order persistence in the database.
  *
- * @author Kenneth
+ * @author Kenneth Wang (KennethWang6)
  */
 @SpringBootTest
 class OrderRepositoryTests {
@@ -25,6 +25,11 @@ class OrderRepositoryTests {
 
     private Order order;
 
+    /**
+     * Creates and saves an order before each test.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @BeforeEach
     void createOrder() {
         // Create order
@@ -46,20 +51,32 @@ class OrderRepositoryTests {
         order = newOrder;
     }
 
-    /** Clears database after each test. */
+    /**
+     * Clears database after each test.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @AfterEach
     void clearDatabase() {
         orderRepository.deleteAll();
     }
 
-    /** Test retrieval of order from database is not null. */
+    /**
+     * Test retrieval of order from database is not null.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testPersistAndLoadOrder() {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
         assertNotNull(orderFromDb, "Could not find saved order in database.");
     }
 
-    /** Test retrieval of order state is correct. */
+    /**
+     * Test retrieval of order state is correct.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testPersistAndLoadOrderState() {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
@@ -67,7 +84,11 @@ class OrderRepositoryTests {
                 order.getState(), orderFromDb.getState(), "Order state is not saved in database.");
     }
 
-    /** Test retrieval of order date is correct. */
+    /**
+     * Test retrieval of order date is correct.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testPersistAndLoadOrderDate() {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
@@ -77,7 +98,11 @@ class OrderRepositoryTests {
                 "Order date is not saved in database.");
     }
 
-    /** Test retrieval of delivery date is correct. */
+    /**
+     * Test retrieval of delivery date is correct.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testPersistAndLoadDeliveryDate() {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
@@ -87,7 +112,11 @@ class OrderRepositoryTests {
                 "Delivery date is not saved in database.");
     }
 
-    /** Test retrieval of delivery address is correct. */
+    /**
+     * Test retrieval of delivery address is correct.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testPersistAndLoadDeliveryAddress() {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
@@ -97,7 +126,11 @@ class OrderRepositoryTests {
                 "Delivery address is not saved in database.");
     }
 
-    /** Test retrieval of order price is correct. */
+    /**
+     * Test retrieval of order price is correct.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testPersistAndLoadOrderPrice() {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
@@ -105,7 +138,11 @@ class OrderRepositoryTests {
                 order.getPrice(), orderFromDb.getPrice(), "Order price is not saved in database.");
     }
 
-    /** Test updating an existing order in the database. */
+    /**
+     * Test updating an existing order in the database.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testUpdateOrder() {
         // Retrieve the saved order
@@ -134,7 +171,11 @@ class OrderRepositoryTests {
         assertEquals(newPrice, updatedOrder.getPrice(), "Order price did not update.");
     }
 
-    /** Test deleting an order from the database. */
+    /**
+     * Test deleting an order from the database.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
     @Test
     void testDeleteOrder() {
         // Ensure it exists first
