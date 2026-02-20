@@ -6,12 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
+import java.sql.Date;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.sql.Date;
 
 /**
  * @author Aurore Zhang (ororio0)
@@ -29,7 +30,7 @@ class EmployeeRepositoryTests {
     // create an employee
     void createEmployee() {
         String email = "ilovefashion@fashionstore.com";
-        String password = "P@ssw0rd";
+        String password = "test-" + UUID.randomUUID();
         String address = " 12 Building McConnell";
         int numLoyaltyPoints = 8;
 
@@ -41,11 +42,10 @@ class EmployeeRepositoryTests {
         // save the employee
         employeeRepository.save(newEmployee);
         employee = newEmployee;
-
         // create an order and assign to employee
         Order newOrder = new Order();
         newOrder.setState(State.ASSIGNED);
-        newOrder.setOrderDate(Date.valueOf("2030-02-30"));
+        newOrder.setOrderDate(Date.valueOf("2026-02-19"));
         newOrder.setDeliveryAddress("67 McGill University Avenue");
         newOrder.setPrice(67.88f);
         newOrder.setEmployee(newEmployee);
@@ -131,6 +131,7 @@ class EmployeeRepositoryTests {
                 employeeFromDb.getNumLoyaltyPoints(),
                 "Employee loyalty points are not saved in database.");
     }
+
     /**
      * Test retrieval of employee's assigned order reference is correct.
      *
