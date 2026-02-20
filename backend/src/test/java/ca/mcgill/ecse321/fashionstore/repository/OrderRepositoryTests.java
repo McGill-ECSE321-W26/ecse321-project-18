@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
+import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
+import jakarta.transaction.Transactional;
 import java.sql.Date;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +25,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class OrderRepositoryTests {
 
     @Autowired private OrderRepository orderRepository;
+    @Autowired private ClothingItemRepository clothingItemRepository;
+    @Autowired private ClothingProductRepository clothingProductRepository;
 
     private Order order;
 
@@ -59,6 +64,8 @@ class OrderRepositoryTests {
     @AfterEach
     void clearDatabase() {
         orderRepository.deleteAll();
+        clothingItemRepository.deleteAll();
+        clothingProductRepository.deleteAll();
     }
 
     /**
@@ -190,5 +197,64 @@ class OrderRepositoryTests {
 
         // Assert deletion
         assertNull(deletedOrder, "Order was not deleted from the database.");
+    }
+
+    /**
+     * Test that clothing items are associated with an order and not deleted when the order is
+     * deleted.
+     */
+    @Transactional
+    @Test
+    void testOrderClothingItemAssociationAndNonCascadeDelete() {
+        // Create clothing product
+        String productName = "Crewneck";
+        float productPrice = 59.99f;
+        String productImage = "image.jpg";
+
+        ClothingProduct product = new ClothingProduct();
+        product.setName(productName);
+        product.setPrice(productPrice);
+        product.setImage(productImage);
+
+        // Save product
+        clothingProductRepository.save(product);
+
+        // Create clothing item
+        ClothingItem item = new ClothingItem();
+        item.setClothingProduct(product);
+
+        // Save item
+        clothingItemRepository.save(item);
+
+        // Associate item with order
+        order.addItem(item);
+        orderRepository.save(order);
+
+        // Retrieve order and verify association
+        Order orderFromDb = orderRepository.findOrderById(order.getId());
+        assertNotNull(orderFromDb, "Order not found in database.");
+        assertEquals(
+                1, orderFromDb.numberOfItems(), "Order should have exactly one clothing item.");
+        assertEquals(
+                item.getId(),
+                orderFromDb.getItem(0).getId(),
+                "Clothing item was not correctly associated with order.");
+
+        // Delete order
+        orderRepository.delete(orderFromDb);
+
+        // Verify order is deleted
+        Order deletedOrder = orderRepository.findOrderById(order.getId());
+        assertNull(deletedOrder, "Order should be deleted but still exists.");
+
+        // Verify clothing item still exists
+        ClothingItem itemFromDb = clothingItemRepository.findClothingItemById(item.getId());
+        assertNotNull(itemFromDb, "Clothing item should NOT be deleted when order is deleted.");
+
+        // Verify clothing product still exists
+        ClothingProduct productFromDb =
+                clothingProductRepository.findClothingProductById(product.getId());
+        assertNotNull(
+                productFromDb, "Clothing product should NOT be deleted when order is deleted.");
     }
 }
