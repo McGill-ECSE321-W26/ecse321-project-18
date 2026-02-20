@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * @author Carolyn Wu (cw118) {@summary Test suite for owner (account) persistence in the database.}
+ * {@summary Test suite for owner (account) persistence in the database.}
+ *
+ * @author Carolyn Wu (cw118)
  */
 @SpringBootTest
 class OwnerRepositoryTests {
@@ -132,6 +134,24 @@ class OwnerRepositoryTests {
 
         // delete the owner from the database
         ownerRepository.delete(ownerFromDb);
+
+        // check that we can no longer find an owner with that email
+        Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
+        assertNull(updatedOwnerFromDb, "Owner deletion was not persisted.");
+    }
+
+    /**
+     * Test deleting the owner by id (email).
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    void testDeleteOwnerById() {
+        // get owner from database
+        String ownerEmail = owner.getEmail();
+
+        // delete the owner using its id (email) from the database
+        ownerRepository.deleteById(ownerEmail);
 
         // check that we can no longer find an owner with that email
         Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
