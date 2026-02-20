@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Order;
@@ -203,10 +204,15 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testDeleteEmployee() {
-        orderRepository.deleteAll();
+        orderRepository.removeEmployeeReference(employee.getEmail());
         employeeRepository.deleteAll();
 
         Employee deletedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
-        assertEquals(null, deletedEmployee, "Employee was not deleted from database.");
+        assertNull(deletedEmployee, "Employee was not deleted from database.");
+
+        Order remainingOrder = orderRepository.findOrderById(order.getId());
+        assertNotNull(remainingOrder, "Order should still exist after employee is deleted.");
+        assertNull(remainingOrder.getEmployee(),
+                "Order should have no employee reference after employee is deleted.");
     }
 }
