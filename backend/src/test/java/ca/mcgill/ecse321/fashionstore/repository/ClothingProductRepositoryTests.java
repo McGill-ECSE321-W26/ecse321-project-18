@@ -1,18 +1,17 @@
 package ca.mcgill.ecse321.fashionstore.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @SpringBootTest
 public class ClothingProductRepositoryTests {
-    @Autowired
-    private ClothingProductRepository clothingProductRepository;
+    @Autowired private ClothingProductRepository clothingProductRepository;
 
     @AfterEach
     public void clearDatabase() {
@@ -35,7 +34,8 @@ public class ClothingProductRepositoryTests {
         int id = newClothingProduct.getId();
 
         // Read person from database
-        ClothingProduct clothingProductFromDB = clothingProductRepository.findClothingProductById(id);
+        ClothingProduct clothingProductFromDB =
+                clothingProductRepository.findClothingProductById(id);
 
         // Assert correct response
         assertNotNull(clothingProductFromDB);
