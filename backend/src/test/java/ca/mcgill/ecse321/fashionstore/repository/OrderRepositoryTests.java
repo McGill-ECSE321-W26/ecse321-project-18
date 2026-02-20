@@ -1,5 +1,9 @@
 package ca.mcgill.ecse321.fashionstore.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import java.sql.Date;
@@ -9,11 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
+ * Test suite for order persistence in the database.
+ *
  * @author Kenneth
- * @summary Test suite for order persistence in the database.
  */
 @SpringBootTest
 class OrderRepositoryTests {
@@ -126,7 +129,8 @@ class OrderRepositoryTests {
 
         // Assert updates persisted
         assertEquals(newState, updatedOrder.getState(), "Order state did not update.");
-        assertEquals(newAddress, updatedOrder.getDeliveryAddress(), "Order address did not update.");
+        assertEquals(
+                newAddress, updatedOrder.getDeliveryAddress(), "Order address did not update.");
         assertEquals(newPrice, updatedOrder.getPrice(), "Order price did not update.");
     }
 
@@ -146,5 +150,4 @@ class OrderRepositoryTests {
         // Assert deletion
         assertNull(deletedOrder, "Order was not deleted from the database.");
     }
-
 }
