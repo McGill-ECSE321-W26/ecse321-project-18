@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * @author Qiuyu Huang (redacted24)
- * @summary Test suite for clothing product persistence in the database.
+ * @author Qiuyu Huang (redacted24) {@summary Test suite for clothing product persistence in the
+ *     database.}
  */
 @SpringBootTest
 class ClothingProductRepositoryTests {

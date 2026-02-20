@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * @author Carolyn Wu (cw118)
- * @summary Test suite for owner (account) persistence in the database.
+ * @author Carolyn Wu (cw118) {@summary Test suite for owner (account) persistence in the database.}
  */
 @SpringBootTest
 class OwnerRepositoryTests {
