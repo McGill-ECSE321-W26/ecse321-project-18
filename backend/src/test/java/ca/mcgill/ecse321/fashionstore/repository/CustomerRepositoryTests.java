@@ -82,9 +82,9 @@ class CustomerRepositoryTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
+    @Transactional
     void testCustomerDelete() {
-        customer.delete();
-        customerRepository.save(customer);
+        customerRepository.deleteCustomerByEmail(customer.getEmail());
         assertNull(
                 customerRepository.findCustomerByEmail("mimi@kittycat.com"),
                 "Persistence did not delete the customer");
