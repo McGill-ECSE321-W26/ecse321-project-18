@@ -200,33 +200,22 @@ class OrderRepositoryTests {
     }
 
     /**
-     * Test that clothing items are associated with an order and not deleted when the order is
-     * deleted.
+     * Test that an order correctly stores its associated clothing items.
+     *
+     * @author Kenneth Wang (KennethWang6)
      */
     @Transactional
     @Test
-    void testOrderClothingItemAssociationAndNonCascadeDelete() {
+    void testOrderClothingItemAssociation() {
         // Create clothing product
-        String productName = "Crewneck";
-        float productPrice = 59.99f;
-        String productImage = "image.jpg";
-
         ClothingProduct product = new ClothingProduct();
-        product.setName(productName);
-        product.setPrice(productPrice);
-        product.setImage(productImage);
-
-        // Save product
         clothingProductRepository.save(product);
 
         // Create clothing item
         ClothingItem item = new ClothingItem();
-        item.setClothingProduct(product);
-
-        // Save item
         clothingItemRepository.save(item);
 
-        // Associate item with order
+        // Add item to order
         order.addItem(item);
         orderRepository.save(order);
 
@@ -234,27 +223,49 @@ class OrderRepositoryTests {
         Order orderFromDb = orderRepository.findOrderById(order.getId());
         assertNotNull(orderFromDb, "Order not found in database.");
         assertEquals(
-                1, orderFromDb.numberOfItems(), "Order should have exactly one clothing item.");
+                1, orderFromDb.numberOfItems(), "Order should contain exactly one clothing item.");
         assertEquals(
                 item.getId(),
                 orderFromDb.getItem(0).getId(),
-                "Clothing item was not correctly associated with order.");
+                "Associated clothing item does not match expected item.");
+    }
 
-        // Delete order
-        orderRepository.delete(orderFromDb);
+    /**
+     * Test that deleting an order does not delete its associated clothing items.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Transactional
+    @Test
+    void testOrderDeletionDoesNotDeleteClothingItem() {
+        // Create clothing product
+        ClothingProduct product = new ClothingProduct();
+        clothingProductRepository.save(product);
 
-        // Verify order is deleted
-        Order deletedOrder = orderRepository.findOrderById(order.getId());
-        assertNull(deletedOrder, "Order should be deleted but still exists.");
+        // Create clothing item
+        ClothingItem item = new ClothingItem();
+        clothingItemRepository.save(item);
+
+        // Add item to order
+        order.addItem(item);
+        orderRepository.save(order);
+
+        // Delete the order
+        orderRepository.delete(order);
+
+        // Verify order deleted
+        assertNull(
+                orderRepository.findOrderById(order.getId()),
+                "Order should be deleted but still exists.");
 
         // Verify clothing item still exists
-        ClothingItem itemFromDb = clothingItemRepository.findClothingItemById(item.getId());
-        assertNotNull(itemFromDb, "Clothing item should NOT be deleted when order is deleted.");
+        assertNotNull(
+                clothingItemRepository.findClothingItemById(item.getId()),
+                "Clothing item should not be deleted when order is removed.");
 
         // Verify clothing product still exists
-        ClothingProduct productFromDb =
-                clothingProductRepository.findClothingProductById(product.getId());
         assertNotNull(
-                productFromDb, "Clothing product should NOT be deleted when order is deleted.");
+                clothingProductRepository.findClothingProductById(product.getId()),
+                "Clothing product should not be deleted when order is removed.");
     }
 }
