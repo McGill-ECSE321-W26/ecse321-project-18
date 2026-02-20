@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import java.util.*;
 
 // line 44 "../../../../../../model.ump"
@@ -34,7 +35,7 @@ public class ClothingProduct {
     private String image;
 
     // ClothingProduct Associations
-    @OneToMany(mappedBy = "clothingProduct")
+    @OneToMany(mappedBy = "clothingProduct", cascade = CascadeType.REMOVE)
     private List<ClothingItem> items;
 
     // ------------------------
