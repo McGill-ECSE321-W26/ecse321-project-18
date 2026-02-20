@@ -3,6 +3,7 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class ClothingProduct {
     private String image;
 
     // ClothingProduct Associations
-    @OneToMany(mappedBy = "clothingProduct")
+    @OneToMany(mappedBy = "clothingProduct", cascade = CascadeType.REMOVE)
     private List<ClothingItem> items;
 
     // ------------------------

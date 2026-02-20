@@ -37,6 +37,7 @@ dependencies {
 checkstyle {
     toolVersion = "13.2.0"
     isIgnoreFailures = false
+    maxWarnings = 0
 }
 
 spotless {
