@@ -62,7 +62,7 @@ class OwnerRepositoryTests {
         Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
 
         // assert that owner was found
-        assertNotNull(ownerFromDb, "Could not find saved owner in the database.");
+        assertNotNull(ownerFromDb, "Could not find saved owner in the database");
     }
 
     /**
@@ -137,7 +137,7 @@ class OwnerRepositoryTests {
 
         // check that we can no longer find an owner with that email
         Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
-        assertNull(updatedOwnerFromDb, "Owner deletion was not persisted.");
+        assertNull(updatedOwnerFromDb, "Owner deletion was not persisted");
     }
 
     /**
@@ -155,6 +155,6 @@ class OwnerRepositoryTests {
 
         // check that we can no longer find an owner with that email
         Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
-        assertNull(updatedOwnerFromDb, "Owner deletion was not persisted.");
+        assertNull(updatedOwnerFromDb, "Owner deletion by id was not persisted");
     }
 }
