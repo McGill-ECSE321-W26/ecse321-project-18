@@ -38,7 +38,6 @@ class EmployeeRepositoryTests {
         String password = "test-" + UUID.randomUUID();
         String address = " 12 Building McConnell";
         int numLoyaltyPoints = 8;
-
         // create and save Employee object
         Employee newEmployee = new Employee();
         newEmployee.setEmail(email);
@@ -200,9 +199,6 @@ class EmployeeRepositoryTests {
         employeeRepository.deleteAll();
 
         Employee deletedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
-        assertEquals(
-                null,
-                deletedEmployee,
-                "Employee was not deleted from database.");
+        assertEquals(null, deletedEmployee, "Employee was not deleted from database.");
     }
 }
