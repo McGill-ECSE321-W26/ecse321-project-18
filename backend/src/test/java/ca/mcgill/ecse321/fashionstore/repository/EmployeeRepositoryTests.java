@@ -212,7 +212,8 @@ class EmployeeRepositoryTests {
 
         Order remainingOrder = orderRepository.findOrderById(order.getId());
         assertNotNull(remainingOrder, "Order should still exist after employee is deleted.");
-        assertNull(remainingOrder.getEmployee(),
+        assertNull(
+                remainingOrder.getEmployee(),
                 "Order should have no employee reference after employee is deleted.");
     }
 }

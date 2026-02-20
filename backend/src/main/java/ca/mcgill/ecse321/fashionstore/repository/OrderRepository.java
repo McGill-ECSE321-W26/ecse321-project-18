@@ -23,6 +23,9 @@ public interface OrderRepository extends CrudRepository<Order, Integer> {
     /** Removes employee reference from all orders assigned to the given employee. */
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE store_order SET employee_email = null WHERE employee_email = :email", nativeQuery = true)
+    @Query(
+            value = "UPDATE store_order SET employee_email = null "
+                    + "WHERE employee_email = :email",
+            nativeQuery = true)
     void removeEmployeeReference(@Param("email") String email);
 }
