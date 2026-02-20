@@ -10,8 +10,19 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: fashionstore
+          POSTGRES_DB: fashion_store
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     permissions:
       contents: read
 
@@ -29,7 +40,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Grant execute permission on Gradle Wrapper
-        run: chmod +x ./gradlew
+        run: chmod +x ./backend/gradlew
 
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: cd backend && ./gradlew build
+
+      - name: Test with Gradle Wrapper
+        run: cd backend && ./gradlew test
