@@ -34,17 +34,18 @@ class ClothingItemRepositoryTests {
         ClothingProduct newClothingProduct = new ClothingProduct();
         newClothingProduct.setName(name);
         newClothingProduct.setPrice(price);
-
         clothingProductRepository.save(newClothingProduct);
-        clothingProduct = newClothingProduct;
 
+        // create clothing item
         ClothingItem newClothingItem = new ClothingItem();
         newClothingItem.setClothingProduct(newClothingProduct);
         newClothingItem.setSize(ClothingItem.Size.S);
         newClothingItem.setColour(ClothingItem.Colour.PINK);
         newClothingItem.setNumInStock(10);
 
-        // Save the clothing product
+        // Save the clothing product and item
+        clothingProductRepository.save(newClothingProduct);
+        clothingProduct = newClothingProduct;
         clothingItemRepository.save(newClothingItem);
         clothingItem = newClothingItem;
     }
@@ -67,37 +68,57 @@ class ClothingItemRepositoryTests {
      */
     @Test
     void testPersistAndLoadClothingItem() {
-        int expId = clothingItem.getId();
-        int expNumInStock = clothingItem.getNumInStock();
-        ClothingItem.Colour expColour = clothingItem.getColour();
-        ClothingItem.Size expSize = clothingItem.getSize();
-        ClothingProduct expClothingProduct = clothingItem.getClothingProduct();
-
         // Read clothing item from database
         ClothingItem clothingItemFromDb =
                 clothingItemRepository.findClothingItemById(clothingItem.getId());
 
-        // Assert correct responses
+        // Assert clothing item found
         assertNotNull(clothingItemFromDb, "Could not find saved clothing item in database.");
+    }
+
+    /**
+     * Test information of clothing item from database is persisted correctly.
+     *
+     * @author Flavie Qin (flavieq88)
+     */
+    @Test
+    void testReadClothingItemInfo() {
+        // Read clothing item from database
+        ClothingItem clothingItemFromDb =
+                clothingItemRepository.findClothingItemById(clothingItem.getId());
+
         assertEquals(
-                expId,
+                clothingItem.getId(),
                 clothingItemFromDb.getId(),
                 "Clothing item id was incorrectly saved in the database.");
         assertEquals(
-                expNumInStock,
+                clothingItem.getNumInStock(),
                 clothingItemFromDb.getNumInStock(),
                 "Clothing item numInStock was incorrectly saved in the database.");
         assertEquals(
-                expColour,
+                clothingItem.getColour(),
                 clothingItemFromDb.getColour(),
                 "Clothing item colour was incorrectly saved in the database.");
         assertEquals(
-                expSize,
+                clothingItem.getSize(),
                 clothingItemFromDb.getSize(),
                 "Clothing item size was incorrectly saved in the database");
+    }
+
+    /**
+     * Test associated clothing product of clothing item from database is persisted correctly.
+     *
+     * @author Flavie Qin (flavieq88)
+     */
+    @Test
+    void testReadClothingItemAssociation() {
+        // Read clothing item from database
+        ClothingItem clothingItemFromDb =
+                clothingItemRepository.findClothingItemById(clothingItem.getId());
+
         assertEquals(
-                expClothingProduct.toString(),
-                clothingProduct.toString(),
+                clothingProduct.getId(),
+                clothingItemFromDb.getClothingProduct().getId(),
                 "Clothing item's clothing product was incorrectly saved in the database");
     }
 
