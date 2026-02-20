@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
+ * Test suite for employee persistence in the database.
+ *
  * @author Aurore Zhang (ororio0)
- * @summary Test suite for employee persistence in the database.
  */
 @SpringBootTest
 class EmployeeRepositoryTests {
@@ -26,23 +27,27 @@ class EmployeeRepositoryTests {
     private Employee employee;
     private Order order;
 
+    /**
+     * Creates and saves an employee and an order before each test.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
     @BeforeEach
-    // create an employee
     void createEmployee() {
         String email = "ilovefashion@fashionstore.com";
         String password = "test-" + UUID.randomUUID();
         String address = " 12 Building McConnell";
         int numLoyaltyPoints = 8;
 
+        // create and save Employee object
         Employee newEmployee = new Employee();
         newEmployee.setEmail(email);
         newEmployee.setPassword(password);
         newEmployee.setAddress(address);
         newEmployee.setNumLoyaltyPoints(numLoyaltyPoints);
-        // save the employee
         employeeRepository.save(newEmployee);
         employee = newEmployee;
-        // create an order and assign to employee
+        // create and save Order object and assign to employee
         Order newOrder = new Order();
         newOrder.setState(State.ASSIGNED);
         newOrder.setOrderDate(Date.valueOf("2026-02-19"));
@@ -146,5 +151,58 @@ class EmployeeRepositoryTests {
                 employee.getEmail(),
                 orderFromDb.getEmployee().getEmail(),
                 "Employee reference in order is not saved correctly in database.");
+    }
+
+    /**
+     * Test update of employee password is correct.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateEmployeePassword() {
+        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        employeeFromDb.setPassword("updated-" + UUID.randomUUID());
+        employeeRepository.save(employeeFromDb);
+
+        Employee updatedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        assertEquals(
+                employeeFromDb.getPassword(),
+                updatedEmployee.getPassword(),
+                "Employee password was not updated in database.");
+    }
+
+    /**
+     * Test update of employee address is correct.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateEmployeeAddress() {
+        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        employeeFromDb.setAddress("99 Updated Street");
+        employeeRepository.save(employeeFromDb);
+
+        Employee updatedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        assertEquals(
+                employeeFromDb.getAddress(),
+                updatedEmployee.getAddress(),
+                "Employee address was not updated in database.");
+    }
+
+    /**
+     * Test deletion of employee from database.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testDeleteEmployee() {
+        orderRepository.deleteAll();
+        employeeRepository.deleteAll();
+
+        Employee deletedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        assertEquals(
+                null,
+                deletedEmployee,
+                "Employee was not deleted from database.");
     }
 }
