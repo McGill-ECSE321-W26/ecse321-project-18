@@ -28,7 +28,7 @@ class EmployeeRepositoryTests {
     private Order order;
 
     /**
-     * Creates and saves an employee and an order before each test.
+     * Creates and saves an employee before each test.
      *
      * @author Aurore Zhang (ororio0)
      */
@@ -46,7 +46,15 @@ class EmployeeRepositoryTests {
         newEmployee.setNumLoyaltyPoints(numLoyaltyPoints);
         employeeRepository.save(newEmployee);
         employee = newEmployee;
-        // create and save Order object and assign to employee
+        createOrder(newEmployee);
+    }
+
+    /**
+     * Creates and saves an order assigned to the given employee.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    private void createOrder(Employee newEmployee) {
         Order newOrder = new Order();
         newOrder.setState(State.ASSIGNED);
         newOrder.setOrderDate(Date.valueOf("2026-02-19"));
