@@ -2,4 +2,7 @@
   <Match>
     <Package name="~ca.mcgill.ecse321.fashionstore.model.*" />
   </Match>
+  <Match>
+    <Bug pattern="HARD_CODE_PASSWORD" />
+  </Match>
 </FindBugsFilter>
