@@ -1,6 +1,5 @@
 package ca.mcgill.ecse321.fashionstore.repository;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,17 +18,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Tests for customer persistence.
- * 
+ *
  * @author Jennifer You (jenni4u)
  */
 @SpringBootTest
 class CustomerRepositoryTests {
-    
+
     @Autowired private CustomerRepository customerRepository;
     @Autowired private OrderRepository orderRepository;
     @Autowired private ClothingItemRepository clothingItemRepository;
     @Autowired private ClothingProductRepository clothingProductRepository;
     private Customer customer;
+    private Order order;
+    private ClothingItem item;
 
     /**
      * Create a customer in the database before each test.
@@ -56,8 +57,8 @@ class CustomerRepositoryTests {
      */
     @AfterEach
     public void clearDatabase() {
-        customerRepository.deleteAll();
         orderRepository.deleteAll();
+        customerRepository.deleteAll();
         clothingItemRepository.deleteAll();
         clothingProductRepository.deleteAll();
     }
@@ -95,18 +96,18 @@ class CustomerRepositoryTests {
      */
     @Test
     void testCustomerReadAttributes() {
-        Customer customerFromDB = customerRepository.findCustomerByEmail(customer.getEmail());
+        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
         assertEquals(
                 customer.getPassword(),
-                customerFromDB.getPassword(),
+                customerFromDb.getPassword(),
                 "Persistence did not return the same password attribute");
         assertEquals(
                 customer.getAddress(),
-                customerFromDB.getAddress(),
+                customerFromDb.getAddress(),
                 "Persistence did not return the same address attribute");
         assertEquals(
                 customer.getNumLoyaltyPoints(),
-                customerFromDB.getNumLoyaltyPoints(),
+                customerFromDb.getNumLoyaltyPoints(),
                 "Persistence did not return the same numLoyaltyPoints attribute");
     }
 
@@ -117,79 +118,103 @@ class CustomerRepositoryTests {
      */
     @Test
     void testCustomerWriteAttributes() {
-        // change attributes
-        String newPassword = "woofie";
-        String newAddress = "456 Dog Street";
-        int newLoyaltyPoints = 200;
-        customer.setPassword(newPassword);
-        customer.setAddress(newAddress);
-        customer.setNumLoyaltyPoints(newLoyaltyPoints);
+        customer.setPassword("woofie");
+        customer.setAddress("456 Dog Street");
+        customer.setNumLoyaltyPoints(200);
         customerRepository.save(customer);
-        customer = customerRepository.findCustomerByEmail(customer.getEmail());
-
+        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
         // attributes
         assertEquals(
-                newPassword,
                 customer.getPassword(),
+                customerFromDb.getPassword(),
                 "Persistence did not update the password attribute");
         assertEquals(
-                newAddress,
                 customer.getAddress(),
+                customerFromDb.getAddress(),
                 "Persistence did not update the address attribute");
         assertEquals(
-                newLoyaltyPoints,
                 customer.getNumLoyaltyPoints(),
+                customerFromDb.getNumLoyaltyPoints(),
                 "Persistence did not update the numLoyaltyPoints attribute");
     }
 
     /**
-     * Test read and write of Customer object's references in the persistence layer.
+     * Test initialization of the Customer object's references in the persistence layer.
      *
      * @author Jennifer You (jenni4u)
      */
     @Test
     @Transactional
-    void testCustomerReferences() {
+    void testCustomerInitializeReferences() {
+        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+        assertFalse(
+                customerFromDb.hasShoppingCart(),
+                "Persistence did not initialize the shopping cart reference");
+        assertFalse(
+                customerFromDb.hasPurchasedOrders(),
+                "Persistence did not initialize the purchased orders reference");
+    }
+
+    /**
+     * Helper method to initialize reference objects for testing Customer references in the
+     * persistence layer.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    private void initializeReferenceObjects() {
         // create clothing item
-        ClothingItem item = new ClothingItem();
+        item = new ClothingItem();
         item.setNumInStock(10);
         item.setColour(ClothingItem.Colour.PINK);
         item.setSize(ClothingItem.Size.M);
         clothingItemRepository.save(item);
-        item = clothingItemRepository.findClothingItemById(item.getId());
 
         // create order
-        Order order = new Order();
+        order = new Order();
         order.setState(Order.State.ASSIGNED);
         order.setOrderDate(new Date(2024, 6, 1));
         order.setDeliveryDate(new Date(2024, 6, 15));
         order.setDeliveryAddress("123 Cat Street");
         order.setPrice(50.0f);
+        order.setCustomer(customerRepository.findCustomerByEmail(customer.getEmail()));
         orderRepository.save(order);
-        order = orderRepository.findOrderById(order.getId());
+    }
 
-        // read references
-        assertFalse(
-                customer.hasShoppingCart(),
-                "Persistence did not return the same shopping cart reference");
-        assertFalse(
-                customer.hasPurchasedOrders(),
-                "Persistence did not return the same purchased orders reference");
-
+    /**
+     * Test adding Customer references to orders and items in the persistence layer.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    @Transactional
+    void testCustomerWriteReferences() {
+        initializeReferenceObjects();
         // write references
         customer.addShoppingCart(item);
         customer.addPurchasedOrder(order);
         customerRepository.save(customer);
-        customer = customerRepository.findCustomerByEmail(customer.getEmail());
+        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+        ClothingItem itemFromDb = clothingItemRepository.findClothingItemById(item.getId());
+        Order orderFromDb = orderRepository.findOrderById(order.getId());
         assertEquals(
-                item,
-                customer.getShoppingCart(customer.indexOfShoppingCart(item)),
+                itemFromDb,
+                customerFromDb.getShoppingCart(customer.indexOfShoppingCart(item)),
                 "Persistence did not update the shopping cart reference");
         assertEquals(
-                order,
-                customer.getPurchasedOrder(customer.indexOfPurchasedOrder(order)),
+                orderFromDb,
+                customerFromDb.getPurchasedOrder(customer.indexOfPurchasedOrder(order)),
                 "Persistence did not update the purchased orders reference");
+    }
 
+    /**
+     * Test deleting Customer references to orders and items in the persistence layer.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    @Transactional
+    void testCustomerDeleteReferences() {
+        initializeReferenceObjects();
         customer.removePurchasedOrder(order);
         customer.removeShoppingCart(item);
         customerRepository.save(customer);
