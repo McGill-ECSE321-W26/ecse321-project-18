@@ -37,29 +37,23 @@ class AccountRepositoryTests {
     @BeforeEach
     void createAndSaveAccounts() {
         // create and save Owner object
-        String ownerEmail = "owner@fashionstore.com";
-        String ownerPassword = "averysafepassword";
         Owner newOwner = new Owner();
-        newOwner.setEmail(ownerEmail);
-        newOwner.setPassword(ownerPassword);
+        newOwner.setEmail("owner@fashionstore.com");
+        newOwner.setPassword("averysafepassword");
         accountRepository.save(newOwner);
         this.owner = newOwner;
 
         // create and save Employee object
-        String employeeEmail = "employee@fashionstore.com";
-        String employeePassword = "thisismypassword";
         Employee newEmployee = new Employee();
-        newEmployee.setEmail(employeeEmail);
-        newEmployee.setPassword(employeePassword);
+        newEmployee.setEmail("employee@fashionstore.com");
+        newEmployee.setPassword("thisismypassword");
         accountRepository.save(newEmployee);
         this.employee = newEmployee;
 
         // create and save Owner object
-        String customerEmail = "customer@fashionstore.com";
-        String customerPassword = "customerpassword";
         Customer newCustomer = new Customer();
-        newCustomer.setEmail(customerEmail);
-        newCustomer.setPassword(customerPassword);
+        newCustomer.setEmail("customer@fashionstore.com");
+        newCustomer.setPassword("customerpassword");
         accountRepository.save(newCustomer);
         this.customer = newCustomer;
     }
