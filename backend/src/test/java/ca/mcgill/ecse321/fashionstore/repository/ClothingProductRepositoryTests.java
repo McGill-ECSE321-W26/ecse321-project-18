@@ -24,6 +24,11 @@ class ClothingProductRepositoryTests {
     private ClothingProduct clothingProduct;
     @Autowired private ClothingItemRepository clothingItemRepository;
 
+    /**
+     * Setup method to run before each test. Builds a mock clothingProduct.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
     @BeforeEach
     void createClothingProduct() {
         // Create clothingProduct
