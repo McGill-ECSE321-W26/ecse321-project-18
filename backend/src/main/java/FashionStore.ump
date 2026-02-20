@@ -3,8 +3,8 @@ namespace ca.mcgill.ecse321.fashionstore.model;
 class Account {
   abstract;
 
-  immutable email; // unique
-  password;
+  lazy immutable email; // unique
+  lazy password;
 }
 
 class Owner {
@@ -14,8 +14,8 @@ class Owner {
 class Customer {
   isA Account;
 
-  address;
-  Integer numLoyaltyPoints;
+  lazy address;
+  lazy Integer numLoyaltyPoints;
 
   * -> * ClothingItem shoppingCart;
   0..1 -- * Order purchasedOrders;      // an Order can have no Customer if the Customer's account was deleted
@@ -31,11 +31,11 @@ class Order {
   enum State { PURCHASED, ASSIGNED, PREPARED, DELIVERED, CANCELLED }
 
   lazy Integer id;
-  State state;
-  Date orderDate;
-  Date deliveryDate;
-  deliveryAddress;
-  Float price;
+  lazy State state;
+  lazy Date orderDate;
+  lazy Date deliveryDate;
+  lazy deliveryAddress;
+  lazy Float price;
 
   * -> * ClothingItem items;
 }
@@ -46,7 +46,7 @@ class ClothingProduct {
   lazy Float price;
   lazy String image;           // image stored as String
 
-  1 <@>- * ClothingItem items;
+  0..1 <@>- * ClothingItem items;
 }
 
 class ClothingItem {
@@ -54,7 +54,7 @@ class ClothingItem {
   enum Colour { RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, BLACK, GREY, WHITE, BROWN }
 
   lazy Integer id;
-  Size size;
-  Colour colour;
-  Integer numInStock;
+  lazy Size size;
+  lazy Colour colour;
+  lazy Integer numInStock;
 }

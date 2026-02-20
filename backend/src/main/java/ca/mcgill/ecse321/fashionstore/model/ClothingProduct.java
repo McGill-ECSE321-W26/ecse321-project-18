@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -40,7 +40,6 @@ public class ClothingProduct {
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
-
     public ClothingProduct() {
         id = 0;
         name = null;
@@ -129,22 +128,18 @@ public class ClothingProduct {
         return 0;
     }
 
-    /* Code from template association_AddManyToOne */
-    public ClothingItem addItem(
-            ClothingItem.Size aSize, ClothingItem.Colour aColour, int aNumInStock) {
-        return new ClothingItem(aSize, aColour, aNumInStock, this);
-    }
-
+    /* Code from template association_AddManyToOptionalOne */
     public boolean addItem(ClothingItem aItem) {
         boolean wasAdded = false;
         if (items.contains(aItem)) {
             return false;
         }
         ClothingProduct existingClothingProduct = aItem.getClothingProduct();
-        boolean isNewClothingProduct =
-                existingClothingProduct != null && !this.equals(existingClothingProduct);
-        if (isNewClothingProduct) {
+        if (existingClothingProduct == null) {
             aItem.setClothingProduct(this);
+        } else if (!this.equals(existingClothingProduct)) {
+            existingClothingProduct.removeItem(aItem);
+            addItem(aItem);
         } else {
             items.add(aItem);
         }
@@ -154,9 +149,9 @@ public class ClothingProduct {
 
     public boolean removeItem(ClothingItem aItem) {
         boolean wasRemoved = false;
-        // Unable to remove aItem, as it must always have a clothingProduct
-        if (!this.equals(aItem.getClothingProduct())) {
+        if (items.contains(aItem)) {
             items.remove(aItem);
+            aItem.setClothingProduct(null);
             wasRemoved = true;
         }
         return wasRemoved;

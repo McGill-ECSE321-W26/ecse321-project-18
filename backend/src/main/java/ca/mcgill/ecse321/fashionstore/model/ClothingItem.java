@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8091.03bcab5b3 modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -66,17 +66,9 @@ public class ClothingItem {
     // CONSTRUCTOR
     // ------------------------
 
-    public ClothingItem(
-            Size aSize, Colour aColour, int aNumInStock, ClothingProduct aClothingProduct) {
+    public ClothingItem() {
         id = 0;
-        size = aSize;
-        colour = aColour;
-        numInStock = aNumInStock;
-        boolean didAddClothingProduct = setClothingProduct(aClothingProduct);
-        if (!didAddClothingProduct) {
-            throw new RuntimeException(
-                    "Unable to create item due to clothingProduct. See https://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-        }
+        numInStock = 0;
     }
 
     // ------------------------
@@ -132,27 +124,30 @@ public class ClothingItem {
         return clothingProduct;
     }
 
-    /* Code from template association_SetOneToMany */
+    public boolean hasClothingProduct() {
+        boolean has = clothingProduct != null;
+        return has;
+    }
+
+    /* Code from template association_SetOptionalOneToMany */
     public boolean setClothingProduct(ClothingProduct aClothingProduct) {
         boolean wasSet = false;
-        if (aClothingProduct == null) {
-            return wasSet;
-        }
-
         ClothingProduct existingClothingProduct = clothingProduct;
         clothingProduct = aClothingProduct;
         if (existingClothingProduct != null && !existingClothingProduct.equals(aClothingProduct)) {
             existingClothingProduct.removeItem(this);
         }
-        clothingProduct.addItem(this);
+        if (aClothingProduct != null) {
+            aClothingProduct.addItem(this);
+        }
         wasSet = true;
         return wasSet;
     }
 
     public void delete() {
-        ClothingProduct placeholderClothingProduct = clothingProduct;
-        this.clothingProduct = null;
-        if (placeholderClothingProduct != null) {
+        if (clothingProduct != null) {
+            ClothingProduct placeholderClothingProduct = clothingProduct;
+            this.clothingProduct = null;
             placeholderClothingProduct.removeItem(this);
         }
     }
