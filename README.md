@@ -49,13 +49,13 @@ Here is an overview of our team's progress and contributions across all delivera
 
 | Name         | Contributions | Hours |
 | ------------ | ------------- | ----- |
-| Cyrus Fung   | Domain model, Umple code generation, Gradle (Checkstyle, PMD, Spotbugs), Spring Boot and PostgreSQL setup, requirements, GitHub Actions, persistence layer, documentation, detailed use case specification | 28 |
-| Qiuyu Huang  | Requirements, detailed use case specification, persistence layer testing | 15 |
-| Flavie Qin   | Requirements, domain model, use case diagrams, detailed use case specifications, persistence layer testing, documentation | 25 |
-| Kenneth Wang | Requirements, detailed use case specification, persistence layer testing, README | 17 |
-| Carolyn Wu   | GitHub project setup (issues, milestones, Kanban board), wiki and README, meeting minutes, requirements, detailed use case specification, documentation, GitHub Actions, persistence layer testing | 23 |
-| Jennifer You | Requirements, detailed use case specification, meeting minutes, persistence layer testing | 19 |
-| Aurore Zhang | Requirements, detailed use case specification, persistence layer testing | 17 |
+| Cyrus Fung   | Domain model, Umple code generation, Gradle (Checkstyle, PMD, Spotbugs), Spring Boot and PostgreSQL setup, requirements, GitHub Actions, persistence layer, documentation, detailed use case specification, E-IDEA workshop and assignments | 28 |
+| Qiuyu Huang  | Requirements, detailed use case specification, persistence layer testing, E-IDEA workshop and assignments | 15 |
+| Flavie Qin   | Requirements, domain model, use case diagrams, detailed use case specifications, persistence layer testing, documentation, E-IDEA workshop and assignments | 25 |
+| Kenneth Wang | Requirements, detailed use case specification, persistence layer testing, README, E-IDEA workshop and assignments | 17 |
+| Carolyn Wu   | GitHub project setup (issues, milestones, Kanban board), wiki and README, meeting minutes, requirements, detailed use case specification, documentation, GitHub Actions, persistence layer testing, E-IDEA workshop and assignments | 23 |
+| Jennifer You | Requirements, detailed use case specification, meeting minutes, persistence layer testing, E-IDEA workshop and assignments | 19 |
+| Aurore Zhang | Requirements, detailed use case specification, persistence layer testing, E-IDEA workshop and assignments | 17 |
 
 ### Deliverable 2
 
@@ -64,3 +64,4 @@ Not started yet - coming soon!
 ### Deliverable 3
 
 Not started yet!
+
