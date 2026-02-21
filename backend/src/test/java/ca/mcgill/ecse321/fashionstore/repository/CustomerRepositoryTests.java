@@ -9,6 +9,7 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import java.sql.Date;
+import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -172,8 +173,8 @@ class CustomerRepositoryTests {
         // create order
         order = new Order();
         order.setState(Order.State.ASSIGNED);
-        order.setOrderDate(new Date(2024, 6, 1));
-        order.setDeliveryDate(new Date(2024, 6, 15));
+        order.setOrderDate(Date.valueOf(LocalDate.now()));
+        order.setDeliveryDate(Date.valueOf(LocalDate.now()));
         order.setDeliveryAddress("123 Cat Street");
         order.setPrice(50.0f);
         order.setCustomer(customerRepository.findCustomerByEmail(customer.getEmail()));
