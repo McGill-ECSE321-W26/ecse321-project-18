@@ -17,7 +17,7 @@ class Customer {
   lazy address;
   lazy Integer numLoyaltyPoints;
 
-  * -> * ClothingItem shoppingCart;
+  * -> * ShoppingCartItem shoppingCartItems;
   0..1 -- * Order purchasedOrders;      // an Order can have no Customer if the Customer's account was deleted
 }
 
@@ -37,7 +37,19 @@ class Order {
   lazy deliveryAddress;
   lazy Float price;
 
-  * -> * ClothingItem items;
+  * -> * OrderItem items;
+}
+
+class OrderItem {
+  lazy Integer quantity;
+
+  0..* -> 1 ClothingItem;
+}
+
+class ShoppingCartItem {
+  lazy Integer quantity;
+
+  0..* -> 1 ClothingItem;
 }
 
 class ClothingProduct {
