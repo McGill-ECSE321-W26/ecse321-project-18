@@ -8,7 +8,4 @@ public interface ShoppingCartItemRepository extends CrudRepository<ShoppingCartI
 
     /** Find by ID method for ShoppingCartItem. */
     ShoppingCartItem findShoppingCartItemById(int id);
-
-    /** Delete by ID method for ShoppingCartItem. */
-    void deleteShoppingCartItemById(int id);
 }

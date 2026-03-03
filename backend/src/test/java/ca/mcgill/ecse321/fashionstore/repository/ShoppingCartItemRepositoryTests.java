@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest
 class ShoppingCartItemRepositoryTests {
-
     @Autowired private CustomerRepository customerRepositoryRepository;
     private Customer customerRepository;
 
