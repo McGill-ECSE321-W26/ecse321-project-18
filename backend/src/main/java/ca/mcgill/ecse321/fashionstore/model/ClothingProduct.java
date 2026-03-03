@@ -35,7 +35,7 @@ public class ClothingProduct {
     private String image;
 
     // ClothingProduct Associations
-    @OneToMany(mappedBy = "clothingProduct", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "clothingProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClothingItem> items;
 
     // Helper Variables

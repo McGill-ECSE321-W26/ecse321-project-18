@@ -26,7 +26,7 @@ public class Customer extends Account {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<ShoppingCartItem> shoppingCartItems;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> purchasedOrders;
 
     // ------------------------

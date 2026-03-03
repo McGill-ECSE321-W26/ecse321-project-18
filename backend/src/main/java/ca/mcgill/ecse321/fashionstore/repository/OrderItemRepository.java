@@ -8,4 +8,7 @@ public interface OrderItemRepository extends CrudRepository<OrderItem, Integer> 
 
     /** Find by ID method for OrderItem. */
     OrderItem findOrderItemById(int id);
+
+    /** Delete by ID method for OrderItem. */
+    void deleteOrderItemById(int id);
 }
