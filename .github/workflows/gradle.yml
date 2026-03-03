@@ -44,7 +44,7 @@ jobs:
         run: chmod +x ./backend/gradlew
 
       - name: Build with Gradle Wrapper
-        run: cd backend && ./gradlew build
+        run: cd backend && ./gradlew build -xtest
 
       - name: Test with Gradle Wrapper
         run: cd backend && ./gradlew test

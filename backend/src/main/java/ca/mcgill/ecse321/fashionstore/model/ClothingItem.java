@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8183.32a6408a9 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -11,8 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
-// line 53 "../../../../../../model.ump"
-// line 97 "../../../../../../model.ump"
+// line 69 "../../../../../../model.ump"
+// line 123 "../../../../../../model.ump"
 @Entity
 public class ClothingItem {
 
@@ -62,21 +62,28 @@ public class ClothingItem {
     // ClothingItem Associations
     @ManyToOne private ClothingProduct clothingProduct;
 
+    // Helper Variables
+    private boolean canSetId;
+
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
     public ClothingItem() {
-        id = 0;
+        canSetId = true;
         numInStock = 0;
     }
 
     // ------------------------
     // INTERFACE
     // ------------------------
-
+    /* Code from template attribute_SetImmutable */
     public boolean setId(int aId) {
         boolean wasSet = false;
+        if (!canSetId) {
+            return false;
+        }
+        canSetId = false;
         id = aId;
         wasSet = true;
         return wasSet;

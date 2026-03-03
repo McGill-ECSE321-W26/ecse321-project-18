@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8183.32a6408a9 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -13,8 +13,8 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import java.util.*;
 
-// line 44 "../../../../../../model.ump"
-// line 92 "../../../../../../model.ump"
+// line 60 "../../../../../../model.ump"
+// line 118 "../../../../../../model.ump"
 @Entity
 public class ClothingProduct {
 
@@ -38,11 +38,15 @@ public class ClothingProduct {
     @OneToMany(mappedBy = "clothingProduct", cascade = CascadeType.REMOVE)
     private List<ClothingItem> items;
 
+    // Helper Variables
+    private boolean canSetId;
+
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
+
     public ClothingProduct() {
-        id = 0;
+        canSetId = true;
         name = null;
         price = 0.0f;
         image = null;
@@ -52,9 +56,13 @@ public class ClothingProduct {
     // ------------------------
     // INTERFACE
     // ------------------------
-
+    /* Code from template attribute_SetImmutable */
     public boolean setId(int aId) {
         boolean wasSet = false;
+        if (!canSetId) {
+            return false;
+        }
+        canSetId = false;
         id = aId;
         wasSet = true;
         return wasSet;

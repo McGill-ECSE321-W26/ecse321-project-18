@@ -59,10 +59,24 @@ class OwnerRepositoryTests {
     @Test
     void testPersistAndLoadOwner() {
         // read owner from database
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
 
         // assert that owner was found
         assertNotNull(ownerFromDb, "Could not find saved owner in the database");
+    }
+
+    /**
+     * Test read (retrieval) of owner id.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testReadOwnerId() {
+        // get owner from database
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
+
+        // check that email was persisted
+        assertEquals(owner.getId(), ownerFromDb.getId(), "Owner id is not saved in database");
     }
 
     /**
@@ -73,7 +87,7 @@ class OwnerRepositoryTests {
     @Test
     void testReadOwnerEmail() {
         // get owner from database
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
 
         // check that email was persisted
         assertEquals(
@@ -88,7 +102,7 @@ class OwnerRepositoryTests {
     @Test
     void testReadOwnerPassword() {
         // get owner from database
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
 
         // check that email was persisted
         assertEquals(
@@ -106,7 +120,7 @@ class OwnerRepositoryTests {
     @Test
     void testWriteOwnerPassword() {
         // get owner from database
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
 
         // update the password
         String newPassword = "asaferpasswordwooo";
@@ -114,7 +128,7 @@ class OwnerRepositoryTests {
         ownerRepository.save(ownerFromDb);
 
         // check that new password was persisted
-        Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner updatedOwnerFromDb = ownerRepository.findOwnerById(owner.getId());
         assertEquals(
                 newPassword,
                 updatedOwnerFromDb.getPassword(),
@@ -129,14 +143,14 @@ class OwnerRepositoryTests {
     @Test
     void testDeleteOwner() {
         // get owner from database
-        String ownerEmail = owner.getEmail();
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
+        int ownerId = owner.getId();
+        Owner ownerFromDb = ownerRepository.findOwnerById(ownerId);
 
         // delete the owner from the database
         ownerRepository.delete(ownerFromDb);
 
         // check that we can no longer find an owner with that email
-        Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
+        Owner updatedOwnerFromDb = ownerRepository.findOwnerById(ownerId);
         assertNull(updatedOwnerFromDb, "Owner deletion was not persisted");
     }
 
@@ -148,13 +162,13 @@ class OwnerRepositoryTests {
     @Test
     void testDeleteOwnerById() {
         // get owner from database
-        String ownerEmail = owner.getEmail();
+        int ownerId = owner.getId();
 
         // delete the owner using its id (email) from the database
-        ownerRepository.deleteById(ownerEmail);
+        ownerRepository.deleteById(ownerId);
 
         // check that we can no longer find an owner with that email
-        Owner updatedOwnerFromDb = ownerRepository.findOwnerByEmail(ownerEmail);
+        Owner updatedOwnerFromDb = ownerRepository.findOwnerById(ownerId);
         assertNull(updatedOwnerFromDb, "Owner deletion by id was not persisted");
     }
 }

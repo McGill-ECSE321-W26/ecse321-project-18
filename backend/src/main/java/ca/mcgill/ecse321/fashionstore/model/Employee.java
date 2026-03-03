@@ -1,5 +1,5 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8183.32a6408a9 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
@@ -7,8 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import java.util.*;
 
-// line 25 "../../../../../../model.ump"
-// line 82 "../../../../../../model.ump"
+// line 26 "../../../../../../model.ump"
+// line 98 "../../../../../../model.ump"
 @Entity
 public class Employee extends Customer {
 

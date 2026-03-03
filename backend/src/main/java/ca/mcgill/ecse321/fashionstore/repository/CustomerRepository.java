@@ -4,11 +4,11 @@ import ca.mcgill.ecse321.fashionstore.model.Customer;
 import org.springframework.data.repository.CrudRepository;
 
 /** CRUDRepository for Customer with Integer as the ID type. */
-public interface CustomerRepository extends CrudRepository<Customer, String> {
+public interface CustomerRepository extends CrudRepository<Customer, Integer> {
 
     /** Find by ID method for Customer. */
-    Customer findCustomerByEmail(String email);
+    Customer findCustomerById(int id);
 
     /** Delete by ID method for Customer. */
-    void deleteCustomerByEmail(String email);
+    void deleteCustomerById(int id);
 }

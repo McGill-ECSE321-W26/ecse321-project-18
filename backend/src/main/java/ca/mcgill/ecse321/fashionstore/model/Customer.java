@@ -1,15 +1,16 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8183.32a6408a9 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import java.util.*;
 
-// line 15 "../../../../../../model.ump"
-// line 77 "../../../../../../model.ump"
+// line 16 "../../../../../../model.ump"
+// line 93 "../../../../../../model.ump"
 @Entity
 public class Customer extends Account {
 
@@ -22,9 +23,10 @@ public class Customer extends Account {
     private int numLoyaltyPoints;
 
     // Customer Associations
-    @ManyToMany private List<ClothingItem> shoppingCart;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<ShoppingCartItem> shoppingCartItems;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> purchasedOrders;
 
     // ------------------------
@@ -35,7 +37,7 @@ public class Customer extends Account {
         super();
         address = null;
         numLoyaltyPoints = 0;
-        shoppingCart = new ArrayList<ClothingItem>();
+        shoppingCartItems = new ArrayList<ShoppingCartItem>();
         purchasedOrders = new ArrayList<Order>();
     }
 
@@ -66,28 +68,29 @@ public class Customer extends Account {
     }
 
     /* Code from template association_GetMany */
-    public ClothingItem getShoppingCart(int index) {
-        ClothingItem aShoppingCart = shoppingCart.get(index);
-        return aShoppingCart;
+    public ShoppingCartItem getShoppingCartItem(int index) {
+        ShoppingCartItem aShoppingCartItem = shoppingCartItems.get(index);
+        return aShoppingCartItem;
     }
 
-    public List<ClothingItem> getShoppingCart() {
-        List<ClothingItem> newShoppingCart = Collections.unmodifiableList(shoppingCart);
-        return newShoppingCart;
+    public List<ShoppingCartItem> getShoppingCartItems() {
+        List<ShoppingCartItem> newShoppingCartItems =
+                Collections.unmodifiableList(shoppingCartItems);
+        return newShoppingCartItems;
     }
 
-    public int numberOfShoppingCart() {
-        int number = shoppingCart.size();
+    public int numberOfShoppingCartItems() {
+        int number = shoppingCartItems.size();
         return number;
     }
 
-    public boolean hasShoppingCart() {
-        boolean has = shoppingCart.size() > 0;
+    public boolean hasShoppingCartItems() {
+        boolean has = shoppingCartItems.size() > 0;
         return has;
     }
 
-    public int indexOfShoppingCart(ClothingItem aShoppingCart) {
-        int index = shoppingCart.indexOf(aShoppingCart);
+    public int indexOfShoppingCartItem(ShoppingCartItem aShoppingCartItem) {
+        int index = shoppingCartItems.indexOf(aShoppingCartItem);
         return index;
     }
 
@@ -119,61 +122,70 @@ public class Customer extends Account {
     }
 
     /* Code from template association_MinimumNumberOfMethod */
-    public static int minimumNumberOfShoppingCart() {
+    public static int minimumNumberOfShoppingCartItems() {
         return 0;
     }
 
-    /* Code from template association_AddUnidirectionalMany */
-    public boolean addShoppingCart(ClothingItem aShoppingCart) {
+    /* Code from template association_AddManyToOptionalOne */
+    public boolean addShoppingCartItem(ShoppingCartItem aShoppingCartItem) {
         boolean wasAdded = false;
-        if (shoppingCart.contains(aShoppingCart)) {
+        if (shoppingCartItems.contains(aShoppingCartItem)) {
             return false;
         }
-        shoppingCart.add(aShoppingCart);
+        Customer existingCustomer = aShoppingCartItem.getCustomer();
+        if (existingCustomer == null) {
+            aShoppingCartItem.setCustomer(this);
+        } else if (!this.equals(existingCustomer)) {
+            existingCustomer.removeShoppingCartItem(aShoppingCartItem);
+            addShoppingCartItem(aShoppingCartItem);
+        } else {
+            shoppingCartItems.add(aShoppingCartItem);
+        }
         wasAdded = true;
         return wasAdded;
     }
 
-    public boolean removeShoppingCart(ClothingItem aShoppingCart) {
+    public boolean removeShoppingCartItem(ShoppingCartItem aShoppingCartItem) {
         boolean wasRemoved = false;
-        if (shoppingCart.contains(aShoppingCart)) {
-            shoppingCart.remove(aShoppingCart);
+        if (shoppingCartItems.contains(aShoppingCartItem)) {
+            shoppingCartItems.remove(aShoppingCartItem);
+            aShoppingCartItem.setCustomer(null);
             wasRemoved = true;
         }
         return wasRemoved;
     }
 
     /* Code from template association_AddIndexControlFunctions */
-    public boolean addShoppingCartAt(ClothingItem aShoppingCart, int index) {
+    public boolean addShoppingCartItemAt(ShoppingCartItem aShoppingCartItem, int index) {
         boolean wasAdded = false;
-        if (addShoppingCart(aShoppingCart)) {
+        if (addShoppingCartItem(aShoppingCartItem)) {
             if (index < 0) {
                 index = 0;
             }
-            if (index > numberOfShoppingCart()) {
-                index = numberOfShoppingCart() - 1;
+            if (index > numberOfShoppingCartItems()) {
+                index = numberOfShoppingCartItems() - 1;
             }
-            shoppingCart.remove(aShoppingCart);
-            shoppingCart.add(index, aShoppingCart);
+            shoppingCartItems.remove(aShoppingCartItem);
+            shoppingCartItems.add(index, aShoppingCartItem);
             wasAdded = true;
         }
         return wasAdded;
     }
 
-    public boolean addOrMoveShoppingCartAt(ClothingItem aShoppingCart, int index) {
+    public boolean addOrMoveShoppingCartItemAt(ShoppingCartItem aShoppingCartItem, int index) {
         boolean wasAdded = false;
-        if (shoppingCart.contains(aShoppingCart)) {
+        if (shoppingCartItems.contains(aShoppingCartItem)) {
             if (index < 0) {
                 index = 0;
             }
-            if (index > numberOfShoppingCart()) {
-                index = numberOfShoppingCart() - 1;
+            if (index > numberOfShoppingCartItems()) {
+                index = numberOfShoppingCartItems() - 1;
             }
-            shoppingCart.remove(aShoppingCart);
-            shoppingCart.add(index, aShoppingCart);
+            shoppingCartItems.remove(aShoppingCartItem);
+            shoppingCartItems.add(index, aShoppingCartItem);
             wasAdded = true;
         } else {
-            wasAdded = addShoppingCartAt(aShoppingCart, index);
+            wasAdded = addShoppingCartItemAt(aShoppingCartItem, index);
         }
         return wasAdded;
     }
@@ -248,7 +260,13 @@ public class Customer extends Account {
     }
 
     public void delete() {
-        shoppingCart.clear();
+        while (shoppingCartItems.size() > 0) {
+            ShoppingCartItem aShoppingCartItem =
+                    shoppingCartItems.get(shoppingCartItems.size() - 1);
+            aShoppingCartItem.delete();
+            shoppingCartItems.remove(aShoppingCartItem);
+        }
+
         while (!purchasedOrders.isEmpty()) {
             purchasedOrders.get(0).setCustomer(null);
         }

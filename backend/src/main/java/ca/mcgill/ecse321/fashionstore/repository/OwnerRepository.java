@@ -4,8 +4,8 @@ import ca.mcgill.ecse321.fashionstore.model.Owner;
 import org.springframework.data.repository.CrudRepository;
 
 /** CRUDRepository for Owner with Integer as the ID type. */
-public interface OwnerRepository extends CrudRepository<Owner, String> {
+public interface OwnerRepository extends CrudRepository<Owner, Integer> {
 
     /** Find by ID method for Owner. */
-    Owner findOwnerByEmail(String email);
+    Owner findOwnerById(int id);
 }
