@@ -3,6 +3,7 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,7 +26,9 @@ public abstract class Account {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @Column(unique = true)
     private String email;
+
     private String password;
 
     // Helper Variables
