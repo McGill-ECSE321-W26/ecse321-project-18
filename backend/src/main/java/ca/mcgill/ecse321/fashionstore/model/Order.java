@@ -1,24 +1,25 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8183.32a6408a9 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.sql.Date;
 import java.util.*;
 
-// line 31 "../../../../../../model.ump"
-// line 87 "../../../../../../model.ump"
+// line 32 "../../../../../../model.ump"
+// line 103 "../../../../../../model.ump"
 @Entity
-@Table(name = "store_order") // ORDER is a reserved word in PostgreSQL
+@Table(name = "purchase")
 public class Order {
 
     // ------------------------
@@ -51,29 +52,38 @@ public class Order {
     private float price;
 
     // Order Associations
-    @ManyToMany private List<ClothingItem> items;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OrderItem> items;
+
     @ManyToOne private Customer customer;
     @ManyToOne private Employee employee;
+
+    // Helper Variables
+    private boolean canSetId;
 
     // ------------------------
     // CONSTRUCTOR
     // ------------------------
 
     public Order() {
-        id = 0;
+        canSetId = true;
         orderDate = null;
         deliveryDate = null;
         deliveryAddress = null;
         price = 0.0f;
-        items = new ArrayList<ClothingItem>();
+        items = new ArrayList<OrderItem>();
     }
 
     // ------------------------
     // INTERFACE
     // ------------------------
-
+    /* Code from template attribute_SetImmutable */
     public boolean setId(int aId) {
         boolean wasSet = false;
+        if (!canSetId) {
+            return false;
+        }
+        canSetId = false;
         id = aId;
         wasSet = true;
         return wasSet;
@@ -139,13 +149,13 @@ public class Order {
     }
 
     /* Code from template association_GetMany */
-    public ClothingItem getItem(int index) {
-        ClothingItem aItem = items.get(index);
+    public OrderItem getItem(int index) {
+        OrderItem aItem = items.get(index);
         return aItem;
     }
 
-    public List<ClothingItem> getItems() {
-        List<ClothingItem> newItems = Collections.unmodifiableList(items);
+    public List<OrderItem> getItems() {
+        List<OrderItem> newItems = Collections.unmodifiableList(items);
         return newItems;
     }
 
@@ -159,7 +169,7 @@ public class Order {
         return has;
     }
 
-    public int indexOfItem(ClothingItem aItem) {
+    public int indexOfItem(OrderItem aItem) {
         int index = items.indexOf(aItem);
         return index;
     }
@@ -189,28 +199,37 @@ public class Order {
         return 0;
     }
 
-    /* Code from template association_AddUnidirectionalMany */
-    public boolean addItem(ClothingItem aItem) {
+    /* Code from template association_AddManyToOptionalOne */
+    public boolean addItem(OrderItem aItem) {
         boolean wasAdded = false;
         if (items.contains(aItem)) {
             return false;
         }
-        items.add(aItem);
+        Order existingOrder = aItem.getOrder();
+        if (existingOrder == null) {
+            aItem.setOrder(this);
+        } else if (!this.equals(existingOrder)) {
+            existingOrder.removeItem(aItem);
+            addItem(aItem);
+        } else {
+            items.add(aItem);
+        }
         wasAdded = true;
         return wasAdded;
     }
 
-    public boolean removeItem(ClothingItem aItem) {
+    public boolean removeItem(OrderItem aItem) {
         boolean wasRemoved = false;
         if (items.contains(aItem)) {
             items.remove(aItem);
+            aItem.setOrder(null);
             wasRemoved = true;
         }
         return wasRemoved;
     }
 
     /* Code from template association_AddIndexControlFunctions */
-    public boolean addItemAt(ClothingItem aItem, int index) {
+    public boolean addItemAt(OrderItem aItem, int index) {
         boolean wasAdded = false;
         if (addItem(aItem)) {
             if (index < 0) {
@@ -226,7 +245,7 @@ public class Order {
         return wasAdded;
     }
 
-    public boolean addOrMoveItemAt(ClothingItem aItem, int index) {
+    public boolean addOrMoveItemAt(OrderItem aItem, int index) {
         boolean wasAdded = false;
         if (items.contains(aItem)) {
             if (index < 0) {
@@ -275,7 +294,12 @@ public class Order {
     }
 
     public void delete() {
-        items.clear();
+        while (items.size() > 0) {
+            OrderItem aItem = items.get(items.size() - 1);
+            aItem.delete();
+            items.remove(aItem);
+        }
+
         if (customer != null) {
             Customer placeholderCustomer = customer;
             this.customer = null;

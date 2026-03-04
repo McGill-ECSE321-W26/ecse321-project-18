@@ -24,8 +24,7 @@ public interface OrderRepository extends CrudRepository<Order, Integer> {
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(
-            value = "UPDATE store_order SET employee_email = null "
-                    + "WHERE employee_email = :email",
+            value = "UPDATE purchase SET employee_id = null " + "WHERE employee_id = :id",
             nativeQuery = true)
-    void removeEmployeeReference(@Param("email") String email);
+    void removeEmployeeReference(@Param("id") int id);
 }

@@ -85,8 +85,20 @@ class EmployeeRepositoryTests {
     @Test
     void testPersistAndLoadEmployee() {
         // read from database
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         assertNotNull(employeeFromDb, "Could not find saved employee in database.");
+    }
+
+    /**
+     * Test retrieval of employee id is correct.
+     *
+     * @author Cyrus Fung (cfung89
+     */
+    @Test
+    void testPersistAndLoadEmployeeId() {
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
+        assertEquals(
+                employee.getId(), employeeFromDb.getId(), "Employee id is not saved in database.");
     }
 
     /**
@@ -96,7 +108,7 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testPersistAndLoadEmployeeEmail() {
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 employee.getEmail(),
                 employeeFromDb.getEmail(),
@@ -110,7 +122,7 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testPersistAndLoadEmployeePassword() {
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 employee.getPassword(),
                 employeeFromDb.getPassword(),
@@ -124,7 +136,7 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testPersistAndLoadEmployeeAddress() {
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 employee.getAddress(),
                 employeeFromDb.getAddress(),
@@ -138,7 +150,7 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testPersistAndLoadEmployeeNumLoyaltyPoints() {
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 employee.getNumLoyaltyPoints(),
                 employeeFromDb.getNumLoyaltyPoints(),
@@ -168,11 +180,11 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testUpdateEmployeePassword() {
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         employeeFromDb.setPassword("updated-" + UUID.randomUUID());
         employeeRepository.save(employeeFromDb);
 
-        Employee updatedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee updatedEmployee = employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 employeeFromDb.getPassword(),
                 updatedEmployee.getPassword(),
@@ -186,11 +198,11 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testUpdateEmployeeAddress() {
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         employeeFromDb.setAddress("99 Updated Street");
         employeeRepository.save(employeeFromDb);
 
-        Employee updatedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee updatedEmployee = employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 employeeFromDb.getAddress(),
                 updatedEmployee.getAddress(),
@@ -204,10 +216,10 @@ class EmployeeRepositoryTests {
      */
     @Test
     void testDeleteEmployee() {
-        orderRepository.removeEmployeeReference(employee.getEmail());
+        orderRepository.removeEmployeeReference(employee.getId());
         employeeRepository.deleteAll();
 
-        Employee deletedEmployee = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee deletedEmployee = employeeRepository.findEmployeeById(employee.getId());
         assertNull(deletedEmployee, "Employee was not deleted from database.");
 
         Order remainingOrder = orderRepository.findOrderById(order.getId());

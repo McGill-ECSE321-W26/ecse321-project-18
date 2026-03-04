@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Order;
+import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
 import java.sql.Date;
 import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
@@ -27,11 +27,10 @@ class CustomerRepositoryTests {
 
     @Autowired private CustomerRepository customerRepository;
     @Autowired private OrderRepository orderRepository;
-    @Autowired private ClothingItemRepository clothingItemRepository;
-    @Autowired private ClothingProductRepository clothingProductRepository;
+    @Autowired private ShoppingCartItemRepository shoppingCartItemRepository;
     private Customer customer;
     private Order order;
-    private ClothingItem item;
+    private ShoppingCartItem item;
 
     /**
      * Create a customer in the database before each test.
@@ -60,8 +59,7 @@ class CustomerRepositoryTests {
     public void clearDatabase() {
         orderRepository.deleteAll();
         customerRepository.deleteAll();
-        clothingItemRepository.deleteAll();
-        clothingProductRepository.deleteAll();
+        shoppingCartItemRepository.deleteAll();
     }
 
     /**
@@ -72,7 +70,7 @@ class CustomerRepositoryTests {
     @Test
     void testCustomerLoad() {
         assertNotNull(
-                customerRepository.findCustomerByEmail(customer.getEmail()),
+                customerRepository.findCustomerById(customer.getId()),
                 "Persistence did not save the customer");
     }
 
@@ -84,10 +82,28 @@ class CustomerRepositoryTests {
     @Test
     @Transactional
     void testCustomerDelete() {
-        customerRepository.deleteCustomerByEmail(customer.getEmail());
+        customerRepository.deleteCustomerById(customer.getId());
         assertNull(
-                customerRepository.findCustomerByEmail("mimi@kittycat.com"),
+                customerRepository.findCustomerById(customer.getId()),
                 "Persistence did not delete the customer");
+    }
+
+    /**
+     * Test read the Customer object's attributes in the persistence layer.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testCustomerReadAttributes() {
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
+        assertEquals(
+                customer.getId(),
+                customerFromDb.getId(),
+                "Persistence did not return the same id attribute");
+        assertEquals(
+                customer.getEmail(),
+                customerFromDb.getEmail(),
+                "Persistence did not return the same email attribute");
     }
 
     /**
@@ -96,8 +112,8 @@ class CustomerRepositoryTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void testCustomerReadAttributes() {
-        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+    void testCustomerReadAttributes2() {
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
         assertEquals(
                 customer.getPassword(),
                 customerFromDb.getPassword(),
@@ -115,7 +131,7 @@ class CustomerRepositoryTests {
     /**
      * Test changing the Customer object's attributes in the persistence layer.
      *
-     * @author Jennifer You (jenni4u)
+     * @author Cyrus Fung (cfung89)
      */
     @Test
     void testCustomerWriteAttributes() {
@@ -123,7 +139,30 @@ class CustomerRepositoryTests {
         customer.setAddress("456 Dog Street");
         customer.setNumLoyaltyPoints(200);
         customerRepository.save(customer);
-        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
+        // attributes
+        assertEquals(
+                customer.getId(),
+                customerFromDb.getId(),
+                "Persistence did not update the id attribute");
+        assertEquals(
+                customer.getEmail(),
+                customerFromDb.getEmail(),
+                "Persistence did not update the email attribute");
+    }
+
+    /**
+     * Test changing the Customer object's attributes in the persistence layer.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void testCustomerWriteAttributes2() {
+        customer.setPassword("woofie");
+        customer.setAddress("456 Dog Street");
+        customer.setNumLoyaltyPoints(200);
+        customerRepository.save(customer);
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
         // attributes
         assertEquals(
                 customer.getPassword(),
@@ -147,9 +186,9 @@ class CustomerRepositoryTests {
     @Test
     @Transactional
     void testCustomerInitializeReferences() {
-        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
         assertFalse(
-                customerFromDb.hasShoppingCart(),
+                customerFromDb.hasShoppingCartItems(),
                 "Persistence did not initialize the shopping cart reference");
         assertFalse(
                 customerFromDb.hasPurchasedOrders(),
@@ -163,12 +202,10 @@ class CustomerRepositoryTests {
      * @author Jennifer You (jenni4u)
      */
     private void initializeReferenceObjects() {
-        // create clothing item
-        item = new ClothingItem();
-        item.setNumInStock(10);
-        item.setColour(ClothingItem.Colour.PINK);
-        item.setSize(ClothingItem.Size.M);
-        clothingItemRepository.save(item);
+        // create shopping cart item
+        item = new ShoppingCartItem();
+        item.setQuantity(2);
+        shoppingCartItemRepository.save(item);
 
         // create order
         order = new Order();
@@ -177,7 +214,7 @@ class CustomerRepositoryTests {
         order.setDeliveryDate(Date.valueOf(LocalDate.now()));
         order.setDeliveryAddress("123 Cat Street");
         order.setPrice(50.0f);
-        order.setCustomer(customerRepository.findCustomerByEmail(customer.getEmail()));
+        order.setCustomer(customerRepository.findCustomerById(customer.getId()));
         orderRepository.save(order);
     }
 
@@ -191,15 +228,16 @@ class CustomerRepositoryTests {
     void testCustomerWriteReferences() {
         initializeReferenceObjects();
         // write references
-        customer.addShoppingCart(item);
+        customer.addShoppingCartItem(item);
         customer.addPurchasedOrder(order);
         customerRepository.save(customer);
-        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
-        ClothingItem itemFromDb = clothingItemRepository.findClothingItemById(item.getId());
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
+        ShoppingCartItem itemFromDb =
+                shoppingCartItemRepository.findShoppingCartItemById(item.getId());
         Order orderFromDb = orderRepository.findOrderById(order.getId());
         assertEquals(
                 itemFromDb,
-                customerFromDb.getShoppingCart(customer.indexOfShoppingCart(item)),
+                customerFromDb.getShoppingCartItem(customer.indexOfShoppingCartItem(item)),
                 "Persistence did not update the shopping cart reference");
         assertEquals(
                 orderFromDb,
@@ -217,11 +255,11 @@ class CustomerRepositoryTests {
     void testCustomerDeleteReferences() {
         initializeReferenceObjects();
         customer.removePurchasedOrder(order);
-        customer.removeShoppingCart(item);
+        customer.removeShoppingCartItem(item);
         customerRepository.save(customer);
         assertEquals(
                 -1,
-                customer.indexOfShoppingCart(item),
+                customer.indexOfShoppingCartItem(item),
                 "Persistence did not remove the shopping cart reference");
         assertEquals(
                 -1,

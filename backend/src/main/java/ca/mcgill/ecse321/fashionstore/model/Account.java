@@ -1,15 +1,18 @@
 /*PLEASE DO NOT EDIT THIS CODE*/
-/*This code was generated using the UMPLE 1.36.0.8108.3ce48223a modeling language!*/
+/*This code was generated using the UMPLE 1.36.0.8183.32a6408a9 modeling language!*/
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 
 // line 4 "../../../../../../model.ump"
-// line 67 "../../../../../../model.ump"
+// line 83 "../../../../../../model.ump"
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Account {
@@ -19,10 +22,17 @@ public abstract class Account {
     // ------------------------
 
     // Account Attributes
-    @Id private String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(unique = true)
+    private String email;
+
     private String password;
 
     // Helper Variables
+    private boolean canSetId;
     private boolean canSetEmail;
 
     // ------------------------
@@ -30,6 +40,7 @@ public abstract class Account {
     // ------------------------
 
     public Account() {
+        canSetId = true;
         canSetEmail = true;
         password = null;
     }
@@ -37,6 +48,18 @@ public abstract class Account {
     // ------------------------
     // INTERFACE
     // ------------------------
+    /* Code from template attribute_SetImmutable */
+    public boolean setId(int aId) {
+        boolean wasSet = false;
+        if (!canSetId) {
+            return false;
+        }
+        canSetId = false;
+        id = aId;
+        wasSet = true;
+        return wasSet;
+    }
+
     /* Code from template attribute_SetImmutable */
     public boolean setEmail(String aEmail) {
         boolean wasSet = false;
@@ -56,6 +79,10 @@ public abstract class Account {
         return wasSet;
     }
 
+    public int getId() {
+        return id;
+    }
+
     /** unique */
     public String getEmail() {
         return email;
@@ -70,6 +97,10 @@ public abstract class Account {
     public String toString() {
         return super.toString()
                 + "["
+                + "id"
+                + ":"
+                + getId()
+                + ","
                 + "email"
                 + ":"
                 + getEmail()

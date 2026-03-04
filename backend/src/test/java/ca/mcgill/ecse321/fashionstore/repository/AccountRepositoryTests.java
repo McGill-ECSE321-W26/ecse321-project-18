@@ -79,9 +79,9 @@ class AccountRepositoryTests {
     @Test
     void testPersistAndLoadAccounts() {
         // read all accounts from database
-        Account ownerFromDb = accountRepository.findAccountByEmail(owner.getEmail());
-        Account employeeFromDb = accountRepository.findAccountByEmail(employee.getEmail());
-        Account customerFromDb = accountRepository.findAccountByEmail(customer.getEmail());
+        Account ownerFromDb = accountRepository.findAccountById(owner.getId());
+        Account employeeFromDb = accountRepository.findAccountById(employee.getId());
+        Account customerFromDb = accountRepository.findAccountById(customer.getId());
 
         // assert that accounts were found
         assertNotNull(ownerFromDb, "Could not find saved owner in the database");
@@ -98,11 +98,11 @@ class AccountRepositoryTests {
     @Test
     void testPersistAndLoadAccountsSubclasses() {
         // read owner from database using owner repository
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
         // read employee from database using employee repository
-        Employee employeeFromDb = employeeRepository.findEmployeeByEmail(employee.getEmail());
+        Employee employeeFromDb = employeeRepository.findEmployeeById(employee.getId());
         // read customer from database using customer repository
-        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
 
         // assert that owner was found
         assertNotNull(ownerFromDb, "Could not find saved owner in the database");
@@ -120,8 +120,10 @@ class AccountRepositoryTests {
     @Test
     void testReadAccountData() {
         // get an account from database
-        Account ownerFromDb = accountRepository.findAccountByEmail(owner.getEmail());
+        Account ownerFromDb = accountRepository.findAccountById(owner.getId());
 
+        // check that id was persisted
+        assertEquals(owner.getId(), ownerFromDb.getId(), "Account email is not saved in database");
         // check that email was persisted
         assertEquals(
                 owner.getEmail(), ownerFromDb.getEmail(), "Account email is not saved in database");
@@ -141,7 +143,7 @@ class AccountRepositoryTests {
     @Test
     void testWriteOwnerPassword() {
         // get owner from database
-        Account employeeFromDb = accountRepository.findAccountByEmail(employee.getEmail());
+        Account employeeFromDb = accountRepository.findAccountById(employee.getId());
 
         // update the password
         String newPassword = "differentemployeepassword";
@@ -149,7 +151,7 @@ class AccountRepositoryTests {
         accountRepository.save(employeeFromDb);
 
         // check that new password was persisted
-        Account updatedEmployeeFromDb = accountRepository.findAccountByEmail(employee.getEmail());
+        Account updatedEmployeeFromDb = accountRepository.findAccountById(employee.getId());
         assertEquals(
                 newPassword,
                 updatedEmployeeFromDb.getPassword(),
@@ -157,7 +159,7 @@ class AccountRepositoryTests {
 
         // check that new password was persisted in the employee table too
         Employee updatedEmployeeFromDbSubclass =
-                employeeRepository.findEmployeeByEmail(employee.getEmail());
+                employeeRepository.findEmployeeById(employee.getId());
         assertEquals(
                 newPassword,
                 updatedEmployeeFromDbSubclass.getPassword(),
@@ -175,11 +177,11 @@ class AccountRepositoryTests {
         accountRepository.delete(customer);
 
         // check that we can no longer find an account with that email
-        Account accountFromDb = accountRepository.findAccountByEmail(customer.getEmail());
+        Account accountFromDb = accountRepository.findAccountById(customer.getId());
         assertNull(accountFromDb, "Account deletion was not persisted");
 
         // also check that employee account was deleted from employee repository
-        Customer customerFromDb = customerRepository.findCustomerByEmail(customer.getEmail());
+        Customer customerFromDb = customerRepository.findCustomerById(customer.getId());
         assertNull(customerFromDb, "Customer deletion was not persisted");
     }
 
@@ -194,11 +196,11 @@ class AccountRepositoryTests {
         ownerRepository.delete(owner);
 
         // check that we can no longer find an account with that email
-        Owner ownerFromDb = ownerRepository.findOwnerByEmail(owner.getEmail());
+        Owner ownerFromDb = ownerRepository.findOwnerById(owner.getId());
         assertNull(ownerFromDb, "Owner deletion was not persisted");
 
         // also check that employee account was deleted from employee repository
-        Account accountFromDb = accountRepository.findAccountByEmail(owner.getEmail());
+        Account accountFromDb = accountRepository.findAccountById(owner.getId());
         assertNull(accountFromDb, "Account deletion was not persisted");
     }
 }

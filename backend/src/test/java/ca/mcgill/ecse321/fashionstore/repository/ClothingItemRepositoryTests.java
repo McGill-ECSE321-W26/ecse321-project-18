@@ -26,6 +26,11 @@ class ClothingItemRepositoryTests {
     @Autowired private ClothingProductRepository clothingProductRepository;
     private ClothingProduct clothingProduct;
 
+    /**
+     * Create a ClothingItem and ClothingProduct before each test.
+     *
+     * @author Flavie Qin (flavieq88)
+     */
     @BeforeEach
     void createClothingItem() {
         // Create clothingProduct to associate with

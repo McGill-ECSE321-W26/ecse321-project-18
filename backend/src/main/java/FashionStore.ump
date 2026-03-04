@@ -3,6 +3,7 @@ namespace ca.mcgill.ecse321.fashionstore.model;
 class Account {
   abstract;
 
+  lazy immutable Integer id;
   lazy immutable email; // unique
   lazy password;
 }
@@ -17,7 +18,7 @@ class Customer {
   lazy address;
   lazy Integer numLoyaltyPoints;
 
-  * -> * ClothingItem shoppingCart;
+  0..1 <@>- * ShoppingCartItem shoppingCartItems;
   0..1 -- * Order purchasedOrders;      // an Order can have no Customer if the Customer's account was deleted
 }
 
@@ -30,21 +31,36 @@ class Employee {
 class Order {
   enum State { PURCHASED, ASSIGNED, PREPARED, DELIVERED, CANCELLED }
 
-  lazy Integer id;
+  lazy immutable Integer id;
   lazy State state;
   lazy Date orderDate;
   lazy Date deliveryDate;
   lazy deliveryAddress;
   lazy Float price;
 
-  * -> * ClothingItem items;
+  0..1 <@>- * OrderItem items;
+}
+
+class OrderItem {
+  lazy immutable Integer id;
+  lazy Integer quantity;
+  lazy Float purchasePrice;  // price of a single item at purchase
+
+  * -> 0..1 ClothingItem;
+}
+
+class ShoppingCartItem {
+  lazy immutable Integer id;
+  lazy Integer quantity;
+
+  * -> 0..1 ClothingItem;
 }
 
 class ClothingProduct {
-  lazy Integer id;
+  lazy immutable Integer id;
   lazy name;
   lazy Float price;
-  lazy String image;           // image stored as String
+  lazy String image;          // image stored as String
 
   0..1 <@>- * ClothingItem items;
 }
@@ -53,7 +69,7 @@ class ClothingItem {
   enum Size { XS, S, M, L, XL }
   enum Colour { RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK, BLACK, GREY, WHITE, BROWN }
 
-  lazy Integer id;
+  lazy immutable Integer id;
   lazy Size size;
   lazy Colour colour;
   lazy Integer numInStock;

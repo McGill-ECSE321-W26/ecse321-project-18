@@ -4,10 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
-import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
+import ca.mcgill.ecse321.fashionstore.model.OrderItem;
 import jakarta.transaction.Transactional;
 import java.sql.Date;
 import org.junit.jupiter.api.AfterEach;
@@ -25,8 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class OrderRepositoryTests {
 
     @Autowired private OrderRepository orderRepository;
-    @Autowired private ClothingItemRepository clothingItemRepository;
-    @Autowired private ClothingProductRepository clothingProductRepository;
+    @Autowired private OrderItemRepository orderItemRepository;
 
     private Order order;
 
@@ -64,8 +62,7 @@ class OrderRepositoryTests {
     @AfterEach
     void clearDatabase() {
         orderRepository.deleteAll();
-        clothingItemRepository.deleteAll();
-        clothingProductRepository.deleteAll();
+        orderItemRepository.deleteAll();
     }
 
     /**
@@ -207,16 +204,12 @@ class OrderRepositoryTests {
     @Transactional
     @Test
     void testOrderClothingItemAssociation() {
-        // Create clothing product
-        ClothingProduct product = new ClothingProduct();
-        clothingProductRepository.save(product);
-
-        // Create clothing item
-        ClothingItem item = new ClothingItem();
-        clothingItemRepository.save(item);
+        // Create order item
+        OrderItem orderItem = new OrderItem();
+        orderItemRepository.save(orderItem);
 
         // Add item to order
-        order.addItem(item);
+        order.addItem(orderItem);
         orderRepository.save(order);
 
         // Retrieve order and verify association
@@ -225,7 +218,7 @@ class OrderRepositoryTests {
         assertEquals(
                 1, orderFromDb.numberOfItems(), "Order should contain exactly one clothing item.");
         assertEquals(
-                item.getId(),
+                orderItem.getId(),
                 orderFromDb.getItem(0).getId(),
                 "Associated clothing item does not match expected item.");
     }
@@ -239,15 +232,12 @@ class OrderRepositoryTests {
     @Test
     void testOrderDeletionDoesNotDeleteClothingItem() {
         // Create clothing product
-        ClothingProduct product = new ClothingProduct();
-        clothingProductRepository.save(product);
-
-        // Create clothing item
-        ClothingItem item = new ClothingItem();
-        clothingItemRepository.save(item);
+        // Create order item
+        OrderItem orderItem = new OrderItem();
+        orderItemRepository.save(orderItem);
 
         // Add item to order
-        order.addItem(item);
+        order.addItem(orderItem);
         orderRepository.save(order);
 
         // Delete the order
@@ -258,14 +248,9 @@ class OrderRepositoryTests {
                 orderRepository.findOrderById(order.getId()),
                 "Order should be deleted but still exists.");
 
-        // Verify clothing item still exists
-        assertNotNull(
-                clothingItemRepository.findClothingItemById(item.getId()),
-                "Clothing item should not be deleted when order is removed.");
-
-        // Verify clothing product still exists
-        assertNotNull(
-                clothingProductRepository.findClothingProductById(product.getId()),
-                "Clothing product should not be deleted when order is removed.");
+        // Verify orderItem deleted
+        assertNull(
+                orderItemRepository.findOrderItemById(orderItem.getId()),
+                "OrderItem should be deleted but still exists.");
     }
 }
