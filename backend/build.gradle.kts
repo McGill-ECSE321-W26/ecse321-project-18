@@ -4,6 +4,7 @@ plugins {
     java
     checkstyle
     pmd
+    jacoco
     id("com.diffplug.spotless") version "8.2.1"
     id("com.github.spotbugs") version "6.4.8"
     id("org.springframework.boot") version "4.0.2"
@@ -25,6 +26,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     runtimeOnly("org.postgresql:postgresql")
@@ -32,6 +34,10 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0")
+}
+
+jacoco {
+    toolVersion = "0.8.14"
 }
 
 checkstyle {
@@ -99,4 +105,17 @@ tasks.named("check") {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
 }
