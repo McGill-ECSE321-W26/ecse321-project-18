@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.dto;
 
+import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -27,6 +28,20 @@ public record ClothingProductResponseDto(
     /** Constructor override for clothingItems as it sets a mutable reference. */
     public ClothingProductResponseDto {
         clothingItems = (clothingItems == null) ? List.of() : List.copyOf(clothingItems);
+    }
+
+    /**
+     * Constructor to map ClothingProduct to ClothingProductResponseDto.
+     *
+     * @param clothingProduct ClothingProduct instance.
+     */
+    public ClothingProductResponseDto(ClothingProduct clothingProduct) {
+        this(
+                clothingProduct.getId(),
+                clothingProduct.getName(),
+                clothingProduct.getPrice(),
+                clothingProduct.getImage(),
+                clothingProduct.getItems().stream().map(ClothingItemResponseDto::new).toList());
     }
 
     @Override

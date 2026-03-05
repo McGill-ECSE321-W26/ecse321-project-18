@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.dto;
 
+import ca.mcgill.ecse321.fashionstore.model.Customer;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -33,6 +34,23 @@ public record CustomerResponseDto(
         shoppingCartItems =
                 (shoppingCartItems == null) ? List.of() : List.copyOf(shoppingCartItems);
         purchasedOrders = (purchasedOrders == null) ? List.of() : List.copyOf(purchasedOrders);
+    }
+
+    /**
+     * Constructor to map Customer to CustomerResponseDto.
+     *
+     * @param customer Customer instance.
+     */
+    public CustomerResponseDto(Customer customer) {
+        this(
+                customer.getId(),
+                customer.getEmail(),
+                customer.getAddress(),
+                customer.getNumLoyaltyPoints(),
+                customer.getShoppingCartItems().stream()
+                        .map(ShoppingCartItemResponseDto::new)
+                        .toList(),
+                customer.getPurchasedOrders().stream().map(OrderResponseDto::new).toList());
     }
 
     @Override

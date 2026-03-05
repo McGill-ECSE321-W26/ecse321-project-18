@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.dto;
 
+import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem.Colour;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem.Size;
 import jakarta.validation.constraints.NotNull;
@@ -20,4 +21,19 @@ public record ClothingItemResponseDto(
         @NotNull(message = "Size must not be null.") Size size,
         @NotNull(message = "Colour must not be null.") Colour colour,
         @NotNull(message = "Stock must not be null.") @PositiveOrZero(message = "Stock must be positive or zero.") Integer numInStock,
-        @NotNull(message = "ClothingProduct ID must not be null.") @Positive(message = "ClothingProduct ID must be positive.") Integer clothingProductId) {}
+        @NotNull(message = "ClothingProduct ID must not be null.") @Positive(message = "ClothingProduct ID must be positive.") Integer clothingProductId) {
+
+    /**
+     * Constructor to map ClothingItem to ClothingItemResponseDto.
+     *
+     * @param clothingItem ClothingItem instance.
+     */
+    public ClothingItemResponseDto(ClothingItem clothingItem) {
+        this(
+                clothingItem.getId(),
+                clothingItem.getSize(),
+                clothingItem.getColour(),
+                clothingItem.getNumInStock(),
+                clothingItem.getClothingProduct().getId());
+    }
+}

@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.dto;
 
+import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
@@ -37,6 +38,24 @@ public record OrderResponseDto(
     /** Constructor override for orderItems and purchasedOrders as it sets a mutable reference. */
     public OrderResponseDto {
         orderItems = (orderItems == null) ? List.of() : List.copyOf(orderItems);
+    }
+
+    /**
+     * Constructor to map Order to OrderResponseDto.
+     *
+     * @param order Order instance.
+     */
+    public OrderResponseDto(Order order) {
+        this(
+                order.getId(),
+                order.getState(),
+                order.getOrderDate().toLocalDate(),
+                order.getDeliveryDate().toLocalDate(),
+                order.getDeliveryAddress(),
+                order.getPrice(),
+                OrderItemResponseDto.orderItemResponseDtos(order.getItems()),
+                order.getCustomer().getId(),
+                order.getEmployee().getId());
     }
 
     @Override
