@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class FashionStoreExceptionHandler {
 
-    /**
-     * Handles validation errors thrown by the Jakarta Validation API.
-     */
+    /** Handles validation errors thrown by the Jakarta Validation API. */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorDto> handleConstraintViolationException(
             ConstraintViolationException e) {
@@ -26,9 +24,7 @@ public class FashionStoreExceptionHandler {
         return new ResponseEntity<>(new ErrorDto(errors), HttpStatus.BAD_REQUEST);
     }
 
-    /**
-     * Handles logic exceptions thrown in the Service layer.
-     */
+    /** Handles logic exceptions thrown in the Service layer. */
     @ExceptionHandler(FashionStoreException.class)
     public ResponseEntity<ErrorDto> handleFashionStoreException(FashionStoreException e) {
         return new ResponseEntity<>(new ErrorDto(e.getMessage()), e.getStatus());
