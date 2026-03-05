@@ -25,7 +25,7 @@ class Customer {
 class Employee {
   isA Customer;
 
-  0..1 -- * Order assignedOrders;
+  0..1 -- * Order assignedOrders;       // an Order can have no Employee assigned to it.
 }
 
 class Order {
