@@ -116,7 +116,7 @@ public class ShoppingCartItemService {
      * @param customerId Customer ID.
      */
     @Transactional
-    public void clearShoppingCartItems(
+    public void deleteShoppingCartItems(
             @NotNull(message = Utils.ID_NOT_NULL) @Positive(message = Utils.ID_POSITIVE) int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
