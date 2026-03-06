@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
+import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import jakarta.validation.Valid;
@@ -9,6 +10,8 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 /** Service class for ClothingProduct. */
 @Service
@@ -70,5 +73,20 @@ public class ClothingProductService {
         // save updated clothing product to repository
         clothingProduct = this.clothingProductRepository.save(clothingProduct);
         return new ClothingProductResponseDto(clothingProduct);
+    }
+
+    /**
+     * Service method to get all clothing products matching a search by name
+     * and/or filters by size, colour.
+     *
+     * @param name Name of clothing product (search)
+     * @param size Size of clothing product (filter)
+     * @param colour Colour of clothing product (filter)
+     * @return
+     */
+    public List<ClothingProductResponseDto> getMatchingClothingProducts(
+        String name, ClothingItem.Size size, ClothingItem.Colour colour
+    ) {
+        // TODO
     }
 }
