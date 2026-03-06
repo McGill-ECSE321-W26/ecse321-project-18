@@ -69,6 +69,8 @@ class ShoppingCartItemRepositoryTests {
         Customer newCustomer = new Customer();
         newCustomer.setNumLoyaltyPoints(49);
         newCustomer.setAddress("123 Lim");
+        newCustomer.setEmail("hello@fashionstore.com");
+        newCustomer.setPassword("thisismypassword!");
 
         return customerRepositoryRepository.save(newCustomer);
     }

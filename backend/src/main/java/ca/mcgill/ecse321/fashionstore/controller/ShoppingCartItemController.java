@@ -26,6 +26,7 @@ public class ShoppingCartItemController {
      * Constructor for ShoppingCartItemController.
      *
      * @param shoppingCartItemService ShoppingCartItem service class.
+     * @author Cyrus Fung
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
@@ -38,6 +39,7 @@ public class ShoppingCartItemController {
      *
      * @param customerId Customer ID.
      * @return Returns a list of ShoppingCartItemResponseDto.
+     * @author Cyrus Fung
      */
     @GetMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
     @ResponseStatus(HttpStatus.OK)
@@ -51,6 +53,7 @@ public class ShoppingCartItemController {
      * @param customerId Customer ID.
      * @param shoppingCartItemRequestDto ShoppingCartItemRequestDto.
      * @return Returns the new ShoppingCartItemResponseDto.
+     * @author Cyrus Fung
      */
     @PostMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
     @ResponseStatus(HttpStatus.CREATED)
@@ -66,6 +69,7 @@ public class ShoppingCartItemController {
      * @param customerId Customer ID.
      * @param shoppingCartItemRequestDto ShoppingCartItemRequestDto.
      * @return Returns the updated ShoppingCartItemResponseDto.
+     * @author Cyrus Fung
      */
     @PutMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}")
     public ShoppingCartItemResponseDto updateShoppingCartItem(
@@ -80,6 +84,7 @@ public class ShoppingCartItemController {
      *
      * @param customerId Customer ID.
      * @param id ShoppingCartItem ID to be deleted.
+     * @author Cyrus Fung
      */
     @DeleteMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -91,6 +96,7 @@ public class ShoppingCartItemController {
      * Delete all items in the customer's shopping cart.
      *
      * @param customerId Customer ID.
+     * @author Cyrus Fung
      */
     @DeleteMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
