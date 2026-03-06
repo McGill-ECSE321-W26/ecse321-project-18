@@ -14,6 +14,7 @@ import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.sql.Date;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
@@ -29,6 +30,7 @@ public class OrderService {
     private CustomerRepository customerRepository;
     private OrderRepository orderRepository;
     private EmployeeRepository employeeRepository;
+    private static final int CANCELLATION_HOURS_BEFORE_DELIVERY = 24;
 
     /**
      * Constructor for OrderService class
@@ -196,10 +198,18 @@ public class OrderService {
      * @author Aurore Zhang
      */
     private void validateCancelled(Order order) {
-        if (order.getState() == State.PREPARED || order.getState() == State.DELIVERED) {
+        if (order.getState() == State.DELIVERED) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Cannot cancel an order that is already delivered.");
+        }
+        long hoursUntilDelivery =
+                ChronoUnit.HOURS.between(
+                        java.time.LocalDateTime.now(),
+                        order.getDeliveryDate().toLocalDate().atStartOfDay());
+        if (hoursUntilDelivery < CANCELLATION_HOURS_BEFORE_DELIVERY) {
             throw new FashionStoreException(
                     HttpStatus.BAD_REQUEST,
-                    String.format("Cannot cancel an order that is already %s.", order.getState()));
+                    "Order can only be cancelled at least 24 hours before the delivery date.");
         }
     }
 }
