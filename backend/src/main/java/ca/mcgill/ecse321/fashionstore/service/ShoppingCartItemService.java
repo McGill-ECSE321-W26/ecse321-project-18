@@ -10,8 +10,6 @@ import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,7 @@ public class ShoppingCartItemService {
      * @param shoppingCartItemRepository ShoppingCartItemRepository required to access the database.
      * @param clothingItemRepository ClothingItemRepository required to access the database.
      * @param customerRepository CustomerRepository required to access the database.
+     * @author Cyrus Fung
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
@@ -48,9 +47,9 @@ public class ShoppingCartItemService {
      * Service method to get all the shopping cart items of a customer.
      *
      * @param customerId Customer ID.
+     * @author Cyrus Fung
      */
-    public List<ShoppingCartItemResponseDto> getShoppingCartItems(
-            @NotNull(message = Utils.ID_NOT_NULL) @Positive(message = Utils.ID_POSITIVE) int customerId) {
+    public List<ShoppingCartItemResponseDto> getShoppingCartItems(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
         List<ShoppingCartItemResponseDto> shoppingCartItems =
                 ShoppingCartItemResponseDto.shoppingCartItemResponseDtos(
@@ -63,11 +62,11 @@ public class ShoppingCartItemService {
      *
      * @param customerId Customer ID.
      * @param shoppingCartItemRequestDto ShoppingCartItem request DTO.
+     * @author Cyrus Fung
      */
     @Transactional
     public ShoppingCartItemResponseDto addShoppingCartItem(
-            @NotNull(message = Utils.ID_NOT_NULL) @Positive(message = Utils.ID_POSITIVE) int customerId,
-            @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
+            int customerId, @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
         ShoppingCartItem newShoppingCartItem = new ShoppingCartItem();
         int clothingItemId = shoppingCartItemRequestDto.clothingItemId();
         ClothingItem clothingItem =
@@ -86,11 +85,11 @@ public class ShoppingCartItemService {
      *
      * @param id ShoppingCartItem ID to be updated.
      * @param shoppingCartItemRequestDto ShoppingCartItem request DTO.
+     * @author Cyrus Fung
      */
     @Transactional
     public ShoppingCartItemResponseDto updateShoppingCartItem(
-            @NotNull(message = Utils.ID_NOT_NULL) @Positive(message = Utils.ID_POSITIVE) int id,
-            @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
+            int id, @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
         ShoppingCartItem shoppingCartItem =
                 Utils.findShoppingCartItemById(shoppingCartItemRepository, id);
         shoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
@@ -103,10 +102,10 @@ public class ShoppingCartItemService {
      * Service method to delete a new shopping cart item to a customer.
      *
      * @param id ShoppingCartItem ID to be deleted.
+     * @author Cyrus Fung
      */
     @Transactional
-    public void deleteShoppingCartItem(
-            @NotNull(message = Utils.ID_NOT_NULL) @Positive(message = Utils.ID_POSITIVE) int id) {
+    public void deleteShoppingCartItem(int id) {
         shoppingCartItemRepository.deleteById(id);
     }
 
@@ -114,10 +113,10 @@ public class ShoppingCartItemService {
      * Service method to delete all shopping cart items of a customer.
      *
      * @param customerId Customer ID.
+     * @author Cyrus Fung
      */
     @Transactional
-    public void deleteShoppingCartItems(
-            @NotNull(message = Utils.ID_NOT_NULL) @Positive(message = Utils.ID_POSITIVE) int customerId) {
+    public void deleteShoppingCartItems(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
             shoppingCartItemRepository.delete(shoppingCartItem);

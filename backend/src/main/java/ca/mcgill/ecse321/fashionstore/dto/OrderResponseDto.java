@@ -16,7 +16,7 @@ import java.util.List;
  * DTO for Order responses.
  *
  * @param state Order state.
- * @param orderDate Order order date.
+ * @param orderDate Order date.
  * @param deliveryDate Order delivery date.
  * @param deliveryAddress Order delivery address.
  * @param price Price of order.

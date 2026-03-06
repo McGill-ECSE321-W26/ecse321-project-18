@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
-import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
@@ -11,11 +10,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,6 +28,7 @@ public class OrderService {
      *
      * @param customerRepository customer repository class
      * @param orderRepository order repository class
+     * @author Flavie Qin
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
@@ -45,20 +43,16 @@ public class OrderService {
      * @param orderRequestDto Order Request DTO
      * @param customerId Customer ID of customer to associate order with
      * @return Order Response DTO
+     * @author Flavie Qin
      */
     @Transactional
     public OrderResponseDto createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
-        // validate that customer with this id exists
-        Optional<Customer> customerOptional = customerRepository.findById(customerId);
-        if (customerOptional.isEmpty()) {
-            throw new FashionStoreException(
-                    HttpStatus.NOT_FOUND,
-                    String.format("Customer ID %d was not found.", customerId));
-        }
+        Customer customer = Utils.findCustomerById(customerRepository, customerId);
+
         // create new order object
         Order newOrder = new Order();
         newOrder.setState(orderRequestDto.state());
-        newOrder.setCustomer(customerOptional.get());
+        newOrder.setCustomer(customer);
         newOrder.setOrderDate(Date.valueOf(orderRequestDto.orderDate()));
         newOrder.setDeliveryDate(Date.valueOf(orderRequestDto.deliveryDate()));
         newOrder.setDeliveryAddress(orderRequestDto.deliveryAddress());
@@ -73,10 +67,11 @@ public class OrderService {
      * Service method to get all orders in the system
      *
      * @return List of Order Response DTOs
+     * @author Flavie Qin
      */
     @Transactional
-    public Collection<OrderResponseDto> getAllOrders() {
-        Collection<OrderResponseDto> list = new ArrayList<>();
+    public List<OrderResponseDto> getAllOrders() {
+        List<OrderResponseDto> list = new ArrayList<>();
 
         // get all orders from database and save in list as response DTOs
         for (Order order : orderRepository.findAll()) {
@@ -91,21 +86,16 @@ public class OrderService {
      *
      * @param customerId Customer ID of customer to get orders from
      * @return List of Order Response DTOs
+     * @author Flavie Qin
      */
     @Transactional
-    public Collection<OrderResponseDto> getAllOrdersByCustomer(int customerId) {
-        // validate that customer with this id exists
-        Optional<Customer> customerOptional = customerRepository.findById(customerId);
-        if (customerOptional.isEmpty()) {
-            throw new FashionStoreException(
-                    HttpStatus.NOT_FOUND,
-                    String.format("Customer ID %d was not found.", customerId));
-        }
+    public List<OrderResponseDto> getAllOrdersByCustomer(int customerId) {
+        Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
-        Collection<OrderResponseDto> list = new ArrayList<>();
+        List<OrderResponseDto> list = new ArrayList<>();
 
         // get all orders associated with a certain customer and save in list as response DTOs
-        for (Order order : customerOptional.get().getPurchasedOrders()) {
+        for (Order order : customer.getPurchasedOrders()) {
             list.add(new OrderResponseDto(order));
         }
 

@@ -34,6 +34,9 @@ class Utils {
      * @param id Account ID.
      */
     public static Account findAccountById(AccountRepository accountRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
         Optional<Account> account = accountRepository.findById(id);
         if (account.isEmpty()) {
             throw new FashionStoreException(
@@ -45,10 +48,14 @@ class Utils {
     /**
      * Find Owner by Owner ID.
      *
-     * @param accountRepository OwnerRepository instance.
+     * @param ownerRepository OwnerRepository instance.
      * @param id Owner ID.
      */
     public static Owner findOwnerById(OwnerRepository ownerRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<Owner> owner = ownerRepository.findById(id);
         if (owner.isEmpty()) {
             throw new FashionStoreException(
@@ -60,10 +67,14 @@ class Utils {
     /**
      * Find Customer by Customer ID.
      *
-     * @param accountRepository CustomerRepository instance.
+     * @param customerRepository CustomerRepository instance.
      * @param id Customer ID.
      */
     public static Customer findCustomerById(CustomerRepository customerRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isEmpty()) {
             throw new FashionStoreException(
@@ -75,10 +86,14 @@ class Utils {
     /**
      * Find Employee by Employee ID.
      *
-     * @param accountRepository EmployeeRepository instance.
+     * @param employeeRepository EmployeeRepository instance.
      * @param id Employee ID.
      */
     public static Employee findEmployeeById(EmployeeRepository employeeRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<Employee> employee = employeeRepository.findById(id);
         if (employee.isEmpty()) {
             throw new FashionStoreException(
@@ -90,10 +105,14 @@ class Utils {
     /**
      * Find Order by Order ID.
      *
-     * @param accountRepository OrderRepository instance.
+     * @param orderRepository OrderRepository instance.
      * @param id Order ID.
      */
     public static Order findOrderById(OrderRepository orderRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<Order> order = orderRepository.findById(id);
         if (order.isEmpty()) {
             throw new FashionStoreException(
@@ -105,10 +124,14 @@ class Utils {
     /**
      * Find OrderItem by OrderItem ID.
      *
-     * @param accountRepository OrderItemRepository instance.
+     * @param orderItemRepository OrderItemRepository instance.
      * @param id OrderItem ID.
      */
     public static OrderItem findOrderItemById(OrderItemRepository orderItemRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<OrderItem> orderItem = orderItemRepository.findById(id);
         if (orderItem.isEmpty()) {
             throw new FashionStoreException(
@@ -120,11 +143,15 @@ class Utils {
     /**
      * Find ShoppingCartItem by ShoppingCartItem ID.
      *
-     * @param accountRepository ShoppingCartItemRepository instance.
+     * @param shoppingCartItemRepository ShoppingCartItemRepository instance.
      * @param id ShoppingCartItem ID.
      */
     public static ShoppingCartItem findShoppingCartItemById(
             ShoppingCartItemRepository shoppingCartItemRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<ShoppingCartItem> shoppingCartItem = shoppingCartItemRepository.findById(id);
         if (shoppingCartItem.isEmpty()) {
             throw new FashionStoreException(
@@ -137,7 +164,7 @@ class Utils {
     /**
      * Find ClothingProduct by ClothingProduct ID.
      *
-     * @param accountRepository ClothingProductRepository instance.
+     * @param clothingProductRepository ClothingProductRepository instance.
      * @param id ClothingProduct ID.
      */
     public static ClothingProduct findClothingProductById(
@@ -154,11 +181,15 @@ class Utils {
     /**
      * Find ClothingItem by ClothingItem ID.
      *
-     * @param accountRepository ClothingItemRepository instance.
+     * @param clothingItemRepository ClothingItemRepository instance.
      * @param id ClothingItem ID.
      */
     public static ClothingItem findClothingItemById(
             ClothingItemRepository clothingItemRepository, int id) {
+        if (id < 0) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, Utils.ID_POSITIVE);
+        }
+
         Optional<ClothingItem> clothingItem = clothingItemRepository.findById(id);
         if (clothingItem.isEmpty()) {
             throw new FashionStoreException(

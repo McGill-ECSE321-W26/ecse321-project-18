@@ -24,6 +24,7 @@ public class OrderController {
      * Constructor for OrderController
      *
      * @param orderService order service class
+     * @author Flavie Qin
      */
     @Autowired
     public OrderController(OrderService orderService) {
@@ -36,6 +37,7 @@ public class OrderController {
      * @param orderRequestDto the details of the new order to create
      * @param id customer id of the customer that is placing the order
      * @return a OrderResponseDto
+     * @author Flavie Qin
      */
     @PostMapping("/fashionstore/account/customer/{id}/order")
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,6 +50,7 @@ public class OrderController {
      * Retrieves a list of all orders placed in the system
      *
      * @return a list of OrderResponseDto
+     * @author Flavie Qin
      */
     @GetMapping("/fashionstore/order")
     public Collection<OrderResponseDto> getAllOrders() {
@@ -59,6 +62,7 @@ public class OrderController {
      *
      * @param id customer id of the customer
      * @return a list of OrderResponseDto
+     * @author Flavie Qin
      */
     @GetMapping("/fashionstore/account/customer/{id}/order")
     public Collection<OrderResponseDto> getAllOrdersByCustomer(@PathVariable int id) {
