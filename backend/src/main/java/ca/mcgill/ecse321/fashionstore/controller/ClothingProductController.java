@@ -27,6 +27,7 @@ public class ClothingProductController {
      * @author Jennifer You (jenni4u)
      */
     @Autowired
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ClothingProductController(ClothingProductService clothingProductService) {
         this.clothingProductService = clothingProductService;
     }
