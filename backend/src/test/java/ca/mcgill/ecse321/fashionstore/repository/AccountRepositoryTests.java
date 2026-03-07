@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.fashionstore.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -202,5 +204,28 @@ class AccountRepositoryTests {
         // also check that employee account was deleted from employee repository
         Account accountFromDb = accountRepository.findAccountById(owner.getId());
         assertNull(accountFromDb, "Account deletion was not persisted");
+    }
+
+    /**
+     * Test existsByEmail returns true when account with email exists
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testExistsByEmailExists() {
+        // check that existing email returns true
+        boolean exists = accountRepository.existsByEmail(customer.getEmail());
+        assertTrue(exists, "existsByEmail should return true for an existing email");
+    }
+
+    /**
+     * Test existsByEmail returns false when account with email does not exist
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testExistsByEmailNotExists() {
+        boolean exists = accountRepository.existsByEmail("nonexistentrandom@email.com");
+        assertFalse(exists, "existsByEmail should return false for a non-existing email");
     }
 }
