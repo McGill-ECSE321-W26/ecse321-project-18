@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
-import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -128,26 +127,26 @@ public class ClothingItemService {
      * @param productId ID of the ClothingProduct that the ClothingItem belongs to
      * @param itemId ID of the ClothingItem to retrieve
      * @return A ClothingItemResponseDTO containing details about the clothing item.
-     * @throws FashionStoreException if the item ID does not correspond to an existing clothing item.
+     * @throws FashionStoreException if the item ID does not correspond to an existing clothing
+     *     item.
      * @author Qiuyu Huang (redacted24)
      */
     public ClothingItemResponseDto getClothingItem(int productId, int itemId) {
         // Find ClothingItem by ID
-        ClothingItem clothingItem =
-                Utils.findClothingItemById(clothingItemRepository, itemId);
+        ClothingItem clothingItem = Utils.findClothingItemById(clothingItemRepository, itemId);
         // Find ClothingProduct by ID
         ClothingProduct clothingProduct =
                 Utils.findClothingProductById(clothingProductRepository, productId);
         // Verify that clothingItem is valid and belongs to clothingProduct
-        if (clothingItem.getClothingProduct() != null && clothingItem.getClothingProduct().getId() == clothingProduct.getId()) {
+        if (clothingItem.getClothingProduct() != null
+                && clothingItem.getClothingProduct().getId() == clothingProduct.getId()) {
             return new ClothingItemResponseDto(clothingItem);
         } else {
             throw new FashionStoreException(
                     HttpStatus.BAD_REQUEST,
                     String.format(
                             "ClothingItem with ID: %d does not belong to ClothingProduct with id: %d",
-                            clothingItem.getId(), clothingProduct.getId())
-            );
+                            clothingItem.getId(), clothingProduct.getId()));
         }
     }
 }
