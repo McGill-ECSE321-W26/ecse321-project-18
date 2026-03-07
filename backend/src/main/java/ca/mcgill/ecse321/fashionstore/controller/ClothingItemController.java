@@ -1,1 +1,44 @@
+package ca.mcgill.ecse321.fashionstore.controller;
 
+import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
+import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.service.ClothingItemService;
+import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+/** Controller for ClothingItem REST API endpoints */
+@RestController
+@SuppressFBWarnings("SPRING_ENDPOINT")
+public class ClothingItemController {
+    private ClothingItemService clothingItemService;
+
+    /**
+     * Constructor for ClothingItemController class
+     *
+     * @param clothingItemService clothing item service class
+     * @author Jennifer You (jenni4u)
+     */
+    @Autowired
+    public ClothingItemController(ClothingItemService clothingItemService) {
+        this.clothingItemService = clothingItemService;
+    }
+
+    /**
+     * REST API endpoint to create a new clothing item
+     *
+     * @param clothingItemRequestDto Clothing Item Request DTO
+     * @return Clothing Item Response DTO
+     * @author Jennifer You (jenni4u)
+     */
+    @PostMapping("/fashionstore/clothingproduct/{id}/clothingitem")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ClothingItemResponseDto createClothingItem(
+            @RequestBody ClothingItemRequestDto clothingItemRequestDto) {
+        return this.clothingItemService.createClothingItem(clothingItemRequestDto);
+    }
+}
