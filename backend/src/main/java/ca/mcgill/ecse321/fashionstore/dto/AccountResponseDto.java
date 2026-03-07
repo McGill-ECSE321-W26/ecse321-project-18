@@ -10,7 +10,9 @@ import jakarta.validation.constraints.Positive;
  *
  * @param id Account ID.
  * @param email Account email address.
+ * @param accountType Account type.
  */
 public record AccountResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
-        @NotBlank(message = "Email is required.") @Email(message = "Email must be a valid email address.") String email) {}
+        @NotBlank(message = "Email is required.") @Email(message = "Email must be a valid email address.") String email,
+        @NotBlank(message = "Account type must not be blank.") String accountType) {}
