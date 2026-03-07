@@ -228,4 +228,16 @@ class AccountRepositoryTests {
         boolean exists = accountRepository.existsByEmail("nonexistentrandom@email.com");
         assertFalse(exists, "existsByEmail should return false for a non-existing email");
     }
+
+    /**
+     * Test account retrieval by email.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void testAccountFindByEmail() {
+        assertNotNull(
+                accountRepository.findAccountByEmail("owner@fashionstore.com"),
+                "Could not find " + "account by email");
+    }
 }

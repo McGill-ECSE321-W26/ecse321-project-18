@@ -29,6 +29,19 @@ public class AccountController {
     }
 
     /**
+     * Login check for accounts
+     *
+     * @param accountRequestDto A request Dto with account email and password
+     * @return An AccountResponseDto with the id, email and account type
+     * @author Qiuyu Huang (redacted24)
+     */
+    @PostMapping("/fashionstore/account/login")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public AccountResponseDto accountLogin(@RequestBody AccountRequestDto accountRequestDto) {
+        return accountService.accountLoginCheck(accountRequestDto);
+    }
+
+    /**
      * Creates a new employee account in the fashion store system.
      *
      * @param accountRequestDto AccountRequestDto (email, password).

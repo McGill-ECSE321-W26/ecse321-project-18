@@ -7,6 +7,7 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -72,5 +73,18 @@ public class ClothingProductController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteClothingProduct(@PathVariable int productId) {
         clothingProductService.deleteClothingProduct(productId);
+    }
+
+    /**
+     * Get a clothing product and all of its clothing items.
+     *
+     * @param productId ID of the ClothingProduct to get
+     * @return A ClothingProductResponseDTO containing details about the product and a list of all
+     *     clothing items associated with it.
+     * @author Qiuyu Huang (redacted24)
+     */
+    @GetMapping("/fashionstore/clothingproduct/{productId}")
+    public ClothingProductResponseDto getClothingProduct(@PathVariable int productId) {
+        return clothingProductService.getClothingProduct(productId);
     }
 }

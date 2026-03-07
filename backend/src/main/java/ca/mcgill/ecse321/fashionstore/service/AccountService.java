@@ -1,46 +1,103 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto.AccountType;
+
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
+import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.repository.AccountRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
-import jakarta.transaction.Transactional;
+import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 /** Account Service class. */
 @Service
 @Validated
 public class AccountService {
-    private final AccountRepository accountRepository;
-    private final CustomerRepository customerRepository;
-    private final EmployeeRepository employeeRepository;
+    private AccountRepository accountRepository;
+    private OwnerRepository ownerRepository;
+    private EmployeeRepository employeeRepository;
+    private CustomerRepository customerRepository;
 
     /**
      * AccountService constructor.
      *
      * @param accountRepository AccountRepository required to access the database.
+     * @param ownerRepository OwnerRepository required to access the database.
      * @param customerRepository CustomerRepository required to access the database.
      * @param employeeRepository EmployeeRepository required to access the database.
-     * @author Aurore Zhang (ororio0)
+     * @author Qiuyu Huang (redacted24)
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
     public AccountService(
             AccountRepository accountRepository,
-            CustomerRepository customerRepository,
-            EmployeeRepository employeeRepository) {
+            OwnerRepository ownerRepository,
+            EmployeeRepository employeeRepository,
+            CustomerRepository customerRepository) {
         this.accountRepository = accountRepository;
-        this.customerRepository = customerRepository;
+        this.ownerRepository = ownerRepository;
         this.employeeRepository = employeeRepository;
+        this.customerRepository = customerRepository;
+    }
+
+    /**
+     * Checks if email exists and the password matches. If both are valid, user is authenticated and
+     * granted access to the system. Otherwise, user is denied access and an error message is shown.
+     *
+     * @param requestDto An AccountRequestDto containing email and password.
+     * @return An AccountResponseDTO with the id, email and the account type (employee, customer,
+     *     owner).
+     * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
+     *     match
+     * @author Qiuyu Huang (redacted24)
+     */
+    public AccountResponseDto accountLoginCheck(@Valid AccountRequestDto requestDto) {
+        Account account = accountRepository.findAccountByEmail(requestDto.email());
+        // Email check
+        if (account == null) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "An account with that email does not exist.");
+        }
+
+        // Password check
+        if (!account.getPassword().equals(requestDto.password())) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Password is incorrect.");
+        }
+
+        // Account found. Check account type.
+        int id = account.getId();
+        return new AccountResponseDto(id, account.getEmail(), findAccountType(id));
+    }
+
+    /**
+     * Method to return a string of the account type of a given account id.
+     *
+     * @param id The id of the account whose type we are trying to retrieve.
+     * @return AccountType (enum), depending on what the type of the account is
+     *     (manager/owner/customer)
+     */
+    public AccountType findAccountType(int id) {
+        if (ownerRepository.findOwnerById(id) != null) {
+            return AccountType.OWNER;
+        }
+        if (employeeRepository.findEmployeeById(id) != null) {
+            return AccountType.EMPLOYEE;
+        }
+        if (customerRepository.findCustomerById(id) != null) {
+            return AccountType.CUSTOMER;
+        }
+        throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Account not found.");
     }
 
     /**

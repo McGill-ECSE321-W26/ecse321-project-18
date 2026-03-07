@@ -120,4 +120,33 @@ public class ClothingItemService {
 
         clothingItemRepository.delete(item);
     }
+
+    /**
+     * Service method to retrieve a clothing item and all of its details
+     *
+     * @param productId ID of the ClothingProduct that the ClothingItem belongs to
+     * @param itemId ID of the ClothingItem to retrieve
+     * @return A ClothingItemResponseDTO containing details about the clothing item.
+     * @throws FashionStoreException if the item ID does not correspond to an existing clothing
+     *     item.
+     * @author Qiuyu Huang (redacted24)
+     */
+    public ClothingItemResponseDto getClothingItem(int productId, int itemId) {
+        // Find ClothingItem by ID
+        ClothingItem clothingItem = Utils.findClothingItemById(clothingItemRepository, itemId);
+        // Find ClothingProduct by ID
+        ClothingProduct clothingProduct =
+                Utils.findClothingProductById(clothingProductRepository, productId);
+        // Verify that clothingItem is valid and belongs to clothingProduct
+        if (clothingItem.getClothingProduct() != null
+                && clothingItem.getClothingProduct().getId() == clothingProduct.getId()) {
+            return new ClothingItemResponseDto(clothingItem);
+        } else {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "ClothingItem with ID: %d does not belong to ClothingProduct with id: %d",
+                            clothingItem.getId(), clothingProduct.getId()));
+        }
+    }
 }
