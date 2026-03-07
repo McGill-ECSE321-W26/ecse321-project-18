@@ -84,9 +84,12 @@ public class ClothingItemController {
     /**
      * Get a specific clothing item to display its details.
      *
-     * @param itemId ID of the ClothingProduct to get
+     * @param itemId ID of the ClothingItem to get
+     * @return A ClothingItemResponseDTO with details about the clothing item.
      * @author Qiuyu Huang (redacted24)
      */
-    @GetMapping("/fashionstore/clothingproduct/{id}")
-    public void getClothingProduct(@PathVariable int itemId) {}
+    @GetMapping("/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}")
+    public ClothingItemResponseDto getClothingProduct(@PathVariable int productId, @PathVariable int itemId) {
+        return clothingItemService.getClothingItem(productId, itemId);
+    }
 }
