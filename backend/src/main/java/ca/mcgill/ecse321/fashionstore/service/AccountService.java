@@ -8,7 +8,6 @@ import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
-import ca.mcgill.ecse321.fashionstore.model.Owner;
 import ca.mcgill.ecse321.fashionstore.repository.AccountRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
@@ -89,20 +88,16 @@ public class AccountService {
      *     (manager/owner/customer)
      */
     public AccountType findAccountType(int id) {
-        AccountType accountType;
-        Owner owner = ownerRepository.findOwnerById(id);
-        Employee employee = employeeRepository.findEmployeeById(id);
-        Customer customer = customerRepository.findCustomerById(id);
-        if (owner != null) {
-            accountType = AccountType.OWNER;
-        } else if (employee != null) {
-            accountType = AccountType.EMPLOYEE;
-        } else if (customer != null) {
-            accountType = AccountType.CUSTOMER;
-        } else {
-            accountType = AccountType.UNKNOWN;
+        if (ownerRepository.findOwnerById(id) != null) {
+            return AccountType.OWNER;
         }
-        return accountType;
+        if (employeeRepository.findEmployeeById(id) != null) {
+            return AccountType.EMPLOYEE;
+        }
+        if (customerRepository.findCustomerById(id) != null) {
+            return AccountType.CUSTOMER;
+        }
+        throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Account not found.");
     }
 
     /**
