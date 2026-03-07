@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto.AccountType;
+
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
@@ -80,21 +82,22 @@ public class AccountService {
      * Method to return a string of the account type of a given account id.
      *
      * @param id The id of the account whose type we are trying to retrieve.
-     * @return String "Owner"/"Employee"/"Customer"/"" depending on what type the account is
+     * @return AccountType (enum), depending on what the type of the account is
+     *     (manager/owner/customer)
      */
-    public String findAccountType(int id) {
-        String accountType;
+    public AccountType findAccountType(int id) {
+        AccountType accountType;
         Owner owner = ownerRepository.findOwnerById(id);
         Employee employee = employeeRepository.findEmployeeById(id);
         Customer customer = customerRepository.findCustomerById(id);
         if (owner != null) {
-            accountType = "Owner";
+            accountType = AccountType.OWNER;
         } else if (employee != null) {
-            accountType = "Employee";
+            accountType = AccountType.EMPLOYEE;
         } else if (customer != null) {
-            accountType = "Customer";
+            accountType = AccountType.CUSTOMER;
         } else {
-            accountType = "";
+            accountType = AccountType.UNKNOWN;
         }
         return accountType;
     }
