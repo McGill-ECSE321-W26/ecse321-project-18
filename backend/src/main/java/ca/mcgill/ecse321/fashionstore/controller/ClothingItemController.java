@@ -7,6 +7,7 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -79,4 +80,13 @@ public class ClothingItemController {
 
         clothingItemService.deleteClothingItem(productId, itemId);
     }
+
+    /**
+     * Get a specific clothing item to display its details.
+     *
+     * @param itemId ID of the ClothingProduct to get
+     * @author Qiuyu Huang (redacted24)
+     */
+    @GetMapping("/fashionstore/clothingproduct/{id}")
+    public void getClothingProduct(@PathVariable int itemId) {}
 }
