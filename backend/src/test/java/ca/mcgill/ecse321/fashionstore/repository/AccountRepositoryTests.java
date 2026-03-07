@@ -211,6 +211,8 @@ class AccountRepositoryTests {
      */
     @Test
     void testAccountFindByEmail() {
-        assertNotNull(accountRepository.findAccountByEmail("owner@fashionstore.com"));
+        assertNotNull(
+                accountRepository.findAccountByEmail("owner@fashionstore.com"),
+                "Could not find " + "account by email");
     }
 }
