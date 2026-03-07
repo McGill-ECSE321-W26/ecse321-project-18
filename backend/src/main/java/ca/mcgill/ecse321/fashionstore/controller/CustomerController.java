@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.controller;
 
+import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.CustomerResponseDto;
-import ca.mcgill.ecse321.fashionstore.dto.LoyaltyPtsRequestDto;
 import ca.mcgill.ecse321.fashionstore.service.CustomerService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +31,13 @@ public class CustomerController {
      * Updates the number of loyalty points for a customer.
      *
      * @param customerId Customer ID.
-     * @param loyaltyPtsRequestDto DTO specifying the new number of loyalty points.
+     * @param customerRequestDto DTO specifying the new number of loyalty points.
      * @return A DTO representing the customer with updated loyalty points.
      * @author Carolyn Wu (cw118)
      */
     @PutMapping("/fashionstore/account/customer/{customerId}/loyalty")
     public CustomerResponseDto updateCustomerLoyaltyPts(
-            @PathVariable int customerId, @RequestBody LoyaltyPtsRequestDto loyaltyPtsRequestDto) {
-        return customerService.updateCustomerLoyaltyPts(customerId, loyaltyPtsRequestDto);
+            @PathVariable int customerId, @RequestBody CustomerRequestDto customerRequestDto) {
+        return customerService.updateCustomerLoyaltyPts(customerId, customerRequestDto);
     }
 }

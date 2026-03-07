@@ -1,7 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.CustomerResponseDto;
-import ca.mcgill.ecse321.fashionstore.dto.LoyaltyPtsRequestDto;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
@@ -33,15 +33,15 @@ public class CustomerService {
      * Service method to update a customer's loyalty points.
      *
      * @param id ID of customer whose loyalty points will be updated
-     * @param loyaltyPtsRequestDto Request DTO for loyalty points
+     * @param customerRequestDto Request DTO for customer
      * @return DTO for the updated customer
      * @author Carolyn Wu (cw118)
      */
     @Transactional
     public CustomerResponseDto updateCustomerLoyaltyPts(
-            int id, @Valid LoyaltyPtsRequestDto loyaltyPtsRequestDto) {
+            int id, @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
-        customer.setNumLoyaltyPoints(loyaltyPtsRequestDto.numOfLoyaltyPoints());
+        customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());
 
         CustomerResponseDto dto = new CustomerResponseDto(customer);
         return dto;

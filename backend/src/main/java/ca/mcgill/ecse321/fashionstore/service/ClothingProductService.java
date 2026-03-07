@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto.clothingProductsToResponseDtos;
+
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
@@ -161,17 +163,5 @@ public class ClothingProductService {
         }
 
         return filteredClothingProducts;
-    }
-
-    /**
-     * Converts a list of ClothingProducts to a list of ClothingProductResponseDtos.
-     *
-     * @param clothingProducts the list of ClothingProducts to convert.
-     * @return the list of converted ClothingProductResponseDtos.
-     * @author Carolyn Wu (cw118)
-     */
-    private List<ClothingProductResponseDto> clothingProductsToResponseDtos(
-            List<ClothingProduct> clothingProducts) {
-        return clothingProducts.stream().map(ClothingProductResponseDto::new).toList();
     }
 }
