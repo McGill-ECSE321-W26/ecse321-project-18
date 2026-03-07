@@ -97,10 +97,10 @@ public class ClothingProductService {
      * Service method to get all clothing products matching a search by name and/or filters by
      * sizes, colours.
      *
-     * @param name Name of clothing product (search)
-     * @param sizes Sizes of clothing product (filter)
-     * @param colours Colours of clothing product (filter)
-     * @return Clothing products matching search and/or filters
+     * @param name Name of clothing product (search).
+     * @param sizes Sizes of clothing product (filter).
+     * @param colours Colours of clothing product (filter).
+     * @return Clothing products matching search and/or filters.
      * @author Carolyn Wu (cw118)
      */
     public List<ClothingProductResponseDto> getMatchingClothingProducts(
@@ -112,9 +112,7 @@ public class ClothingProductService {
                 filterClothingProductsBySizeColour(clothingProducts, sizes, colours);
 
         List<ClothingProductResponseDto> clothingProductResponseDtos =
-                matchingClothingProducts.isEmpty()
-                        ? clothingProductsToResponseDtos(clothingProducts)
-                        : clothingProductsToResponseDtos(matchingClothingProducts);
+                clothingProductsToResponseDtos(matchingClothingProducts);
 
         return clothingProductResponseDtos;
     }
@@ -146,9 +144,10 @@ public class ClothingProductService {
             List<ClothingProduct> clothingProducts,
             List<ClothingItem.Size> sizes,
             List<ClothingItem.Colour> colours) {
-        List<ClothingProduct> filteredClothingProducts = new ArrayList<>();
 
-        if (!sizes.isEmpty() && !colours.isEmpty()) {
+        if (!clothingProducts.isEmpty() && !sizes.isEmpty() && !colours.isEmpty()) {
+            List<ClothingProduct> filteredClothingProducts = new ArrayList<>();
+
             for (ClothingProduct clothingProduct : clothingProducts) {
                 List<ClothingItem> matchingItems =
                         clothingProduct.getItems().stream()
@@ -163,8 +162,10 @@ public class ClothingProductService {
                     filteredClothingProducts.add(clothingProduct);
                 }
             }
+            return filteredClothingProducts;
         }
 
-        return filteredClothingProducts;
+        // no filters specified and/or empty clothingProducts, so just return original list
+        return clothingProducts;
     }
 }
