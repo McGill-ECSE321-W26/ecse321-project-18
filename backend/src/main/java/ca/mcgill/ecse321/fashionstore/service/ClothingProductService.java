@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
+import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import jakarta.validation.Valid;
@@ -70,5 +71,20 @@ public class ClothingProductService {
         // save updated clothing product to repository
         clothingProduct = this.clothingProductRepository.save(clothingProduct);
         return new ClothingProductResponseDto(clothingProduct);
+    }
+
+    /**
+     * Service method to delete a clothing product and all of its associated clothing items.
+     *
+     * @param productId ID of the ClothingProduct to delete
+     * @throws FashionStoreException if the product ID does not correspond to an existing product
+     * @author Kenneth Wang (KennethWang6)
+     */
+    public void deleteClothingProduct(int productId) {
+
+        ClothingProduct product =
+                Utils.findClothingProductById(clothingProductRepository, productId);
+
+        clothingProductRepository.delete(product);
     }
 }
