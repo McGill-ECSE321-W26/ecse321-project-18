@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ public class ClothingProductController {
      * @author Jennifer You (jenni4u)
      */
     @Autowired
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public ClothingProductController(ClothingProductService clothingProductService) {
         this.clothingProductService = clothingProductService;
     }
@@ -63,6 +65,18 @@ public class ClothingProductController {
             @RequestBody ClothingProductRequestDto clothingProductRequestDto,
             @PathVariable int id) {
         return clothingProductService.updateClothingProduct(clothingProductRequestDto, id);
+    }
+
+    /**
+     * Deletes a clothing product and all of its associated clothing items.
+     *
+     * @param productId ID of the ClothingProduct to delete
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @DeleteMapping("/fashionstore/clothingproduct/{productId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteClothingProduct(@PathVariable int productId) {
+        clothingProductService.deleteClothingProduct(productId);
     }
 
     /**

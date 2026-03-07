@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
@@ -9,10 +10,11 @@ import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-/** Service class for ClothingProduct. */
+/** Service class for ClothingItem. */
 @Service
 @Validated
 public class ClothingItemService {
@@ -56,5 +58,66 @@ public class ClothingItemService {
         // save clothing item to repository
         clothingItem = this.clothingItemRepository.save(clothingItem);
         return new ClothingItemResponseDto(clothingItem);
+    }
+
+    /**
+     * Service method to update the stock quantity of an existing clothing item.
+     *
+     * @param productId ID of the ClothingProduct the item belongs to
+     * @param itemId ID of the ClothingItem to update
+     * @param clothingItemRequestDto ClothingItem Request DTO containing the new stock quantity
+     * @return clothingItemResponseDto updated ClothingItem Response DTO
+     * @author Kenneth Wang (KennethWang6)
+     */
+    public ClothingItemResponseDto updateClothingItemStock(
+            int productId, int itemId, @Valid ClothingItemRequestDto clothingItemRequestDto) {
+
+        ClothingProduct product =
+                Utils.findClothingProductById(clothingProductRepository, productId);
+
+        ClothingItem item = Utils.findClothingItemById(clothingItemRepository, itemId);
+
+        if (item.getClothingProduct() == null
+                || item.getClothingProduct().getId() != product.getId()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "ClothingItem ID %d does not belong to ClothingProduct ID %d.",
+                            itemId, productId));
+        }
+
+        // update stock
+        item.setNumInStock(clothingItemRequestDto.numInStock());
+
+        item = clothingItemRepository.save(item);
+
+        return new ClothingItemResponseDto(item);
+    }
+
+    /**
+     * Service method to delete a clothing item from a clothing product.
+     *
+     * @param productId ID of the ClothingProduct the item belongs to
+     * @param itemId ID of the ClothingItem to delete
+     * @throws FashionStoreException if the item does not belong to the specified product
+     * @author Kenneth Wang (KennethWang6)
+     */
+    public void deleteClothingItem(int productId, int itemId) {
+
+        ClothingProduct product =
+                Utils.findClothingProductById(clothingProductRepository, productId);
+
+        ClothingItem item = Utils.findClothingItemById(clothingItemRepository, itemId);
+
+        if (item.getClothingProduct() == null
+                || item.getClothingProduct().getId() != product.getId()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "ClothingItem ID %d does not belong to ClothingProduct ID %d.",
+                            itemId, productId));
+        }
+
+        clothingItemRepository.delete(item);
     }
 }
