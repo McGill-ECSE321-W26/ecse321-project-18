@@ -198,10 +198,24 @@ public class OrderService {
      * @author Aurore Zhang
      */
     private void validateCancelled(Order order) {
-        if (order.getState() == State.DELIVERED) {
-            throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST, "Cannot cancel an order that is already delivered.");
+        State state = order.getState();
+        if (state == State.CANCELLED) {
+            return;
         }
+        if (state == State.DELIVERED) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Cannot cancel an order that is delivered.");
+        }
+        validateCancellationTime(order);
+    }
+
+    /**
+     * Validates that an order is being cancelled at least 24 hours before delivery.
+     *
+     * @param order Order to cancel.
+     * @author Aurore Zhang
+     */
+    private void validateCancellationTime(Order order) {
         long hoursUntilDelivery =
                 ChronoUnit.HOURS.between(
                         java.time.LocalDateTime.now(),
