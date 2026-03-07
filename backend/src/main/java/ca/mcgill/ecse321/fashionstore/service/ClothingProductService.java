@@ -181,4 +181,20 @@ public class ClothingProductService {
         return ((sizeFilters == null || sizeFilters.contains(clothingItem.getSize()))
                 && (colourFilters == null || colourFilters.contains(clothingItem.getColour())));
     }
+
+    /**
+     * Service method to retrieve a clothing product and all of its associated clothing items.
+     *
+     * @param productId ID of the ClothingProduct to retrieve
+     * @return A ClothingProductResponseDTO containing details about the clothing product and a list
+     *     of all clothing items associated with it.
+     * @throws FashionStoreException if the product ID does not correspond to an existing product.
+     * @author Qiuyu Huang (redacted24)
+     */
+    public ClothingProductResponseDto getClothingProduct(int productId) {
+        // Find ClothingProduct by ID
+        ClothingProduct clothingProduct =
+                Utils.findClothingProductById(clothingProductRepository, productId);
+        return new ClothingProductResponseDto(clothingProduct);
+    }
 }

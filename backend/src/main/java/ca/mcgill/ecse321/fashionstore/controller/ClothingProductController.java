@@ -96,4 +96,17 @@ public class ClothingProductController {
             @RequestParam(required = false) List<ClothingItem.Colour> colours) {
         return clothingProductService.getMatchingClothingProducts(name, sizes, colours);
     }
+
+    /**
+     * Get a clothing product and all of its clothing items.
+     *
+     * @param productId ID of the ClothingProduct to get
+     * @return A ClothingProductResponseDTO containing details about the product and a list of all
+     *     clothing items associated with it.
+     * @author Qiuyu Huang (redacted24)
+     */
+    @GetMapping("/fashionstore/clothingproduct/{productId}")
+    public ClothingProductResponseDto getClothingProduct(@PathVariable int productId) {
+        return clothingProductService.getClothingProduct(productId);
+    }
 }

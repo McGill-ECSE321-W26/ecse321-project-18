@@ -8,4 +8,10 @@ public interface AccountRepository extends CrudRepository<Account, Integer> {
 
     /** Find by ID method for Account. */
     Account findAccountById(int id);
+
+    /** Check if an account with the given email already exists. */
+    boolean existsByEmail(String email);
+
+    /** Find by Email method for Account. */
+    Account findAccountByEmail(String email);
 }
