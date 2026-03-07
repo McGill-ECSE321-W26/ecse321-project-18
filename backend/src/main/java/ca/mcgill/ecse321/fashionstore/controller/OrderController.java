@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.controller;
 
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.OrderStatusRequestDto;
 import ca.mcgill.ecse321.fashionstore.service.OrderService;
 import java.util.Collection;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,5 +69,20 @@ public class OrderController {
     @GetMapping("/fashionstore/account/customer/{id}/order")
     public Collection<OrderResponseDto> getAllOrdersByCustomer(@PathVariable int id) {
         return orderService.getAllOrdersByCustomer(id);
+    }
+
+    /**
+     * Updates the status of an order.
+     *
+     * @param id Order ID.
+     * @param orderStatusRequestDto OrderStatusRequestDto (state, employeeId).
+     * @return Returns the updated OrderResponseDto.
+     * @author Aurore Zhang (ororio0)
+     */
+    @PutMapping("/fashionstore/order/{id}/status")
+    @ResponseStatus(HttpStatus.OK)
+    public OrderResponseDto updateOrderStatus(
+            @PathVariable int id, @RequestBody OrderStatusRequestDto orderStatusRequestDto) {
+        return orderService.updateOrderStatus(id, orderStatusRequestDto);
     }
 }

@@ -16,6 +16,7 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 /** Service class for AccountService. */
@@ -51,7 +52,7 @@ public class AccountService {
      * granted access to the system. Otherwise, user is denied access and an error message is shown.
      *
      * @param requestDto An AccountRequestDto containing email and password.
-     * @return An AccoutResponseDTO with the id, email and the account type (employee, customer,
+     * @return An AccountResponseDTO with the id, email and the account type (employee, customer,
      *     owner).
      * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
      *     match
@@ -96,5 +97,49 @@ public class AccountService {
             accountType = "";
         }
         return accountType;
+    }
+
+    /**
+     * Service method to create a new employee account.
+     *
+     * @param accountRequestDto AccountRequestDto (email, password).
+     * @author Aurore Zhang (ororio0)
+     */
+    @Transactional
+    public AccountResponseDto createEmployeeAccount(@Valid AccountRequestDto accountRequestDto) {
+        if (accountRepository.existsByEmail(accountRequestDto.email())) {
+            throw new FashionStoreException(
+                    HttpStatus.CONFLICT,
+                    String.format(
+                            "An account with email %s already exists.", accountRequestDto.email()));
+        }
+        Employee employee = new Employee();
+        employee.setEmail(accountRequestDto.email());
+        employee.setPassword(accountRequestDto.password());
+        employee = employeeRepository.save(employee);
+        AccountResponseDto dto = new AccountResponseDto(employee);
+        return dto;
+    }
+
+    /**
+     * Service method to create a new customer account.
+     *
+     * @param accountRequestDto AccountRequestDto (email, password).
+     * @author Aurore Zhang (ororio0)
+     */
+    @Transactional
+    public AccountResponseDto createCustomerAccount(@Valid AccountRequestDto accountRequestDto) {
+        if (accountRepository.existsByEmail(accountRequestDto.email())) {
+            throw new FashionStoreException(
+                    HttpStatus.CONFLICT,
+                    String.format(
+                            "An account with email %s already exists.", accountRequestDto.email()));
+        }
+        Customer customer = new Customer();
+        customer.setEmail(accountRequestDto.email());
+        customer.setPassword(accountRequestDto.password());
+        customer = customerRepository.save(customer);
+        AccountResponseDto dto = new AccountResponseDto(customer);
+        return dto;
     }
 }

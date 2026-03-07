@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Controller for Account REST API Endpoints */
+/** Controller for Account REST API endpoints */
 @RestController
 @SuppressFBWarnings("SPRING_ENDPOINT")
 public class AccountController {
     private AccountService accountService;
 
     /**
-     * Constructor for AccountController class
+     * Constructor for AccountController.
      *
-     * @param accountService account service class
-     * @author Qiuyu Huang (redacted24)
+     * @param accountService Account service class.
+     * @author Aurore Zhang (ororio0)
      */
     @Autowired
     public AccountController(AccountService accountService) {
@@ -39,5 +39,33 @@ public class AccountController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public AccountResponseDto accountLogin(@RequestBody AccountRequestDto accountRequestDto) {
         return accountService.accountLoginCheck(accountRequestDto);
+    }
+
+    /**
+     * Creates a new employee account in the fashion store system.
+     *
+     * @param accountRequestDto AccountRequestDto (email, password).
+     * @return Returns the new AccountResponseDto (id, email).
+     * @author Aurore Zhang (ororio0)
+     */
+    @PostMapping("/fashionstore/account/employee")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountResponseDto createEmployeeAccount(
+            @RequestBody AccountRequestDto accountRequestDto) {
+        return accountService.createEmployeeAccount(accountRequestDto);
+    }
+
+    /**
+     * Creates a new customer account in the fashion store system.
+     *
+     * @param accountRequestDto AccountRequestDto (email, password).
+     * @return Returns the new AccountResponseDto (id, email).
+     * @author Aurore Zhang (ororio0)
+     */
+    @PostMapping("/fashionstore/account/customer")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountResponseDto createCustomerAccount(
+            @RequestBody AccountRequestDto accountRequestDto) {
+        return accountService.createCustomerAccount(accountRequestDto);
     }
 }
