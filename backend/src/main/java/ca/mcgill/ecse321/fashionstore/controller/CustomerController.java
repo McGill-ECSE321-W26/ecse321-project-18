@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller for Customer REST API endpoints.
- */
+/** Controller for Customer REST API endpoints. */
 @RestController
 @SuppressFBWarnings("SPRING_ENDPOINT")
 public class CustomerController {
@@ -25,7 +23,6 @@ public class CustomerController {
      * @author Carolyn Wu (cw118)
      */
     @Autowired
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
@@ -40,8 +37,7 @@ public class CustomerController {
      */
     @PutMapping("/fashionstore/account/customer/{customerId}/loyalty")
     public CustomerResponseDto updateCustomerLoyaltyPts(
-        @PathVariable int customerId,
-        @RequestBody LoyaltyPtsRequestDto loyaltyPtsRequestDto) {
+            @PathVariable int customerId, @RequestBody LoyaltyPtsRequestDto loyaltyPtsRequestDto) {
         return customerService.updateCustomerLoyaltyPts(customerId, loyaltyPtsRequestDto);
     }
 }

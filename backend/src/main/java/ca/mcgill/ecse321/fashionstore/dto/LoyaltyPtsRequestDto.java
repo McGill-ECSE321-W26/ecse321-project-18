@@ -9,4 +9,4 @@ import jakarta.validation.constraints.PositiveOrZero;
  * @param numOfLoyaltyPoints New number of loyalty points for the customer.
  */
 public record LoyaltyPtsRequestDto(
-    @NotNull(message = "Number of loyalty points must not be null.") @PositiveOrZero(message = "Number of loyalty points must be positive or zero.") Integer numOfLoyaltyPoints) {}
+        @NotNull(message = "Number of loyalty points must not be null.") @PositiveOrZero(message = "Number of loyalty points must be positive or zero.") Integer numOfLoyaltyPoints) {}

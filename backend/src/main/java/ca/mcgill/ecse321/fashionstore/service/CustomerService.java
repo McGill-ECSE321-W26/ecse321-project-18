@@ -17,6 +17,12 @@ import org.springframework.validation.annotation.Validated;
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
+    /**
+     * CustomerService constructor.
+     *
+     * @param customerRepository CustomerRepository required to access the database.
+     * @author Carolyn Wu (cw118)
+     */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
     public CustomerService(CustomerRepository customerRepository) {
@@ -33,8 +39,7 @@ public class CustomerService {
      */
     @Transactional
     public CustomerResponseDto updateCustomerLoyaltyPts(
-        int id,
-        @Valid LoyaltyPtsRequestDto loyaltyPtsRequestDto) {
+            int id, @Valid LoyaltyPtsRequestDto loyaltyPtsRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
         customer.setNumLoyaltyPoints(loyaltyPtsRequestDto.numOfLoyaltyPoints());
 
