@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-/** Service class for AccountService. */
+/** Account Service class. */
 @Service
 @Validated
 public class AccountService {
@@ -31,9 +31,12 @@ public class AccountService {
     private CustomerRepository customerRepository;
 
     /**
-     * Constructor for AccountRepository class
+     * AccountService constructor.
      *
-     * @param accountRepository account repository class
+     * @param accountRepository AccountRepository required to access the database.
+     * @param ownerRepository OwnerRepository required to access the database.
+     * @param customerRepository CustomerRepository required to access the database.
+     * @param employeeRepository EmployeeRepository required to access the database.
      * @author Qiuyu Huang (redacted24)
      */
     @Autowired
@@ -74,8 +77,8 @@ public class AccountService {
         }
 
         // Account found. Check account type.
-        return new AccountResponseDto(
-                account.getId(), account.getEmail(), findAccountType(account.getId()));
+        int id = account.getId();
+        return new AccountResponseDto(id, account.getEmail(), findAccountType(id));
     }
 
     /**

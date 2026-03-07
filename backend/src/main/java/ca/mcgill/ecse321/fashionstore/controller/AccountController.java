@@ -33,9 +33,9 @@ public class AccountController {
      *
      * @param accountRequestDto A request Dto with account email and password
      * @return An AccountResponseDto with the id, email and account type
-     * @author Flavie Qin
+     * @author Qiuyu Huang (redacted24)
      */
-    @PostMapping("/fashionstore/accout/login")
+    @PostMapping("/fashionstore/account/login")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public AccountResponseDto accountLogin(@RequestBody AccountRequestDto accountRequestDto) {
         return accountService.accountLoginCheck(accountRequestDto);
