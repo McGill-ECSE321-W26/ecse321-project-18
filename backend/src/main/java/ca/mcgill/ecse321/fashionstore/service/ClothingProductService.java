@@ -145,27 +145,40 @@ public class ClothingProductService {
             List<ClothingItem.Size> sizes,
             List<ClothingItem.Colour> colours) {
 
-        if (!clothingProducts.isEmpty() && !sizes.isEmpty() && !colours.isEmpty()) {
+        if (!clothingProducts.isEmpty() && (sizes != null || colours != null)) {
+            // filter if at least one of size or colour filters is specified
             List<ClothingProduct> filteredClothingProducts = new ArrayList<>();
 
             for (ClothingProduct clothingProduct : clothingProducts) {
                 List<ClothingItem> matchingItems =
                         clothingProduct.getItems().stream()
-                                .filter(
-                                        item ->
-                                                sizes.contains(item.getSize())
-                                                        && colours.contains(item.getColour()))
+                                .filter(item -> isFilterMatch(sizes, colours, item))
                                 .toList();
 
-                // if the product has an item matching the size/colour filter, keep/add it!
                 if (!matchingItems.isEmpty()) {
                     filteredClothingProducts.add(clothingProduct);
                 }
             }
             return filteredClothingProducts;
         }
-
         // no filters specified and/or empty clothingProducts, so just return original list
         return clothingProducts;
+    }
+
+    /**
+     * Checks whether an item fits the specified size and/or colour filters.
+     *
+     * @param sizeFilters valid sizes.
+     * @param colourFilters valid colours.
+     * @param clothingItem item to check against.
+     * @return true if the item matches filters and should be kept, false otherwise.
+     * @author Carolyn Wu (cw118)
+     */
+    private boolean isFilterMatch(
+            List<ClothingItem.Size> sizeFilters,
+            List<ClothingItem.Colour> colourFilters,
+            ClothingItem clothingItem) {
+        return ((sizeFilters == null || sizeFilters.contains(clothingItem.getSize()))
+                && (colourFilters == null || colourFilters.contains(clothingItem.getColour())));
     }
 }
