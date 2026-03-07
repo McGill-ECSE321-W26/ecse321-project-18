@@ -203,4 +203,14 @@ class AccountRepositoryTests {
         Account accountFromDb = accountRepository.findAccountById(owner.getId());
         assertNull(accountFromDb, "Account deletion was not persisted");
     }
+
+    /**
+     * Test account retrieval by email.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void testAccountFindByEmail() {
+        assertNotNull(accountRepository.findAccountByEmail("owner@fashionstore.com"));
+    }
 }
