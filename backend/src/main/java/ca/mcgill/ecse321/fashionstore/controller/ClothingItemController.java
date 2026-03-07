@@ -89,7 +89,7 @@ public class ClothingItemController {
      * @author Qiuyu Huang (redacted24)
      */
     @GetMapping("/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}")
-    public ClothingItemResponseDto getClothingProduct(
+    public ClothingItemResponseDto getClothingItem(
             @PathVariable int productId, @PathVariable int itemId) {
         return clothingItemService.getClothingItem(productId, itemId);
     }
