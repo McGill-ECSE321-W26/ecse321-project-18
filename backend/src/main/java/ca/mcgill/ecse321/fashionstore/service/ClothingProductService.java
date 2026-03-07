@@ -101,6 +101,7 @@ public class ClothingProductService {
      * @param sizes Sizes of clothing product (filter)
      * @param colours Colours of clothing product (filter)
      * @return Clothing products matching search and/or filters
+     * @author Carolyn Wu (cw118)
      */
     public List<ClothingProductResponseDto> getMatchingClothingProducts(
             String name, List<ClothingItem.Size> sizes, List<ClothingItem.Colour> colours) {
@@ -123,7 +124,8 @@ public class ClothingProductService {
      *
      * @param name clothing product name to search by.
      * @return list of ClothingProducts whose name contain the search string. If the search string
-     *     is null, then this simply the full original list.
+     *     is null, then this simply returns the full original list.
+     * @author Carolyn Wu (cw118)
      */
     private List<ClothingProduct> searchClothingProductsByName(String name) {
         return (name == null)
@@ -138,6 +140,7 @@ public class ClothingProductService {
      * @param sizes size filters.
      * @param colours colour filters.
      * @return list of ClothingProducts that match the given size and/or colour filters.
+     * @author Carolyn Wu (cw118)
      */
     private List<ClothingProduct> filterClothingProductsBySizeColour(
             List<ClothingProduct> clothingProducts,
