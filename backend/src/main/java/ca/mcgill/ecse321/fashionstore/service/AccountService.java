@@ -35,7 +35,11 @@ public class AccountService {
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
-    public AccountService(AccountRepository accountRepository, OwnerRepository ownerRepository, EmployeeRepository employeeRepository, CustomerRepository customerRepository) {
+    public AccountService(
+            AccountRepository accountRepository,
+            OwnerRepository ownerRepository,
+            EmployeeRepository employeeRepository,
+            CustomerRepository customerRepository) {
         this.accountRepository = accountRepository;
         this.ownerRepository = ownerRepository;
         this.employeeRepository = employeeRepository;
@@ -45,48 +49,52 @@ public class AccountService {
     /**
      * Checks if email exists and the password matches. If both are valid, user is authenticated and
      * granted access to the system. Otherwise, user is denied access and an error message is shown.
-     * @param requestDto
-     * @return An AccoutResponseDTO with the id, email and the account type (employee, customer, owner).
-     * @throws FashionStoreException if an account with the email isn't found, or a password doesn't match
+     *
+     * @param requestDto An AccountRequestDto containing email and password.
+     * @return An AccoutResponseDTO with the id, email and the account type (employee, customer,
+     *     owner).
+     * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
+     *     match
      * @author Qiuyu Huang (redacted24)
      */
-    public AccountResponseDto accoutLoginCheck(@Valid AccountRequestDto requestDto) {
+    public AccountResponseDto accountLoginCheck(@Valid AccountRequestDto requestDto) {
         Account account = accountRepository.findAccountByEmail(requestDto.email());
         // Email check
         if (account == null) {
             throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST,
-                    "An account with that email does not exist."
-                    );
+                    HttpStatus.BAD_REQUEST, "An account with that email does not exist.");
         }
 
         // Password check
         if (!account.getPassword().equals(requestDto.password())) {
-            throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST,
-                    "Password is incorrect."
-            );
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Password is incorrect.");
         }
 
         // Account found. Check account type.
-        // Owner
-        Owner owner = ownerRepository.findOwnerById(account.getId());
+        return new AccountResponseDto(
+                account.getId(), account.getEmail(), findAccountType(account.getId()));
+    }
+
+    /**
+     * Method to return a string of the account type of a given account id.
+     *
+     * @param id The id of the account whose type we are trying to retrieve.
+     * @return String "Owner"/"Employee"/"Customer"/"" depending on what type the account is
+     */
+    public String findAccountType(int id) {
+        String accountType;
+        Owner owner = ownerRepository.findOwnerById(id);
+        Employee employee = employeeRepository.findEmployeeById(id);
+        Customer customer = customerRepository.findCustomerById(id);
         if (owner != null) {
-            return new AccountResponseDto(account.getId(), account.getEmail(), "Owner");
+            accountType = "Owner";
+        } else if (employee != null) {
+            accountType = "Employee";
+        } else if (customer != null) {
+            accountType = "Customer";
+        } else {
+            accountType = "";
         }
-
-        // Employee
-        Employee employee = employeeRepository.findEmployeeById(account.getId());
-        if (employee != null) {
-            return new AccountResponseDto(account.getId(), account.getEmail(), "Employee");
-        }
-
-        // Customer
-        Customer customer = customerRepository.findCustomerById(account.getId());
-        if (customer != null) {
-            return new AccountResponseDto(account.getId(), account.getEmail(), "Customer");
-        }
-
-        return new AccountResponseDto(account.getId(), account.getEmail(), "");
+        return accountType;
     }
 }
