@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.controller;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
 import ca.mcgill.ecse321.fashionstore.service.ShoppingCartItemService;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
@@ -44,7 +45,9 @@ public class ShoppingCartItemController {
     @GetMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
     @ResponseStatus(HttpStatus.OK)
     public List<ShoppingCartItemResponseDto> getShoppingCartItems(@PathVariable int customerId) {
-        return shoppingCartItemService.getShoppingCartItems(customerId);
+        List<ShoppingCartItem> shoppingCartItems =
+                shoppingCartItemService.getShoppingCartItems(customerId);
+        return ShoppingCartItemResponseDto.shoppingCartItemResponseDtos(shoppingCartItems);
     }
 
     /**
@@ -60,7 +63,9 @@ public class ShoppingCartItemController {
     public ShoppingCartItemResponseDto addShoppingCartItem(
             @PathVariable int customerId,
             @RequestBody ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
-        return shoppingCartItemService.addShoppingCartItem(customerId, shoppingCartItemRequestDto);
+        ShoppingCartItem shoppingCartItem =
+                shoppingCartItemService.addShoppingCartItem(customerId, shoppingCartItemRequestDto);
+        return new ShoppingCartItemResponseDto(shoppingCartItem);
     }
 
     /**
@@ -76,7 +81,9 @@ public class ShoppingCartItemController {
             @PathVariable int customerId,
             @PathVariable int id,
             @RequestBody ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
-        return shoppingCartItemService.updateShoppingCartItem(id, shoppingCartItemRequestDto);
+        ShoppingCartItem shoppingCartItem =
+                shoppingCartItemService.updateShoppingCartItem(id, shoppingCartItemRequestDto);
+        return new ShoppingCartItemResponseDto(shoppingCartItem);
     }
 
     /**
