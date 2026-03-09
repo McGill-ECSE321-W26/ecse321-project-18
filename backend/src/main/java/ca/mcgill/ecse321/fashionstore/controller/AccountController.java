@@ -41,7 +41,8 @@ public class AccountController {
     public AccountResponseDto accountLogin(@RequestBody AccountRequestDto accountRequestDto) {
         // Create a DTO from the account object returned by the service.
         Account account = accountService.accountLoginCheck(accountRequestDto);
-        return new AccountResponseDto(account);
+        int id = account.getId();
+        return new AccountResponseDto(id, account.getEmail(), accountService.findAccountType(id));
     }
 
     /**

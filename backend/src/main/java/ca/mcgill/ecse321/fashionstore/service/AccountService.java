@@ -56,8 +56,7 @@ public class AccountService {
      * granted access to the system. Otherwise, user is denied access and an error message is shown.
      *
      * @param requestDto An AccountRequestDto containing email and password.
-     * @return An Account with the id, email and the account type (employee, customer,
-     *     owner).
+     * @return An Account with the id, email and the account type (employee, customer, owner).
      * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
      *     match
      * @author Qiuyu Huang (redacted24)
@@ -75,8 +74,6 @@ public class AccountService {
             throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Password is incorrect.");
         }
 
-        // Account found. Check account type.
-        int id = account.getId();
         return account;
     }
 
