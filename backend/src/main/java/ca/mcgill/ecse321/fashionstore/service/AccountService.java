@@ -56,13 +56,13 @@ public class AccountService {
      * granted access to the system. Otherwise, user is denied access and an error message is shown.
      *
      * @param requestDto An AccountRequestDto containing email and password.
-     * @return An AccountResponseDTO with the id, email and the account type (employee, customer,
+     * @return An Account with the id, email and the account type (employee, customer,
      *     owner).
      * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
      *     match
      * @author Qiuyu Huang (redacted24)
      */
-    public AccountResponseDto accountLoginCheck(@Valid AccountRequestDto requestDto) {
+    public Account accountLoginCheck(@Valid AccountRequestDto requestDto) {
         Account account = accountRepository.findAccountByEmail(requestDto.email());
         // Email check
         if (account == null) {
@@ -77,7 +77,7 @@ public class AccountService {
 
         // Account found. Check account type.
         int id = account.getId();
-        return new AccountResponseDto(id, account.getEmail(), findAccountType(id));
+        return account;
     }
 
     /**
