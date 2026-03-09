@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.fashionstore.controller;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
+import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.service.ClothingProductService;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
@@ -107,6 +108,7 @@ public class ClothingProductController {
      */
     @GetMapping("/fashionstore/clothingproduct/{productId}")
     public ClothingProductResponseDto getClothingProduct(@PathVariable int productId) {
-        return clothingProductService.getClothingProduct(productId);
+        ClothingProduct clothingProduct = clothingProductService.getClothingProduct(productId);
+        return new ClothingProductResponseDto(clothingProduct);
     }
 }
