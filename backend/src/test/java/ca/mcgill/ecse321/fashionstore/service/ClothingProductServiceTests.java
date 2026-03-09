@@ -5,19 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
-import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Test suite for clothing product service class. */
 @SpringBootTest
@@ -105,23 +103,24 @@ class ClothingProductServiceTests {
     /**
      * Test retrieving an existing clothingProduct and check for its clothing items. It is assumed
      * that the GET works and returns a valid ClothingProduct.
+     *
+     * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Transactional
     void getClothingProductCheckItems() {
         ClothingProduct response =
                 clothingProductService.getClothingProduct(clothingProduct.getId());
-        ClothingProductResponseDto dto = new ClothingProductResponseDto(response);
-        List<ClothingItemResponseDto> clothingItemList = dto.clothingItems();
-        assertNotNull(clothingItemList, "ClothingItem list is null when the product has items.");
+        assertNotNull(response.getItems(), "ClothingProduct items list should not be null.");
         assertEquals(
                 1,
-                clothingItemList.size(),
+                response.getItems().size(),
                 String.format(
                         "ClothingProduct item list size is %d, should be %d.",
                         response.getItems().size(), clothingProduct.getItems().size()));
         assertEquals(
                 clothingItem.getColour(),
-                clothingItemList.getFirst().colour(),
+                response.getItem(0).getColour(),
                 "Retrieved clothing product's item does not have correct colour.");
     }
 }
