@@ -52,7 +52,7 @@ class ShoppingCartItemServiceTests {
     private static final int VALID_QUANTITY_2 = 20;
 
     /**
-     * Helper fr service layer test for getting all of a customer's shopping cart items.
+     * Helper for service layer test for getting all of a customer's shopping cart items.
      *
      * @author Cyrus Fung (cfung89)
      */
@@ -212,5 +212,177 @@ class ShoppingCartItemServiceTests {
 
         verify(shoppingCartItemRepository, times(1))
                 .save(argThat((ShoppingCartItem item) -> VALID_QUANTITY_1 == item.getQuantity()));
+    }
+
+    /**
+     * Helper for service layer test for updating a shopping cart item.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    private ShoppingCartItem updateShoppingCartItemSetup() {
+        // Arrange
+        Customer newCustomer = new Customer();
+        newCustomer.setId(VALID_CUSTOMER_ID);
+
+        ClothingProduct newProduct = new ClothingProduct();
+        newProduct.setId(VALID_PRODUCT_ID);
+
+        ClothingItem newClothingItem = new ClothingItem();
+        newClothingItem.setId(VALID_CLOTHING_ID_1);
+        newClothingItem.setClothingProduct(newProduct);
+
+        ShoppingCartItem newShoppingCartItem = new ShoppingCartItem();
+        newShoppingCartItem.setId(VALID_ITEM_ID_1);
+        newShoppingCartItem.setQuantity(VALID_QUANTITY_1);
+        newShoppingCartItem.setCustomer(newCustomer);
+        newShoppingCartItem.setClothingItem(newClothingItem);
+
+        when(shoppingCartItemRepository.findById(VALID_ITEM_ID_1))
+                .thenReturn(Optional.of(newShoppingCartItem));
+
+        when(shoppingCartItemRepository.save(any(ShoppingCartItem.class)))
+                .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+
+        return updateShoppingCartItemAct();
+    }
+
+    /**
+     * Helper for service layer test for updating a shopping cart item.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    private ShoppingCartItem updateShoppingCartItemAct() {
+        // Act
+        ShoppingCartItemRequestDto updatedShoppingCartItem =
+                new ShoppingCartItemRequestDto(VALID_CLOTHING_ID_1, VALID_QUANTITY_2);
+        ShoppingCartItem shoppingCartItem =
+                shoppingCartItemService.updateShoppingCartItem(
+                        VALID_ITEM_ID_1, updatedShoppingCartItem);
+        return shoppingCartItem;
+    }
+
+    /**
+     * Service layer test for updating a shopping cart items with valid ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testUpdateShoppingCartItemByValidId() {
+        // Arrange and act
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
+                new ShoppingCartItemResponseDto(updateShoppingCartItemSetup());
+
+        // Assert
+        assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
+        assertEquals(
+                VALID_QUANTITY_2,
+                shoppingCartItemResponseDto.quantity(),
+                "ShoppingCartItemResponseDto did not update the quantity correctly.");
+        assertEquals(
+                VALID_CUSTOMER_ID,
+                shoppingCartItemResponseDto.customerId(),
+                "ShoppingCartItemResponseDto does not contain correct Customer ID.");
+        assertEquals(
+                VALID_CLOTHING_ID_1,
+                shoppingCartItemResponseDto.clothingItem().id(),
+                "ShoppingCartItemResponseDto does not contain correct ClothingItem ID.");
+
+        verify(shoppingCartItemRepository, times(1))
+                .save(argThat((ShoppingCartItem item) -> VALID_QUANTITY_2 == item.getQuantity()));
+    }
+
+    /**
+     * Service layer test for updating a shopping cart items with invalid ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testUpdateShoppingCartItemByInvalidId() {
+        when(shoppingCartItemRepository.findById(VALID_ITEM_ID_1)).thenReturn(Optional.empty());
+
+        ShoppingCartItemRequestDto shoppingCartItemRequestDto =
+                new ShoppingCartItemRequestDto(VALID_CLOTHING_ID_1, VALID_QUANTITY_1);
+
+        // Assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                shoppingCartItemService.updateShoppingCartItem(
+                                        VALID_ITEM_ID_1, shoppingCartItemRequestDto));
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "HTTP status is not NOT_FOUND after invalid shopping cart item ID request.");
+        assertEquals(
+                String.format("ShoppingCartItem ID %d was not found.", VALID_ITEM_ID_1),
+                e.getMessage(),
+                "HTTP message is not correct after invalid shopping cart item ID request.");
+    }
+
+    /**
+     * Service layer test for deleting a shopping cart item.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testDeleteShoppingCartItem() {
+        shoppingCartItemService.deleteShoppingCartItem(VALID_ITEM_ID_1);
+        verify(shoppingCartItemRepository, times(1)).deleteById(VALID_ITEM_ID_1);
+    }
+
+    /**
+     * Service layer test for deleting all a valid customer's shopping cart items.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testDeleteShoppingCartItemsByValidId() {
+        // Arrange
+        Customer newCustomer = new Customer();
+        newCustomer.setId(VALID_CUSTOMER_ID);
+
+        ShoppingCartItem item1 = new ShoppingCartItem();
+        item1.setId(VALID_ITEM_ID_1);
+
+        ShoppingCartItem item2 = new ShoppingCartItem();
+        item2.setId(VALID_ITEM_ID_2);
+
+        newCustomer.addShoppingCartItem(item1);
+        newCustomer.addShoppingCartItem(item2);
+
+        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.of(newCustomer));
+
+        // Act
+        shoppingCartItemService.deleteShoppingCartItems(VALID_CUSTOMER_ID);
+
+        // Verify
+        verify(shoppingCartItemRepository, times(2)).delete(any(ShoppingCartItem.class));
+    }
+
+    /**
+     * Service layer test for deleting all an invalid customer's shopping cart items.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void testDeleteShoppingCartItemsByInvalidId() {
+        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.empty());
+
+        // Assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> shoppingCartItemService.deleteShoppingCartItems(VALID_CUSTOMER_ID));
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "HTTP status is not NOT_FOUND after invalid customer ID request.");
+        assertEquals(
+                String.format("Customer ID %d was not found.", VALID_CUSTOMER_ID),
+                e.getMessage(),
+                "HTTP message is not correct after invalid customer ID request.");
     }
 }
