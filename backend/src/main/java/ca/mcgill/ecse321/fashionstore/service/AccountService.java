@@ -24,10 +24,15 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Validated
 public class AccountService {
-    private AccountRepository accountRepository;
-    private OwnerRepository ownerRepository;
-    private EmployeeRepository employeeRepository;
-    private CustomerRepository customerRepository;
+    // error messages
+    public static final String badPasswordErrorMsg = "Password is incorrect.";
+    public static final String nonexistentEmailErrorMsg =
+            "An account with that email does not exist.";
+
+    private final AccountRepository accountRepository;
+    private final OwnerRepository ownerRepository;
+    private final EmployeeRepository employeeRepository;
+    private final CustomerRepository customerRepository;
 
     /**
      * AccountService constructor.
@@ -71,7 +76,7 @@ public class AccountService {
 
         // Password check
         if (!account.getPassword().equals(requestDto.password())) {
-            throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Password is incorrect.");
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, badPasswordErrorMsg);
         }
 
         return account;
@@ -83,6 +88,7 @@ public class AccountService {
      * @param id The id of the account whose type we are trying to retrieve.
      * @return AccountType (enum), depending on what the type of the account is
      *     (manager/owner/customer)
+     * @author Qiuyu Huang (redacted24)
      */
     public AccountType findAccountType(int id) {
         if (ownerRepository.findOwnerById(id) != null) {

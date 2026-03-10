@@ -38,24 +38,24 @@ class AccountServiceTests {
     void loadDatabase() {
         // Dummy employee
         Employee newEmployee = new Employee();
-        newEmployee.setEmail("newEmployee@fashionstore.com");
-        newEmployee.setPassword("newEmployee123");
+        newEmployee.setEmail("employee@fashionstore.com");
+        newEmployee.setPassword("employee123");
         newEmployee.setAddress("1000 Peel Street");
         employeeRepository.save(newEmployee);
         this.employee = newEmployee;
 
         // Dummy owner
         Owner newOwner = new Owner();
-        newOwner.setEmail("newOwner@fashionstore.com");
-        newOwner.setPassword("newOwner123");
+        newOwner.setEmail("owner@fashionstore.com");
+        newOwner.setPassword("owner123");
         ownerRepository.save(newOwner);
         this.owner = newOwner;
 
         // Dummy customer
         Customer newCustomer = new Customer();
-        newCustomer.setEmail("newCustomer@fashionstore.com");
+        newCustomer.setEmail("customer@fashionstore.com");
         newCustomer.setAddress("1001 Customer Street");
-        newCustomer.setPassword("newCustomer123");
+        newCustomer.setPassword("customer123");
         customerRepository.save(newCustomer);
         this.customer = newCustomer;
     }
