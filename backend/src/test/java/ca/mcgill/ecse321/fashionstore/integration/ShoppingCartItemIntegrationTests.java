@@ -38,6 +38,9 @@ class ShoppingCartItemIntegrationTests {
     private static final String responseNullError = "Response body is null.";
     private static final String shoppingCartItemUri =
             "/fashionstore/account/customer/{customerId}/shoppingcartitem";
+    private static final String shoppingCartItemsUri =
+            "/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}";
+    private static final String errorLoc = "$.errors";
 
     private static final int VALID_QUANTITY_1 = 10;
     private static final int VALID_QUANTITY_2 = 20;
@@ -99,38 +102,7 @@ class ShoppingCartItemIntegrationTests {
         clothingItemRepository.deleteAll();
     }
 
-    /**
-     * Integration test to add a shopping cart item with a valid ID.
-     *
-     * @author Cyrus Fung (cfung89)
-     */
-    @Test
-    @Order(0)
-    void testAddShoppingCartItemsByValidId() {
-        // Arrange
-        ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_2);
-
-        // Act
-        ShoppingCartItemResponseDto response =
-                client.post()
-                        .uri(shoppingCartItemUri, customerId)
-                        .body(body)
-                        .exchange()
-                        .expectStatus()
-                        .isCreated()
-                        .expectBody(ShoppingCartItemResponseDto.class)
-                        .returnResult()
-                        .getResponseBody();
-
-        // Assert
-        assertNotNull(response, responseNullError);
-        assertTrue(response.id() > 0, "The ID should be a positive int.");
-        this.itemId2 = response.id();
-        assertAddShoppingCartItemsByValidId(body, response);
-    }
-
-    private void assertAddShoppingCartItemsByValidId(
+    private void assertBodyResponse(
             ShoppingCartItemRequestDto body, ShoppingCartItemResponseDto response) {
         assertEquals(
                 body.clothingItemId(),
@@ -139,31 +111,6 @@ class ShoppingCartItemIntegrationTests {
         assertEquals(body.quantity(), response.quantity(), "Quantity of response is incorrect.");
         assertNotNull(response.customerId(), "Response customer ID is null.");
         assertEquals(customerId, response.customerId(), "Customer ID of response is incorrect.");
-    }
-
-    /**
-     * Integration test to get shopping cart items with a valid customer ID.
-     *
-     * @author Cyrus Fung (cfung89)
-     */
-    @Test
-    @Order(1)
-    void testGetShoppingCartItemsByValidId() {
-        // Act
-        List<ShoppingCartItemResponseDto> response =
-                client.get()
-                        .uri(shoppingCartItemUri, customerId)
-                        .exchange()
-                        .expectStatus()
-                        .isOk()
-                        .expectBody(
-                                new ParameterizedTypeReference<
-                                        List<ShoppingCartItemResponseDto>>() {})
-                        .returnResult()
-                        .getResponseBody();
-
-        // Assert
-        assertGetShoppingCartItemsByValidId(response);
     }
 
     private void assertGetShoppingCartItemsByValidId(List<ShoppingCartItemResponseDto> response) {
@@ -196,6 +143,62 @@ class ShoppingCartItemIntegrationTests {
     }
 
     /**
+     * Integration test to add a shopping cart item with a valid ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(0)
+    void testAddShoppingCartItemsByValidId() {
+        // Arrange
+        ShoppingCartItemRequestDto body =
+                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_2);
+
+        // Act
+        ShoppingCartItemResponseDto response =
+                client.post()
+                        .uri(shoppingCartItemUri, customerId)
+                        .body(body)
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(ShoppingCartItemResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertTrue(response.id() > 0, "The ID should be a positive int.");
+        this.itemId2 = response.id();
+        assertBodyResponse(body, response);
+    }
+
+    /**
+     * Integration test to get shopping cart items with a valid customer ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(1)
+    void testGetShoppingCartItemsByValidId() {
+        // Act
+        List<ShoppingCartItemResponseDto> response =
+                client.get()
+                        .uri(shoppingCartItemUri, customerId)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(
+                                new ParameterizedTypeReference<
+                                        List<ShoppingCartItemResponseDto>>() {})
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertGetShoppingCartItemsByValidId(response);
+    }
+
+    /**
      * Integration test to update a shopping cart item with a valid ID.
      *
      * @author Cyrus Fung (cfung89)
@@ -210,10 +213,7 @@ class ShoppingCartItemIntegrationTests {
         // Act
         ShoppingCartItemResponseDto response =
                 client.put()
-                        .uri(
-                                "/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}",
-                                customerId,
-                                itemId2)
+                        .uri(shoppingCartItemsUri, customerId, itemId2)
                         .body(body)
                         .exchange()
                         .expectStatus()
@@ -224,20 +224,9 @@ class ShoppingCartItemIntegrationTests {
 
         // Assert
         assertNotNull(response, responseNullError);
-        assertUpdateShoppingCartItemsByValidId(body, response);
-    }
-
-    private void assertUpdateShoppingCartItemsByValidId(
-            ShoppingCartItemRequestDto body, ShoppingCartItemResponseDto response) {
         assertTrue(response.id() > 0, "The ID should be a positive int.");
-        this.itemId2 = response.id();
-        assertEquals(
-                body.clothingItemId(),
-                response.clothingItem().id(),
-                "ClothingItem ID of response is incorrect.");
-        assertEquals(body.quantity(), response.quantity(), "Quantity of response is incorrect.");
-        assertNotNull(response.customerId(), "Response customer ID is null.");
-        assertEquals(customerId, response.customerId(), "Customer ID of response is incorrect.");
+        assertEquals(response.id(), itemId2, "The ID is not the same.");
+        assertBodyResponse(body, response);
     }
 
     /**
@@ -268,11 +257,11 @@ class ShoppingCartItemIntegrationTests {
         assertNotNull(response, responseNullError);
         assertTrue(response.id() > 0, "The ID should be a positive int.");
         this.itemId3 = response.id();
-        assertAddShoppingCartItemsByValidId(body, response);
+        assertBodyResponse(body, response);
     }
 
     /**
-     * Integration test to update a shopping cart item with a valid ID.
+     * Integration test to delete a shopping cart item with a valid ID.
      *
      * @author Cyrus Fung (cfung89)
      */
@@ -281,10 +270,7 @@ class ShoppingCartItemIntegrationTests {
     void testDeleteShoppingCartItemByValidId() {
         // Act
         client.delete()
-                .uri(
-                        "/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}",
-                        customerId,
-                        itemId3)
+                .uri(shoppingCartItemsUri, customerId, itemId3)
                 .exchange()
                 .expectStatus()
                 .isNoContent()
@@ -298,7 +284,7 @@ class ShoppingCartItemIntegrationTests {
     }
 
     /**
-     * Integration test to update a shopping cart item with a valid ID.
+     * Integration test to delete all shopping cart items with a valid ID.
      *
      * @author Cyrus Fung (cfung89)
      */
@@ -325,5 +311,171 @@ class ShoppingCartItemIntegrationTests {
                 0,
                 shoppingCartItemRepository.count(),
                 "The shopping_cart_item table is not empty.");
+    }
+
+    /**
+     * Integration test to get shopping cart items with a valid customer ID (empty response).
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testGetShoppingCartItemsByValidId2() {
+        // Act
+        List<ShoppingCartItemResponseDto> response =
+                client.get()
+                        .uri(shoppingCartItemUri, customerId)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(
+                                new ParameterizedTypeReference<
+                                        List<ShoppingCartItemResponseDto>>() {})
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertEquals(response.size(), 0, "Response body has incorrect number of DTO objects.");
+    }
+
+    /**
+     * Integration test to get shopping cart items with an invalid customer ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testGetShoppingCartItemsByInvalidId() {
+        // Act
+        client.get()
+                .uri(shoppingCartItemUri, 40)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("Customer ID 40 was not found.");
+    }
+
+    /**
+     * Integration test to add shopping cart items with an invalid customer ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testAddShoppingCartItemsByInvalidId() {
+        // Act
+        ShoppingCartItemRequestDto body =
+                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_2);
+        client.post()
+                .uri(shoppingCartItemUri, 40)
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("Customer ID 40 was not found.");
+    }
+
+    /**
+     * Integration test to add shopping cart items with an invalid ClothingItem ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testAddShoppingCartItemsByInvalidId2() {
+        // Act
+        ShoppingCartItemRequestDto body = new ShoppingCartItemRequestDto(40, VALID_QUANTITY_2);
+        client.post()
+                .uri(shoppingCartItemUri, customerId)
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("ClothingItem ID 40 was not found.");
+    }
+
+    /**
+     * Integration test to update shopping cart items with an invalid ShoppingCartItem ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testUpdateShoppingCartItemsByInvalidId() {
+        // Act
+        ShoppingCartItemRequestDto body =
+                new ShoppingCartItemRequestDto(clothingId1, VALID_QUANTITY_2);
+        client.put()
+                .uri(shoppingCartItemsUri, customerId, itemId1)
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo(String.format("ShoppingCartItem ID %d was not found.", itemId1));
+    }
+
+    /**
+     * Integration test to delete a shopping cart item that does not exist with a valid customer ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testDeleteShoppingCartItemByValidId2() {
+        // Act
+        client.delete()
+                .uri(shoppingCartItemsUri, customerId, itemId1)
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody()
+                .isEmpty();
+    }
+
+    /**
+     * Integration test to delete all shopping cart items that do not exist with a valid customer
+     * ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testDeleteShoppingCartItemsByValidId2() {
+        // Act
+        client.delete()
+                .uri(shoppingCartItemUri, customerId)
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody()
+                .isEmpty();
+    }
+
+    /**
+     * Integration test to delete all shopping cart items that with an invalid customer ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(6)
+    void testDeleteShoppingCartItemsByInvalidId() {
+        // Act
+        client.delete()
+                .uri(shoppingCartItemUri, 2)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("Customer ID 2 was not found.");
     }
 }
