@@ -5,7 +5,6 @@ package ca.mcgill.ecse321.fashionstore.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import java.util.*;
 
@@ -23,7 +22,7 @@ public class Customer extends Account {
     private int numLoyaltyPoints;
 
     // Customer Associations
-    @ManyToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ShoppingCartItem> shoppingCartItems;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
