@@ -46,11 +46,11 @@ class ShoppingCartItemIntegrationTests {
     private static final int VALID_QUANTITY_2 = 20;
 
     private int customerId;
-    private int clothingId1;
-    private int clothingId2;
-    private int itemId1;
-    private int itemId2;
-    private int itemId3;
+    private int clothingItemId1;
+    private int clothingItemId2;
+    private int shoppingCartItemId1;
+    private int shoppingCartItemId2;
+    private int shoppingCartItemId3;
 
     @Autowired private RestTestClient client;
 
@@ -63,35 +63,45 @@ class ShoppingCartItemIntegrationTests {
     @BeforeAll
     public void setup() {
         // Arrange
-        ClothingProduct prod = new ClothingProduct();
-        prod = clothingProductRepository.save(prod);
+        ClothingProduct clothingProduct = createClothingProduct();
 
-        ClothingItem item1 = new ClothingItem();
-        item1.setClothingProduct(prod);
-        item1 = clothingItemRepository.save(item1);
-        clothingId1 = item1.getId();
+        ClothingItem clothingItem1 = createClothingItem(clothingProduct);
+        clothingItemId1 = clothingItem1.getId();
 
-        ClothingItem item2 = new ClothingItem();
-        item2.setClothingProduct(prod);
-        item2 = clothingItemRepository.save(item2);
-        clothingId2 = item2.getId();
+        ClothingItem clothingItem2 = createClothingItem(clothingProduct);
+        clothingItemId2 = clothingItem2.getId();
 
-        setup2(item1);
-    }
-
-    /** Setup method for ShoppingCartItem integration tests. */
-    void setup2(ClothingItem item1) {
-        // Arrange
-        Customer customer = new Customer();
-        customer = customerRepository.save(customer);
+        Customer customer = createCustomer();
         customerId = customer.getId();
 
-        ShoppingCartItem cartItem1 = new ShoppingCartItem();
-        cartItem1.setClothingItem(item1);
-        cartItem1.setQuantity(VALID_QUANTITY_1);
-        cartItem1.setCustomer(customer);
-        cartItem1 = shoppingCartItemRepository.save(cartItem1);
-        itemId1 = cartItem1.getId();
+        ShoppingCartItem shoppingCartItem =
+                createShoppingCartItem(VALID_QUANTITY_1, clothingItem1, customer);
+        shoppingCartItemId1 = shoppingCartItem.getId();
+    }
+
+    private ClothingProduct createClothingProduct() {
+        ClothingProduct clothingProduct = new ClothingProduct();
+        return clothingProductRepository.save(clothingProduct);
+    }
+
+    private ClothingItem createClothingItem(ClothingProduct clothingProduct) {
+        ClothingItem clothingItem = new ClothingItem();
+        clothingItem.setClothingProduct(clothingProduct);
+        return clothingItemRepository.save(clothingItem);
+    }
+
+    private Customer createCustomer() {
+        Customer customer = new Customer();
+        return customerRepository.save(customer);
+    }
+
+    private ShoppingCartItem createShoppingCartItem(
+            int quantity, ClothingItem clothingItem, Customer customer) {
+        ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
+        shoppingCartItem.setQuantity(quantity);
+        shoppingCartItem.setClothingItem(clothingItem);
+        shoppingCartItem.setCustomer(customer);
+        return shoppingCartItemRepository.save(shoppingCartItem);
     }
 
     /** Cleanup method for ShoppingCartItem integration tests. */
@@ -117,9 +127,9 @@ class ShoppingCartItemIntegrationTests {
         assertNotNull(response, responseNullError);
         assertEquals(response.size(), 2, "Response body has incorrect number of DTO objects.");
         assertGetShoppingCartItemsByValidId2(
-                response.get(0), itemId1, VALID_QUANTITY_1, clothingId1);
+                response.get(0), shoppingCartItemId1, VALID_QUANTITY_1, clothingItemId1);
         assertGetShoppingCartItemsByValidId2(
-                response.get(1), itemId2, VALID_QUANTITY_2, clothingId2);
+                response.get(1), shoppingCartItemId2, VALID_QUANTITY_2, clothingItemId2);
     }
 
     private void assertGetShoppingCartItemsByValidId2(
@@ -152,7 +162,7 @@ class ShoppingCartItemIntegrationTests {
     void testAddShoppingCartItemsByValidId() {
         // Arrange
         ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_2);
+                new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_2);
 
         // Act
         ShoppingCartItemResponseDto response =
@@ -169,7 +179,7 @@ class ShoppingCartItemIntegrationTests {
         // Assert
         assertNotNull(response, responseNullError);
         assertTrue(response.id() > 0, "The ID should be a positive int.");
-        this.itemId2 = response.id();
+        this.shoppingCartItemId2 = response.id();
         assertBodyResponse(body, response);
     }
 
@@ -208,12 +218,12 @@ class ShoppingCartItemIntegrationTests {
     void testUpdateShoppingCartItemsByValidId() {
         // Arrange
         ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_1);
+                new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_1);
 
         // Act
         ShoppingCartItemResponseDto response =
                 client.put()
-                        .uri(shoppingCartItemsUri, customerId, itemId2)
+                        .uri(shoppingCartItemsUri, customerId, shoppingCartItemId2)
                         .body(body)
                         .exchange()
                         .expectStatus()
@@ -225,7 +235,7 @@ class ShoppingCartItemIntegrationTests {
         // Assert
         assertNotNull(response, responseNullError);
         assertTrue(response.id() > 0, "The ID should be a positive int.");
-        assertEquals(response.id(), itemId2, "The ID is not the same.");
+        assertEquals(response.id(), shoppingCartItemId2, "The ID is not the same.");
         assertBodyResponse(body, response);
     }
 
@@ -239,7 +249,7 @@ class ShoppingCartItemIntegrationTests {
     void testAddShoppingCartItemsByValidId2() {
         // Arrange
         ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_2);
+                new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_2);
 
         // Act
         ShoppingCartItemResponseDto response =
@@ -256,7 +266,7 @@ class ShoppingCartItemIntegrationTests {
         // Assert
         assertNotNull(response, responseNullError);
         assertTrue(response.id() > 0, "The ID should be a positive int.");
-        this.itemId3 = response.id();
+        this.shoppingCartItemId3 = response.id();
         assertBodyResponse(body, response);
     }
 
@@ -270,7 +280,7 @@ class ShoppingCartItemIntegrationTests {
     void testDeleteShoppingCartItemByValidId() {
         // Act
         client.delete()
-                .uri(shoppingCartItemsUri, customerId, itemId3)
+                .uri(shoppingCartItemsUri, customerId, shoppingCartItemId3)
                 .exchange()
                 .expectStatus()
                 .isNoContent()
@@ -279,7 +289,7 @@ class ShoppingCartItemIntegrationTests {
 
         // Assert
         assertFalse(
-                shoppingCartItemRepository.existsById(itemId3),
+                shoppingCartItemRepository.existsById(shoppingCartItemId3),
                 "Item 3 was not deleted from the database.");
     }
 
@@ -302,10 +312,10 @@ class ShoppingCartItemIntegrationTests {
 
         // Assert
         assertFalse(
-                shoppingCartItemRepository.existsById(itemId1),
+                shoppingCartItemRepository.existsById(shoppingCartItemId1),
                 "Item 1 was not deleted from the database.");
         assertFalse(
-                shoppingCartItemRepository.existsById(itemId2),
+                shoppingCartItemRepository.existsById(shoppingCartItemId2),
                 "Item 2 was not deleted from the database.");
         assertEquals(
                 0,
@@ -368,7 +378,7 @@ class ShoppingCartItemIntegrationTests {
     void testAddShoppingCartItemsByInvalidId() {
         // Act
         ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingId2, VALID_QUANTITY_2);
+                new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_2);
         client.post()
                 .uri(shoppingCartItemUri, 40)
                 .body(body)
@@ -411,16 +421,18 @@ class ShoppingCartItemIntegrationTests {
     void testUpdateShoppingCartItemsByInvalidId() {
         // Act
         ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingId1, VALID_QUANTITY_2);
+                new ShoppingCartItemRequestDto(clothingItemId1, VALID_QUANTITY_2);
         client.put()
-                .uri(shoppingCartItemsUri, customerId, itemId1)
+                .uri(shoppingCartItemsUri, customerId, shoppingCartItemId1)
                 .body(body)
                 .exchange()
                 .expectStatus()
                 .isNotFound()
                 .expectBody()
                 .jsonPath(errorLoc)
-                .isEqualTo(String.format("ShoppingCartItem ID %d was not found.", itemId1));
+                .isEqualTo(
+                        String.format(
+                                "ShoppingCartItem ID %d was not found.", shoppingCartItemId1));
     }
 
     /**
@@ -433,7 +445,7 @@ class ShoppingCartItemIntegrationTests {
     void testDeleteShoppingCartItemByValidId2() {
         // Act
         client.delete()
-                .uri(shoppingCartItemsUri, customerId, itemId1)
+                .uri(shoppingCartItemsUri, customerId, shoppingCartItemId1)
                 .exchange()
                 .expectStatus()
                 .isNoContent()
