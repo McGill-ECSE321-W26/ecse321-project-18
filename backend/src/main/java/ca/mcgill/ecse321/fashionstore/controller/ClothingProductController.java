@@ -107,6 +107,7 @@ public class ClothingProductController {
      * @author Qiuyu Huang (redacted24)
      */
     @GetMapping("/fashionstore/clothingproduct/{productId}")
+    @ResponseStatus(HttpStatus.OK)
     public ClothingProductResponseDto getClothingProduct(@PathVariable int productId) {
         ClothingProduct clothingProduct = clothingProductService.getClothingProduct(productId);
         return new ClothingProductResponseDto(clothingProduct);
