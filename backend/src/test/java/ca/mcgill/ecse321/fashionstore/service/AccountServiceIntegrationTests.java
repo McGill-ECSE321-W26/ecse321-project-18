@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.fashionstore.controller.AccountController;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
@@ -13,10 +15,8 @@ import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 /** Account Service class integration tests. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
 class AccountServiceIntegrationTests {
@@ -33,6 +32,10 @@ class AccountServiceIntegrationTests {
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private OwnerRepository ownerRepository;
     @Autowired private CustomerRepository customerRepository;
+
+    private Owner owner;
+    private Employee employee;
+    private Customer customer;
 
     // URI
     private static final String accountLoginUri = "/fashionstore/account/login";
@@ -43,15 +46,21 @@ class AccountServiceIntegrationTests {
     /** Setup for accountService integration tests. */
     @BeforeAll
     void setup() {
+        // initialize
         Owner owner = new Owner();
         owner.setEmail("owner@fashionstore.com");
         owner.setPassword("owner123");
+        this.owner = owner;
         Employee employee = new Employee();
         employee.setEmail("employee@fashionstore.com");
         employee.setPassword("employee123");
+        this.employee = employee;
         Customer customer = new Customer();
         customer.setEmail("customer@fashionstore.com");
         customer.setPassword("customer123");
+        this.customer = customer;
+
+        // Save to repository
         ownerRepository.save(owner);
         employeeRepository.save(employee);
         customerRepository.save(customer);
@@ -65,9 +74,13 @@ class AccountServiceIntegrationTests {
         customerRepository.deleteAll();
     }
 
-    /** Test successful owner account login */
+    /**
+     * Test successful owner account login.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
     @Test
-    void accountLogin() {
+    void accountOwnerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
                 new AccountRequestDto("owner@fashionstore.com", "owner123");
@@ -79,12 +92,158 @@ class AccountServiceIntegrationTests {
                         .body(accountRequestDto)
                         .exchange()
                         .expectStatus()
-                        .isCreated()
+                        .isOk()
                         .expectBody(AccountResponseDto.class)
                         .returnResult()
                         .getResponseBody();
 
         // Asserts
         assertNotNull(response, responseNullError);
+        assertEquals(response.email(), owner.getEmail(), "Owner login response has wrong email.");
+        assertEquals(response.id(), owner.getId(), "Owner login response has wrong ID.");
+    }
+
+    /**
+     * Test successful employee account login.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void accountEmployeeLogin() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("employee@fashionstore.com", "employee123");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountLoginUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Asserts
+        assertNotNull(response, responseNullError);
+        assertEquals(
+                response.email(), employee.getEmail(), "Employee login response has wrong email.");
+        assertEquals(response.id(), employee.getId(), "Employee login response has wrong ID.");
+    }
+
+    /**
+     * Test successful customer account login.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void accountCustomerLogin() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("customer@fashionstore.com", "customer123");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountLoginUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Asserts
+        assertNotNull(response, responseNullError);
+        assertEquals(
+                response.email(), customer.getEmail(), "Customer login response has wrong email.");
+        assertEquals(response.id(), customer.getId(), "Customer login response has wrong ID.");
+    }
+
+    /**
+     * Test unsuccessful owner account login.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void failAccountOwnerLogin() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("owner@fashionstore.com", "owner14354");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountLoginUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isBadRequest()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Asserts
+        assertNotNull(response, responseNullError);
+        assertNull(response.email(), "Failed owner login should have null email in response.");
+    }
+
+    /**
+     * Test unsuccessful customer account login.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void failAccountCustomerLogin() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("customer@fashionstore.com", "customer124");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountLoginUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isBadRequest()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Asserts
+        assertNotNull(response, responseNullError);
+        assertNull(response.email(), "Failed customer login should have null email in response.");
+    }
+
+    /**
+     * Test unsuccessful employee account login.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void failAccountEmployeeLogin() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("employee@fashionstore.com", "employee1234");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountLoginUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isBadRequest()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Asserts
+        assertNotNull(response, responseNullError);
+        assertNull(response.email(), "Failed employee login should have null email in response.");
     }
 }
