@@ -1,4 +1,4 @@
-package ca.mcgill.ecse321.fashionstore.service;
+package ca.mcgill.ecse321.fashionstore.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
