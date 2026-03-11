@@ -33,8 +33,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    // testImplementation("org.springframework.boot:spring-boot-resttestclient")
-    // testImplementation("org.springframework.boot:spring-boot-restclient")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.14.0")
 }

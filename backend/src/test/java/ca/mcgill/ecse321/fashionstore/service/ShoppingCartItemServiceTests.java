@@ -21,6 +21,7 @@ import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -42,47 +43,66 @@ class ShoppingCartItemServiceTests {
 
     @InjectMocks ShoppingCartItemService shoppingCartItemService;
 
-    private static final int VALID_CUSTOMER_ID = 11;
-    private static final int VALID_CLOTHING_ID_1 = 5;
-    private static final int VALID_CLOTHING_ID_2 = 7;
-    private static final int VALID_PRODUCT_ID = 50;
-    private static final int VALID_ITEM_ID_1 = 3;
-    private static final int VALID_ITEM_ID_2 = 4;
-    private static final int VALID_QUANTITY_1 = 10;
-    private static final int VALID_QUANTITY_2 = 20;
+    private static final int CLOTHING_ITEM_ID_1 = 5;
+    private static final int CLOTHING_ITEM_ID_2 = 7;
+    private static final int PRODUCT_ID = 50;
+    private static final int SHOPPING_CART_ITEM_ID_1 = 3;
+    private static final int SHOPPING_CART_ITEM_ID_2 = 4;
+    private static final int QUANTITY_1 = 10;
+    private static final int QUANTITY_2 = 20;
+    private static final int CUSTOMER_ID = 11;
 
-    /**
-     * Helper for service layer test for getting all of a customer's shopping cart items.
-     *
-     * @author Cyrus Fung (cfung89)
-     */
-    private List<ShoppingCartItem> getShoppingCartItemsSetup() {
+    private ClothingProduct clothingProduct;
+    private ClothingItem clothingItem1;
+    private ClothingItem clothingItem2;
+    private ShoppingCartItem shoppingCartItem1;
+    private ShoppingCartItem shoppingCartItem2;
+    private Customer customer;
+
+    /** Setup function for ShoppingCartItem service layer tests. */
+    @BeforeEach
+    void setup() {
         // Arrange
-        ClothingItem item1 = new ClothingItem();
-        item1.setId(VALID_CLOTHING_ID_1);
+        clothingProduct = createClothingProduct(PRODUCT_ID);
+        clothingItem1 = createClothingItem(CLOTHING_ITEM_ID_1, clothingProduct);
+        clothingItem2 = createClothingItem(CLOTHING_ITEM_ID_2, clothingProduct);
+        shoppingCartItem1 =
+                createShoppingCartItem(SHOPPING_CART_ITEM_ID_1, QUANTITY_1, clothingItem1);
+        shoppingCartItem2 =
+                createShoppingCartItem(SHOPPING_CART_ITEM_ID_2, QUANTITY_2, clothingItem2);
+        List<ShoppingCartItem> shoppingCartItems = List.of(shoppingCartItem1, shoppingCartItem2);
+        customer = createCustomer(CUSTOMER_ID, shoppingCartItems);
+    }
 
-        ClothingItem item2 = new ClothingItem();
-        item2.setId(VALID_CLOTHING_ID_2);
+    private ClothingProduct createClothingProduct(int id) {
+        ClothingProduct newProduct = new ClothingProduct();
+        newProduct.setId(id);
+        return newProduct;
+    }
 
-        ShoppingCartItem cartItem1 = new ShoppingCartItem();
-        cartItem1.setId(VALID_ITEM_ID_1);
-        cartItem1.setClothingItem(item1);
-        cartItem1.setQuantity(VALID_QUANTITY_1);
+    private ClothingItem createClothingItem(int id, ClothingProduct product) {
+        ClothingItem newItem = new ClothingItem();
+        newItem.setId(id);
+        newItem.setClothingProduct(product);
+        return newItem;
+    }
 
-        ShoppingCartItem cartItem2 = new ShoppingCartItem();
-        cartItem2.setId(VALID_ITEM_ID_2);
-        cartItem2.setClothingItem(item2);
-        cartItem2.setQuantity(VALID_QUANTITY_2);
+    private ShoppingCartItem createShoppingCartItem(
+            int id, int quantity, ClothingItem clothingItem) {
+        ShoppingCartItem newItem = new ShoppingCartItem();
+        newItem.setId(id);
+        newItem.setQuantity(quantity);
+        newItem.setClothingItem(clothingItem);
+        return newItem;
+    }
 
-        Customer customer = new Customer();
-        customer.setId(VALID_CUSTOMER_ID);
-        customer.addShoppingCartItem(cartItem1);
-        customer.addShoppingCartItem(cartItem2);
-
-        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.of(customer));
-
-        // Act
-        return shoppingCartItemService.getShoppingCartItems(VALID_CUSTOMER_ID);
+    private Customer createCustomer(int id, List<ShoppingCartItem> shoppingCartItems) {
+        Customer newCustomer = new Customer();
+        newCustomer.setId(id);
+        for (ShoppingCartItem item : shoppingCartItems) {
+            newCustomer.addShoppingCartItem(item);
+        }
+        return newCustomer;
     }
 
     /**
@@ -92,16 +112,19 @@ class ShoppingCartItemServiceTests {
      */
     @Test
     void testGetShoppingCartItemsByValidId() {
-        List<ShoppingCartItem> result = getShoppingCartItemsSetup();
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
+
+        // Act
+        List<ShoppingCartItem> result = shoppingCartItemService.getShoppingCartItems(CUSTOMER_ID);
 
         // Assert
         assertNotNull(result, "List of shopping cart items is null.");
         assertEquals(2, result.size(), "List of shopping cart items does not have length 2.");
         assertGetShoppingCartItems(
-                result.get(0), VALID_ITEM_ID_1, VALID_QUANTITY_1, VALID_CLOTHING_ID_1);
+                result.get(0), SHOPPING_CART_ITEM_ID_1, QUANTITY_1, CLOTHING_ITEM_ID_1);
         assertGetShoppingCartItems(
-                result.get(1), VALID_ITEM_ID_2, VALID_QUANTITY_2, VALID_CLOTHING_ID_2);
-        verify(customerRepository, times(1)).findById(VALID_CUSTOMER_ID);
+                result.get(1), SHOPPING_CART_ITEM_ID_2, QUANTITY_2, CLOTHING_ITEM_ID_2);
+        verify(customerRepository, times(1)).findById(CUSTOMER_ID);
     }
 
     /**
@@ -122,7 +145,7 @@ class ShoppingCartItemServiceTests {
                 item.getClothingItem().getId(),
                 "Shopping cart item does not have correct clothing item ID.");
         assertEquals(
-                VALID_CUSTOMER_ID,
+                CUSTOMER_ID,
                 item.getCustomer().getId(),
                 "Shopping cart item does not have correct customer ID.");
     }
@@ -134,20 +157,20 @@ class ShoppingCartItemServiceTests {
      */
     @Test
     void testGetShoppingCartItemsByInvalidId() {
-        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.empty());
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.empty());
 
         // Assert
         FashionStoreException e =
                 assertThrows(
                         FashionStoreException.class,
-                        () -> shoppingCartItemService.getShoppingCartItems(VALID_CUSTOMER_ID));
+                        () -> shoppingCartItemService.getShoppingCartItems(CUSTOMER_ID));
 
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 e.getStatus(),
                 "HTTP status is not NOT_FOUND after invalid customer ID request.");
         assertEquals(
-                String.format("Customer ID %d was not found.", VALID_CUSTOMER_ID),
+                String.format("Customer ID %d was not found.", CUSTOMER_ID),
                 e.getMessage(),
                 "HTTP message is not correct after invalid customer ID request.");
     }
@@ -157,31 +180,21 @@ class ShoppingCartItemServiceTests {
      *
      * @author Cyrus Fung (cfung89)
      */
-    private ShoppingCartItem addShoppingCartItemSetup() {
+    private ShoppingCartItemResponseDto addShoppingCartItemSetup() {
         // Arrange
-        Customer newCustomer = new Customer();
-        newCustomer.setId(VALID_CUSTOMER_ID);
-        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.of(newCustomer));
-
-        ClothingProduct newProduct = new ClothingProduct();
-        newProduct.setId(VALID_PRODUCT_ID);
-
-        ClothingItem newClothingItem = new ClothingItem();
-        newClothingItem.setId(VALID_CLOTHING_ID_2);
-        newClothingItem.setClothingProduct(newProduct);
-        when(clothingItemRepository.findById(VALID_CLOTHING_ID_2))
-                .thenReturn(Optional.of(newClothingItem));
-
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
+        when(clothingItemRepository.findById(CLOTHING_ITEM_ID_2))
+                .thenReturn(Optional.of(clothingItem2));
         when(shoppingCartItemRepository.save(any(ShoppingCartItem.class)))
                 .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
 
         // Act
         ShoppingCartItemRequestDto createdShoppingCartItem =
-                new ShoppingCartItemRequestDto(VALID_CLOTHING_ID_2, VALID_QUANTITY_1);
+                new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_2, QUANTITY_2);
         ShoppingCartItem shoppingCartItem =
-                shoppingCartItemService.addShoppingCartItem(
-                        VALID_CUSTOMER_ID, createdShoppingCartItem);
-        return shoppingCartItem;
+                shoppingCartItemService.addShoppingCartItem(CUSTOMER_ID, createdShoppingCartItem);
+
+        return new ShoppingCartItemResponseDto(shoppingCartItem);
     }
 
     /**
@@ -192,26 +205,34 @@ class ShoppingCartItemServiceTests {
     @Test
     void testAddShoppingCartItem() {
         // Arrange and act
-        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
-                new ShoppingCartItemResponseDto(addShoppingCartItemSetup());
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto = addShoppingCartItemSetup();
 
         // Assert
         assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
         assertEquals(
-                VALID_QUANTITY_1,
+                QUANTITY_2,
                 shoppingCartItemResponseDto.quantity(),
                 "ShoppingCartItemResponseDto does not contain correct quantity.");
         assertEquals(
-                VALID_CUSTOMER_ID,
+                CUSTOMER_ID,
                 shoppingCartItemResponseDto.customerId(),
                 "ShoppingCartItemResponseDto does not contain correct Customer ID.");
         assertEquals(
-                VALID_CLOTHING_ID_2,
+                CLOTHING_ITEM_ID_2,
                 shoppingCartItemResponseDto.clothingItem().id(),
                 "ShoppingCartItemResponseDto does not contain correct ClothingItem ID.");
+        verifyAddShoppingCartItem();
+    }
 
+    private void verifyAddShoppingCartItem() {
         verify(shoppingCartItemRepository, times(1))
-                .save(argThat((ShoppingCartItem item) -> VALID_QUANTITY_1 == item.getQuantity()));
+                .save(
+                        argThat(
+                                (ShoppingCartItem item) ->
+                                        item.getQuantity() == QUANTITY_2
+                                                && item.getCustomer().getId() == CUSTOMER_ID
+                                                && item.getClothingItem().getId()
+                                                        == CLOTHING_ITEM_ID_2));
     }
 
     /**
@@ -219,46 +240,21 @@ class ShoppingCartItemServiceTests {
      *
      * @author Cyrus Fung (cfung89)
      */
-    private ShoppingCartItem updateShoppingCartItemSetup() {
+    private ShoppingCartItemResponseDto updateShoppingCartItemSetup() {
         // Arrange
-        Customer newCustomer = new Customer();
-        newCustomer.setId(VALID_CUSTOMER_ID);
-
-        ClothingProduct newProduct = new ClothingProduct();
-        newProduct.setId(VALID_PRODUCT_ID);
-
-        ClothingItem newClothingItem = new ClothingItem();
-        newClothingItem.setId(VALID_CLOTHING_ID_1);
-        newClothingItem.setClothingProduct(newProduct);
-
-        ShoppingCartItem newShoppingCartItem = new ShoppingCartItem();
-        newShoppingCartItem.setId(VALID_ITEM_ID_1);
-        newShoppingCartItem.setQuantity(VALID_QUANTITY_1);
-        newShoppingCartItem.setCustomer(newCustomer);
-        newShoppingCartItem.setClothingItem(newClothingItem);
-
-        when(shoppingCartItemRepository.findById(VALID_ITEM_ID_1))
-                .thenReturn(Optional.of(newShoppingCartItem));
-
+        when(shoppingCartItemRepository.findById(SHOPPING_CART_ITEM_ID_1))
+                .thenReturn(Optional.of(shoppingCartItem1));
         when(shoppingCartItemRepository.save(any(ShoppingCartItem.class)))
                 .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
 
-        return updateShoppingCartItemAct();
-    }
-
-    /**
-     * Helper for service layer test for updating a shopping cart item.
-     *
-     * @author Cyrus Fung (cfung89)
-     */
-    private ShoppingCartItem updateShoppingCartItemAct() {
         // Act
         ShoppingCartItemRequestDto updatedShoppingCartItem =
-                new ShoppingCartItemRequestDto(VALID_CLOTHING_ID_1, VALID_QUANTITY_2);
+                new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_1, QUANTITY_2);
         ShoppingCartItem shoppingCartItem =
                 shoppingCartItemService.updateShoppingCartItem(
-                        VALID_ITEM_ID_1, updatedShoppingCartItem);
-        return shoppingCartItem;
+                        SHOPPING_CART_ITEM_ID_1, updatedShoppingCartItem);
+
+        return new ShoppingCartItemResponseDto(shoppingCartItem);
     }
 
     /**
@@ -269,26 +265,34 @@ class ShoppingCartItemServiceTests {
     @Test
     void testUpdateShoppingCartItemByValidId() {
         // Arrange and act
-        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
-                new ShoppingCartItemResponseDto(updateShoppingCartItemSetup());
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto = updateShoppingCartItemSetup();
 
         // Assert
         assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
         assertEquals(
-                VALID_QUANTITY_2,
+                QUANTITY_2,
                 shoppingCartItemResponseDto.quantity(),
                 "ShoppingCartItemResponseDto did not update the quantity correctly.");
         assertEquals(
-                VALID_CUSTOMER_ID,
+                CUSTOMER_ID,
                 shoppingCartItemResponseDto.customerId(),
                 "ShoppingCartItemResponseDto does not contain correct Customer ID.");
         assertEquals(
-                VALID_CLOTHING_ID_1,
+                CLOTHING_ITEM_ID_1,
                 shoppingCartItemResponseDto.clothingItem().id(),
                 "ShoppingCartItemResponseDto does not contain correct ClothingItem ID.");
+        verifyUpdateShoppingCartItemByValidId();
+    }
 
+    private void verifyUpdateShoppingCartItemByValidId() {
         verify(shoppingCartItemRepository, times(1))
-                .save(argThat((ShoppingCartItem item) -> VALID_QUANTITY_2 == item.getQuantity()));
+                .save(
+                        argThat(
+                                (ShoppingCartItem item) ->
+                                        item.getQuantity() == QUANTITY_2
+                                                && item.getCustomer().getId() == CUSTOMER_ID
+                                                && item.getClothingItem().getId()
+                                                        == CLOTHING_ITEM_ID_1));
     }
 
     /**
@@ -298,10 +302,11 @@ class ShoppingCartItemServiceTests {
      */
     @Test
     void testUpdateShoppingCartItemByInvalidId() {
-        when(shoppingCartItemRepository.findById(VALID_ITEM_ID_1)).thenReturn(Optional.empty());
+        when(shoppingCartItemRepository.findById(SHOPPING_CART_ITEM_ID_1))
+                .thenReturn(Optional.empty());
 
         ShoppingCartItemRequestDto shoppingCartItemRequestDto =
-                new ShoppingCartItemRequestDto(VALID_CLOTHING_ID_1, VALID_QUANTITY_1);
+                new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_1, QUANTITY_1);
 
         // Assert
         FashionStoreException e =
@@ -309,14 +314,14 @@ class ShoppingCartItemServiceTests {
                         FashionStoreException.class,
                         () ->
                                 shoppingCartItemService.updateShoppingCartItem(
-                                        VALID_ITEM_ID_1, shoppingCartItemRequestDto));
+                                        SHOPPING_CART_ITEM_ID_1, shoppingCartItemRequestDto));
 
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 e.getStatus(),
                 "HTTP status is not NOT_FOUND after invalid shopping cart item ID request.");
         assertEquals(
-                String.format("ShoppingCartItem ID %d was not found.", VALID_ITEM_ID_1),
+                String.format("ShoppingCartItem ID %d was not found.", SHOPPING_CART_ITEM_ID_1),
                 e.getMessage(),
                 "HTTP message is not correct after invalid shopping cart item ID request.");
     }
@@ -328,8 +333,8 @@ class ShoppingCartItemServiceTests {
      */
     @Test
     void testDeleteShoppingCartItem() {
-        shoppingCartItemService.deleteShoppingCartItem(VALID_ITEM_ID_1);
-        verify(shoppingCartItemRepository, times(1)).deleteById(VALID_ITEM_ID_1);
+        shoppingCartItemService.deleteShoppingCartItem(SHOPPING_CART_ITEM_ID_1);
+        verify(shoppingCartItemRepository, times(1)).deleteById(SHOPPING_CART_ITEM_ID_1);
     }
 
     /**
@@ -340,22 +345,10 @@ class ShoppingCartItemServiceTests {
     @Test
     void testDeleteShoppingCartItemsByValidId() {
         // Arrange
-        Customer newCustomer = new Customer();
-        newCustomer.setId(VALID_CUSTOMER_ID);
-
-        ShoppingCartItem item1 = new ShoppingCartItem();
-        item1.setId(VALID_ITEM_ID_1);
-
-        ShoppingCartItem item2 = new ShoppingCartItem();
-        item2.setId(VALID_ITEM_ID_2);
-
-        newCustomer.addShoppingCartItem(item1);
-        newCustomer.addShoppingCartItem(item2);
-
-        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.of(newCustomer));
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
 
         // Act
-        shoppingCartItemService.deleteShoppingCartItems(VALID_CUSTOMER_ID);
+        shoppingCartItemService.deleteShoppingCartItems(CUSTOMER_ID);
 
         // Verify
         verify(shoppingCartItemRepository, times(2)).delete(any(ShoppingCartItem.class));
@@ -368,20 +361,20 @@ class ShoppingCartItemServiceTests {
      */
     @Test
     void testDeleteShoppingCartItemsByInvalidId() {
-        when(customerRepository.findById(VALID_CUSTOMER_ID)).thenReturn(Optional.empty());
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.empty());
 
         // Assert
         FashionStoreException e =
                 assertThrows(
                         FashionStoreException.class,
-                        () -> shoppingCartItemService.deleteShoppingCartItems(VALID_CUSTOMER_ID));
+                        () -> shoppingCartItemService.deleteShoppingCartItems(CUSTOMER_ID));
 
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 e.getStatus(),
                 "HTTP status is not NOT_FOUND after invalid customer ID request.");
         assertEquals(
-                String.format("Customer ID %d was not found.", VALID_CUSTOMER_ID),
+                String.format("Customer ID %d was not found.", CUSTOMER_ID),
                 e.getMessage(),
                 "HTTP message is not correct after invalid customer ID request.");
     }
