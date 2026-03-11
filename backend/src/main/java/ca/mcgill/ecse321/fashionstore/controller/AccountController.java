@@ -37,7 +37,7 @@ public class AccountController {
      * @author Qiuyu Huang (redacted24)
      */
     @PostMapping("/fashionstore/account/login")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public AccountResponseDto accountLogin(@RequestBody AccountRequestDto accountRequestDto) {
         // Create a DTO from the account object returned by the service.
         Account account = accountService.accountLoginCheck(accountRequestDto);

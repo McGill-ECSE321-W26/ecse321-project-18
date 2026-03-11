@@ -1,8 +1,10 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import ca.mcgill.ecse321.fashionstore.controller.AccountController;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
@@ -15,6 +17,7 @@ import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -23,8 +26,10 @@ import org.springframework.boot.test.context.SpringBootTest;
  *
  * @author Qiuyu Huang (redacted24)
  */
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AccountServiceTests {
+    @Autowired private AccountController accountController;
     @Autowired private AccountService accountService;
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private OwnerRepository ownerRepository;
@@ -33,6 +38,22 @@ class AccountServiceTests {
     private Owner owner;
     private Employee employee;
     private Customer customer;
+
+    // Error messages
+    private static final String badEmailError =
+            """
+            Response wrong email.%n\
+            Expected: %s%n\
+            Actual: %s%n\
+            """;
+    private static final String wrongLoginFailureErrorMsg =
+            """
+            Login failure error message is wrong.%n\
+            Current: %s%n\
+            Should be: %s%n\
+            """;
+    private static final String badCredentialsLoginSuccessErrorMsg =
+            "Login passed with wrong credentials.";
 
     @BeforeEach
     void loadDatabase() {
@@ -138,5 +159,135 @@ class AccountServiceTests {
                 AccountResponseDto.AccountType.CUSTOMER,
                 accountService.findAccountType(id),
                 "Account type retrieval is wrong for customer.");
+    }
+
+    /**
+     * Test employee login fail due to password. Email is correct.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void badEmployeePasswordAccountLogin() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("employee@fashionstore.com", "employee1233");
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountController.accountLogin(accountRequestDto),
+                        badCredentialsLoginSuccessErrorMsg);
+        assertEquals(
+                AccountService.badPasswordErrorMsg,
+                e.getMessage(),
+                String.format(
+                        wrongLoginFailureErrorMsg,
+                        e.getMessage(),
+                        AccountService.badPasswordErrorMsg));
+    }
+
+    /**
+     * Test employee login fail due to email. Password is correct.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void badEmployeeEmailAccountLogin() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("employe@fashionstore.com", "employee123");
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountController.accountLogin(accountRequestDto),
+                        badCredentialsLoginSuccessErrorMsg);
+        assertEquals(
+                AccountService.nonexistentEmailErrorMsg,
+                e.getMessage(),
+                String.format(
+                        wrongLoginFailureErrorMsg,
+                        e.getMessage(),
+                        AccountService.nonexistentEmailErrorMsg));
+    }
+
+    /**
+     * Test employee login success.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void successEmployeeAccountLogin() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto(employee.getEmail(), employee.getPassword());
+        AccountResponseDto response =
+                assertDoesNotThrow(
+                        () -> accountController.accountLogin(accountRequestDto),
+                        "Login with correct credentials does not pass.");
+        assertEquals(
+                employee.getEmail(),
+                response.email(),
+                String.format(badEmailError, employee.getEmail(), response.email()));
+    }
+
+    /**
+     * Test customer login fail due to password. Email is correct.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void badCustomerPasswordAccountLogin() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("customer@fashionstore.com", "customer1233");
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountController.accountLogin(accountRequestDto),
+                        badCredentialsLoginSuccessErrorMsg);
+        assertEquals(
+                AccountService.badPasswordErrorMsg,
+                e.getMessage(),
+                String.format(
+                        wrongLoginFailureErrorMsg,
+                        e.getMessage(),
+                        AccountService.badPasswordErrorMsg));
+    }
+
+    /**
+     * Test customer login fail due to email. Password is correct.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void badCustomerEmailAccountLogin() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("employe@fashionstore.com", "customer123");
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountController.accountLogin(accountRequestDto),
+                        badCredentialsLoginSuccessErrorMsg);
+        assertEquals(
+                AccountService.nonexistentEmailErrorMsg,
+                e.getMessage(),
+                String.format(
+                        wrongLoginFailureErrorMsg,
+                        e.getMessage(),
+                        AccountService.nonexistentEmailErrorMsg));
+    }
+
+    /**
+     * Test customer login success.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Test
+    void successCustomerAccountLogin() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto(customer.getEmail(), customer.getPassword());
+        AccountResponseDto response =
+                assertDoesNotThrow(
+                        () -> accountController.accountLogin(accountRequestDto),
+                        "Login with correct credentials does not pass.");
+        assertEquals(
+                customer.getEmail(),
+                response.email(),
+                String.format(badEmailError, customer.getEmail(), response.email()));
     }
 }
