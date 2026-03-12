@@ -142,7 +142,7 @@ class ClothingItemServiceIntegrationTests {
                 .body(dto)
                 .exchange()
                 .expectStatus()
-                .isBadRequest();
+                .isNotFound();
     }
 
     /**
@@ -180,6 +180,6 @@ class ClothingItemServiceIntegrationTests {
                 .uri(clothingItemUri, wrongProductId, itemId)
                 .exchange()
                 .expectStatus()
-                .isBadRequest();
+                .isNotFound();
     }
 }
