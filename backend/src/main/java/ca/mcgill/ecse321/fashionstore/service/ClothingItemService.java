@@ -69,7 +69,7 @@ public class ClothingItemService {
      * @return clothingItemResponseDto updated ClothingItem Response DTO
      * @author Kenneth Wang (KennethWang6)
      */
-    public ClothingItemResponseDto updateClothingItemStock(
+    public ClothingItem updateClothingItemStock(
             int productId, int itemId, @Valid ClothingItemRequestDto clothingItemRequestDto) {
 
         ClothingProduct product =
@@ -91,7 +91,7 @@ public class ClothingItemService {
 
         item = clothingItemRepository.save(item);
 
-        return new ClothingItemResponseDto(item);
+        return item;
     }
 
     /**

@@ -1,9 +1,11 @@
 package ca.mcgill.ecse321.fashionstore.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import ca.mcgill.ecse321.fashionstore.controller.ClothingProductController;
+import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -32,6 +34,8 @@ class ClothingItemServiceIntegrationTests {
     private ClothingItem clothingItem;
     private static final String clothingProductUri = "/fashionstore/clothingproduct/{id}";
     private static final String clothingItemUri =
+            "/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}";
+    private static final String clothingItemUpdateUri =
             "/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}";
 
     /** Setup method for the test suite. */
@@ -88,5 +92,94 @@ class ClothingItemServiceIntegrationTests {
                 "Wrong size for response of GET ClothingItem.");
         assertEquals(
                 response.id(), clothingItem.getId(), "Wrong Id for response of GET ClothingItem.");
+    }
+
+    /**
+     * Test successful PUT to update ClothingItem stock.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void updateClothingItemStockOk() {
+        int productId = clothingProduct.getId();
+        int itemId = clothingItem.getId();
+
+        ClothingItemRequestDto dto =
+                new ClothingItemRequestDto(
+                        clothingItem.getSize(), clothingItem.getColour(), 50, productId);
+
+        ClothingItemResponseDto response =
+                client.put()
+                        .uri(clothingItemUpdateUri, productId, itemId)
+                        .body(dto)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(ClothingItemResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        assertNotNull(response, "Response body for PUT ClothingItem is null.");
+        assertEquals(50, response.numInStock(), "Stock should update to 50.");
+    }
+
+    /**
+     * Test invalid PUT for ClothingItem (wrong productId).
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void updateClothingItemStockInvalid() {
+        int wrongProductId = clothingProduct.getId() + 97;
+        int itemId = clothingItem.getId();
+
+        ClothingItemRequestDto dto =
+                new ClothingItemRequestDto(
+                        clothingItem.getSize(), clothingItem.getColour(), 50, wrongProductId);
+
+        client.put()
+                .uri(clothingItemUpdateUri, wrongProductId, itemId)
+                .body(dto)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+    }
+
+    /**
+     * Test successful DELETE for a ClothingItem.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingItemOk() {
+        int productId = clothingProduct.getId();
+        int itemId = clothingItem.getId();
+
+        client.delete()
+                .uri(clothingItemUri, productId, itemId)
+                .exchange()
+                .expectStatus()
+                .isNoContent();
+
+        assertFalse(
+                clothingItemRepository.existsById(itemId),
+                "ClothingItem should be deleted after DELETE request.");
+    }
+
+    /**
+     * Test invalid DELETE for a ClothingItem (wrong productId).
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingItemInvalid() {
+        int wrongProductId = clothingProduct.getId() + 20;
+        int itemId = clothingItem.getId();
+
+        client.delete()
+                .uri(clothingItemUri, wrongProductId, itemId)
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
     }
 }
