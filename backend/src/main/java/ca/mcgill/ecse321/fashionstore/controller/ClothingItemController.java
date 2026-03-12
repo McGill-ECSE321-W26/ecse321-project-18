@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.controller;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.service.ClothingItemService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,7 @@ public class ClothingItemController {
     @GetMapping("/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}")
     public ClothingItemResponseDto getClothingItem(
             @PathVariable int productId, @PathVariable int itemId) {
-        return clothingItemService.getClothingItem(productId, itemId);
+        ClothingItem clothingItem = clothingItemService.getClothingItem(productId, itemId);
+        return new ClothingItemResponseDto(clothingItem);
     }
 }
