@@ -24,10 +24,15 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Validated
 public class AccountService {
-    private AccountRepository accountRepository;
-    private OwnerRepository ownerRepository;
-    private EmployeeRepository employeeRepository;
-    private CustomerRepository customerRepository;
+    // error messages
+    public static final String badPasswordErrorMsg = "Password is incorrect.";
+    public static final String nonexistentEmailErrorMsg =
+            "An account with that email does not exist.";
+
+    private final AccountRepository accountRepository;
+    private final OwnerRepository ownerRepository;
+    private final EmployeeRepository employeeRepository;
+    private final CustomerRepository customerRepository;
 
     /**
      * AccountService constructor.
@@ -56,13 +61,12 @@ public class AccountService {
      * granted access to the system. Otherwise, user is denied access and an error message is shown.
      *
      * @param requestDto An AccountRequestDto containing email and password.
-     * @return An AccountResponseDTO with the id, email and the account type (employee, customer,
-     *     owner).
+     * @return An Account with the id, email and the account type (employee, customer, owner).
      * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
      *     match
      * @author Qiuyu Huang (redacted24)
      */
-    public AccountResponseDto accountLoginCheck(@Valid AccountRequestDto requestDto) {
+    public Account accountLoginCheck(@Valid AccountRequestDto requestDto) {
         Account account = accountRepository.findAccountByEmail(requestDto.email());
         // Email check
         if (account == null) {
@@ -72,12 +76,10 @@ public class AccountService {
 
         // Password check
         if (!account.getPassword().equals(requestDto.password())) {
-            throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Password is incorrect.");
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, badPasswordErrorMsg);
         }
 
-        // Account found. Check account type.
-        int id = account.getId();
-        return new AccountResponseDto(id, account.getEmail(), findAccountType(id));
+        return account;
     }
 
     /**
@@ -86,6 +88,7 @@ public class AccountService {
      * @param id The id of the account whose type we are trying to retrieve.
      * @return AccountType (enum), depending on what the type of the account is
      *     (manager/owner/customer)
+     * @author Qiuyu Huang (redacted24)
      */
     public AccountType findAccountType(int id) {
         if (ownerRepository.findOwnerById(id) != null) {

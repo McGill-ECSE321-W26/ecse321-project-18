@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.controller;
 
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
+import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.service.AccountService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,12 @@ public class AccountController {
      * @author Qiuyu Huang (redacted24)
      */
     @PostMapping("/fashionstore/account/login")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public AccountResponseDto accountLogin(@RequestBody AccountRequestDto accountRequestDto) {
-        return accountService.accountLoginCheck(accountRequestDto);
+        // Create a DTO from the account object returned by the service.
+        Account account = accountService.accountLoginCheck(accountRequestDto);
+        int id = account.getId();
+        return new AccountResponseDto(id, account.getEmail(), accountService.findAccountType(id));
     }
 
     /**
