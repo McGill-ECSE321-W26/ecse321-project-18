@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
@@ -49,12 +48,9 @@ public class ShoppingCartItemService {
      * @param customerId Customer ID.
      * @author Cyrus Fung
      */
-    public List<ShoppingCartItemResponseDto> getShoppingCartItems(int customerId) {
+    public List<ShoppingCartItem> getShoppingCartItems(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
-        List<ShoppingCartItemResponseDto> shoppingCartItems =
-                ShoppingCartItemResponseDto.shoppingCartItemResponseDtos(
-                        customer.getShoppingCartItems());
-        return shoppingCartItems;
+        return customer.getShoppingCartItems();
     }
 
     /**
@@ -65,7 +61,7 @@ public class ShoppingCartItemService {
      * @author Cyrus Fung
      */
     @Transactional
-    public ShoppingCartItemResponseDto addShoppingCartItem(
+    public ShoppingCartItem addShoppingCartItem(
             int customerId, @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
         ShoppingCartItem newShoppingCartItem = new ShoppingCartItem();
         int clothingItemId = shoppingCartItemRequestDto.clothingItemId();
@@ -75,9 +71,7 @@ public class ShoppingCartItemService {
         newShoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
         newShoppingCartItem.setCustomer(customer);
-        newShoppingCartItem = shoppingCartItemRepository.save(newShoppingCartItem);
-        ShoppingCartItemResponseDto dto = new ShoppingCartItemResponseDto(newShoppingCartItem);
-        return dto;
+        return shoppingCartItemRepository.save(newShoppingCartItem);
     }
 
     /**
@@ -88,14 +82,12 @@ public class ShoppingCartItemService {
      * @author Cyrus Fung
      */
     @Transactional
-    public ShoppingCartItemResponseDto updateShoppingCartItem(
+    public ShoppingCartItem updateShoppingCartItem(
             int id, @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
         ShoppingCartItem shoppingCartItem =
                 Utils.findShoppingCartItemById(shoppingCartItemRepository, id);
         shoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
-        shoppingCartItem = shoppingCartItemRepository.save(shoppingCartItem);
-        ShoppingCartItemResponseDto dto = new ShoppingCartItemResponseDto(shoppingCartItem);
-        return dto;
+        return shoppingCartItemRepository.save(shoppingCartItem);
     }
 
     /**

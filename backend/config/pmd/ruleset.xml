@@ -13,6 +13,12 @@
   <rule ref="category/java/bestpractices.xml">
     <exclude name="SystemPrintln" /> <!-- not forcing logger -->
     <exclude name="UnitTestContainsTooManyAsserts" />
+    <exclude name="UnitTestShouldIncludeAssert" />
+  </rule>
+  <rule ref="category/java/bestpractices.xml/UnitTestShouldIncludeAssert">
+    <properties>
+        <property name="extraAssertMethodNames" value="expectStatus,expectBody,expectHeader" />
+    </properties>
   </rule>
   <rule ref="category/java/documentation.xml/CommentRequired">
     <properties>
@@ -27,5 +33,4 @@
   </rule>
   <rule ref="category/java/performance.xml" />
   <rule ref="category/java/security.xml" />
-
 </ruleset>
