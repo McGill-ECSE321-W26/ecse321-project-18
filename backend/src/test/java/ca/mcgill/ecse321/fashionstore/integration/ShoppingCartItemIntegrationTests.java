@@ -92,6 +92,7 @@ class ShoppingCartItemIntegrationTests {
 
     private Customer createCustomer() {
         Customer customer = new Customer();
+        customer.setEmail("hello@email.com");
         return customerRepository.save(customer);
     }
 
