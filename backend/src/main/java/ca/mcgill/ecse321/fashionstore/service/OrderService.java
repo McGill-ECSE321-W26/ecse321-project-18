@@ -1,12 +1,9 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderStatusRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
-import ca.mcgill.ecse321.fashionstore.model.Customer;
-import ca.mcgill.ecse321.fashionstore.model.Employee;
-import ca.mcgill.ecse321.fashionstore.model.Order;
+import ca.mcgill.ecse321.fashionstore.model.*;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
@@ -56,11 +53,11 @@ public class OrderService {
      *
      * @param orderRequestDto Order Request DTO
      * @param customerId Customer ID of customer to associate order with
-     * @return Order Response DTO
+     * @return new Order instance
      * @author Flavie Qin
      */
     @Transactional
-    public OrderResponseDto createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
+    public Order createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
         // create new order object
@@ -72,24 +69,56 @@ public class OrderService {
         newOrder.setDeliveryAddress(orderRequestDto.deliveryAddress());
         newOrder.setPrice(orderRequestDto.price());
 
-        // save object in database and return response
+        // save new order
         this.orderRepository.save(newOrder);
-        return new OrderResponseDto(newOrder);
+
+        // assign all items in customer cart to the order
+        assignOrderItems(newOrder, customer);
+
+        // save updated object in database and return order
+        this.orderRepository.save(newOrder);
+
+        return newOrder;
+    }
+
+    /**
+     * Helper method to assign all items from a customer's shopping cart to the new order
+     *
+     * @param order Order instance
+     * @param customer Customer instance that is placing the order
+     */
+    private void assignOrderItems(Order order, Customer customer) {
+        // throw error if no items in shopping cart
+        if (customer.getShoppingCartItems().isEmpty()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Cannot create a new order for no items.");
+        }
+
+        // go through customer shopping cart items and add to the order
+        for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
+            ClothingItem clothingItem = shoppingCartItem.getClothingItem();
+            OrderItem newItem = new OrderItem();
+            newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
+            newItem.setClothingItem(clothingItem);
+            newItem.setQuantity(shoppingCartItem.getQuantity());
+            newItem.setOrder(order);
+            order.addItem(newItem);
+        }
     }
 
     /**
      * Service method to get all orders in the system
      *
-     * @return List of Order Response DTOs
+     * @return List of Order
      * @author Flavie Qin
      */
     @Transactional
-    public List<OrderResponseDto> getAllOrders() {
-        List<OrderResponseDto> list = new ArrayList<>();
+    public List<Order> getAllOrders() {
+        List<Order> list = new ArrayList<>();
 
-        // get all orders from database and save in list as response DTOs
+        // get all orders from database and save in list
         for (Order order : orderRepository.findAll()) {
-            list.add(new OrderResponseDto(order));
+            list.add(order);
         }
 
         return list;
@@ -99,21 +128,15 @@ public class OrderService {
      * Service method to get all orders placed by a certain customer
      *
      * @param customerId Customer ID of customer to get orders from
-     * @return List of Order Response DTOs
+     * @return List of Order
      * @author Flavie Qin
      */
     @Transactional
-    public List<OrderResponseDto> getAllOrdersByCustomer(int customerId) {
+    public List<Order> getAllOrdersByCustomer(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
-        List<OrderResponseDto> list = new ArrayList<>();
-
-        // get all orders associated with a certain customer and save in list as response DTOs
-        for (Order order : customer.getPurchasedOrders()) {
-            list.add(new OrderResponseDto(order));
-        }
-
-        return list;
+        // get all orders associated with a certain customer and return in list
+        return new ArrayList<>(customer.getPurchasedOrders());
     }
 
     /**
@@ -121,10 +144,11 @@ public class OrderService {
      *
      * @param orderId Order ID to update.
      * @param orderStatusRequestDto OrderStatusRequestDto (state, employeeId).
+     * @return update Order instance
      * @author Aurore Zhang
      */
     @Transactional
-    public OrderResponseDto updateOrderStatus(
+    public Order updateOrderStatus(
             int orderId, @Valid OrderStatusRequestDto orderStatusRequestDto) {
         Order order = Utils.findOrderById(orderRepository, orderId);
         Employee employee =
@@ -141,8 +165,7 @@ public class OrderService {
         }
         order.setState(newState);
         order = orderRepository.save(order);
-        OrderResponseDto dto = new OrderResponseDto(order);
-        return dto;
+        return order;
     }
 
     /**

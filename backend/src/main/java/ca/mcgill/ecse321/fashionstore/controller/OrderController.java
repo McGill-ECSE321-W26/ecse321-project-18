@@ -3,8 +3,10 @@ package ca.mcgill.ecse321.fashionstore.controller;
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderStatusRequestDto;
+import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.service.OrderService;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,7 +47,8 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponseDto createOrder(
             @RequestBody OrderRequestDto orderRequestDto, @PathVariable int id) {
-        return orderService.createOrder(orderRequestDto, id);
+        Order order = orderService.createOrder(orderRequestDto, id);
+        return new OrderResponseDto(order);
     }
 
     /**
@@ -55,8 +58,14 @@ public class OrderController {
      * @author Flavie Qin
      */
     @GetMapping("/fashionstore/order")
-    public Collection<OrderResponseDto> getAllOrders() {
-        return orderService.getAllOrders();
+    public List<OrderResponseDto> getAllOrders() {
+        List<Order> orders = orderService.getAllOrders();
+        List<OrderResponseDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            orderDtos.add(new OrderResponseDto(order));
+        }
+
+        return orderDtos;
     }
 
     /**
@@ -67,8 +76,15 @@ public class OrderController {
      * @author Flavie Qin
      */
     @GetMapping("/fashionstore/account/customer/{id}/order")
-    public Collection<OrderResponseDto> getAllOrdersByCustomer(@PathVariable int id) {
-        return orderService.getAllOrdersByCustomer(id);
+    public List<OrderResponseDto> getAllOrdersByCustomer(@PathVariable int id) {
+        List<Order> orders = orderService.getAllOrdersByCustomer(id);
+
+        List<OrderResponseDto> orderDtos = new ArrayList<>();
+        for (Order order : orders) {
+            orderDtos.add(new OrderResponseDto(order));
+        }
+
+        return orderDtos;
     }
 
     /**
@@ -83,6 +99,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public OrderResponseDto updateOrderStatus(
             @PathVariable int id, @RequestBody OrderStatusRequestDto orderStatusRequestDto) {
-        return orderService.updateOrderStatus(id, orderStatusRequestDto);
+        Order order = orderService.updateOrderStatus(id, orderStatusRequestDto);
+        return new OrderResponseDto(order);
     }
 }
