@@ -41,7 +41,7 @@ public class ClothingProductService {
      * @return Clothing Product Response DTO
      * @author Jennifer You (jenni4u)
      */
-    public ClothingProductResponseDto createClothingProduct(
+    public ClothingProduct createClothingProduct(
             @Valid ClothingProductRequestDto clothingProductRequestDto) {
         // create new clothing product
         ClothingProduct clothingProduct = new ClothingProduct();
@@ -49,9 +49,8 @@ public class ClothingProductService {
         clothingProduct.setPrice(clothingProductRequestDto.price());
         clothingProduct.setImage(clothingProductRequestDto.image());
 
-        // save clothing product to repository
-        clothingProduct = this.clothingProductRepository.save(clothingProduct);
-        return new ClothingProductResponseDto(clothingProduct);
+        // save clothing product to repository and return
+        return this.clothingProductRepository.save(clothingProduct);
     }
 
     /**
@@ -62,7 +61,7 @@ public class ClothingProductService {
      * @return Clothing Product Response DTO
      * @author Jennifer You (jenni4u)
      */
-    public ClothingProductResponseDto updateClothingProduct(
+    public ClothingProduct updateClothingProduct(
             @Valid ClothingProductRequestDto clothingProductRequestDto, int clothingProductId) {
         // find clothing product to update
         ClothingProduct clothingProduct =
@@ -73,9 +72,8 @@ public class ClothingProductService {
         clothingProduct.setPrice(clothingProductRequestDto.price());
         clothingProduct.setImage(clothingProductRequestDto.image());
 
-        // save updated clothing product to repository
-        clothingProduct = this.clothingProductRepository.save(clothingProduct);
-        return new ClothingProductResponseDto(clothingProduct);
+        // save updated clothing product to repository and return
+        return this.clothingProductRepository.save(clothingProduct);
     }
 
     /**

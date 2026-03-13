@@ -49,7 +49,9 @@ public class ClothingProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public ClothingProductResponseDto createClothingProduct(
             @RequestBody ClothingProductRequestDto clothingProductRequestDto) {
-        return clothingProductService.createClothingProduct(clothingProductRequestDto);
+        ClothingProduct clothingProduct =
+                clothingProductService.createClothingProduct(clothingProductRequestDto);
+        return new ClothingProductResponseDto(clothingProduct);
     }
 
     /**
@@ -65,7 +67,9 @@ public class ClothingProductController {
     public ClothingProductResponseDto updateClothingProduct(
             @RequestBody ClothingProductRequestDto clothingProductRequestDto,
             @PathVariable int id) {
-        return clothingProductService.updateClothingProduct(clothingProductRequestDto, id);
+        ClothingProduct clothingProduct =
+                clothingProductService.updateClothingProduct(clothingProductRequestDto, id);
+        return new ClothingProductResponseDto(clothingProduct);
     }
 
     /**

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.fashionstore.controller.ClothingProductController;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -115,5 +116,82 @@ class ClothingProductServiceIntegrationTests {
         assertNull(
                 response.name(),
                 "Response name should be null for a failed GET for clothing product.");
+    }
+
+    /**
+     * Test creating a new clothing product with valid input saves successfully into the repository.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingProductSave() {
+        ClothingProductResponseDto response =
+                client.post()
+                        .uri("/fashionstore/clothingproduct")
+                        .body(new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png"))
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(ClothingProductResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+        assertNotNull(response, "Response body for creating clothing product should not be null.");
+        assertNotNull(
+                clothingProductRepository.findClothingProductById(response.id()),
+                "Clothing product is not saved in the repository.");
+    }
+
+    /**
+     * Test creating a new clothing product matches given input
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingProductAttributes() {
+        ClothingProductResponseDto response =
+                client.post()
+                        .uri("/fashionstore/clothingproduct")
+                        .body(new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png"))
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(ClothingProductResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+        assertEquals(
+                "T-Shirt", response.name(), "Clothing product name is different than expected.");
+        assertEquals(
+                29.99f, response.price(), "Clothing product price is different than expected.");
+        assertEquals(
+                "tshirt.png",
+                response.image(),
+                "Clothing product image is different than expected.");
+    }
+
+    /**
+     * Test updating a clothing product.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateClothingProduct() {
+        ClothingProductResponseDto response =
+                client.put()
+                        .uri(clothingProductUri, clothingProduct.getId())
+                        .body(new ClothingProductRequestDto("Crewneck", 49.99f, "crewneck.png"))
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(ClothingProductResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+        assertEquals(
+                "Crewneck", response.name(), "Clothing product name is different than expected.");
+        assertEquals(
+                49.99f, response.price(), "Clothing product price is different than expected.");
+        assertEquals(
+                "crewneck.png",
+                response.image(),
+                "Clothing product image is different than expected.");
     }
 }
