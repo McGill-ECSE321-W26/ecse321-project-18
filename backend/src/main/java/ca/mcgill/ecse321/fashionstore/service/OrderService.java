@@ -101,14 +101,18 @@ public class OrderService {
 
         // go through customer shopping cart items and add to the order
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
-            ClothingItem clothingItem = shoppingCartItem.getClothingItem();
-            OrderItem newItem = new OrderItem();
-            newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
-            newItem.setClothingItem(clothingItem);
-            newItem.setQuantity(shoppingCartItem.getQuantity());
-            newItem.setOrder(order);
+            OrderItem newItem = createNewOrderItem(shoppingCartItem);
             order.addItem(newItem);
         }
+    }
+
+    private OrderItem createNewOrderItem(ShoppingCartItem shoppingCartItem) {
+        ClothingItem clothingItem = shoppingCartItem.getClothingItem();
+        OrderItem newItem = new OrderItem();
+        newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
+        newItem.setClothingItem(clothingItem);
+        newItem.setQuantity(shoppingCartItem.getQuantity());
+        return newItem;
     }
 
     /**
