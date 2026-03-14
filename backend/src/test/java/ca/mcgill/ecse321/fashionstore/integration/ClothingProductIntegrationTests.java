@@ -12,8 +12,8 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +25,24 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
-class ClothingProductServiceIntegrationTests {
+class ClothingProductIntegrationTests {
     @Autowired RestTestClient client;
     @Autowired ClothingProductController clothingProductController;
     @Autowired private ClothingProductRepository clothingProductRepository;
     @Autowired private ClothingItemRepository clothingItemRepository;
 
     private ClothingProduct clothingProduct;
+    private ClothingProductRequestDto clothingProductRequestDto;
     private static final String clothingProductUri = "/fashionstore/clothingproduct/{id}";
 
     private ClothingItem clothingItem;
     private static final String clothingItemUri =
             "/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}";
 
+    private static final String errorLoc = "$.errors";
+
     /** Setup method for the test suite. */
-    @BeforeAll
+    @BeforeEach
     void createClothingProducts() {
         // set clothing product first
         ClothingProduct clothingProduct = new ClothingProduct();
@@ -57,10 +60,14 @@ class ClothingProductServiceIntegrationTests {
         clothingItem.setNumInStock(100);
         clothingItemRepository.save(clothingItem);
         this.clothingItem = clothingItem;
+
+        ClothingProductRequestDto clothingProductRequestDto =
+                new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png");
+        this.clothingProductRequestDto = clothingProductRequestDto;
     }
 
     /** Teardown method for test suite. (placeholder, please modify if needed) */
-    @AfterAll
+    @AfterEach
     void clearDatabase() {
         clothingItemRepository.deleteAll();
         clothingProductRepository.deleteAll();
@@ -118,80 +125,81 @@ class ClothingProductServiceIntegrationTests {
                 "Response name should be null for a failed GET for clothing product.");
     }
 
-    /**
-     * Test creating a new clothing product with valid input saves successfully into the repository.
-     *
-     * @author Jennifer You (jenni4u)
-     */
-    @Test
-    void createClothingProductSave() {
-        ClothingProductResponseDto response =
-                client.post()
-                        .uri("/fashionstore/clothingproduct")
-                        .body(new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png"))
-                        .exchange()
-                        .expectStatus()
-                        .isCreated()
-                        .expectBody(ClothingProductResponseDto.class)
-                        .returnResult()
-                        .getResponseBody();
+    private void assertBodyResponse(
+            ClothingProductRequestDto body, ClothingProductResponseDto response) {
         assertNotNull(response, "Response body for creating clothing product should not be null.");
         assertNotNull(
                 clothingProductRepository.findClothingProductById(response.id()),
                 "Clothing product is not saved in the repository.");
-    }
-
-    /**
-     * Test creating a new clothing product matches given input
-     *
-     * @author Jennifer You (jenni4u)
-     */
-    @Test
-    void createClothingProductAttributes() {
-        ClothingProductResponseDto response =
-                client.post()
-                        .uri("/fashionstore/clothingproduct")
-                        .body(new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png"))
-                        .exchange()
-                        .expectStatus()
-                        .isCreated()
-                        .expectBody(ClothingProductResponseDto.class)
-                        .returnResult()
-                        .getResponseBody();
         assertEquals(
-                "T-Shirt", response.name(), "Clothing product name is different than expected.");
+                body.name(), response.name(), "Clothing product name is different than expected.");
         assertEquals(
-                29.99f, response.price(), "Clothing product price is different than expected.");
+                body.price(),
+                response.price(),
+                "Clothing product price is different than expected.");
         assertEquals(
-                "tshirt.png",
+                body.image(),
                 response.image(),
                 "Clothing product image is different than expected.");
     }
 
     /**
-     * Test updating a clothing product.
+     * Test creating a new clothing product.
      *
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void updateClothingProduct() {
+    void createClothingProduct() {
+        ClothingProductResponseDto response =
+                client.post()
+                        .uri("/fashionstore/clothingproduct")
+                        .body(this.clothingProductRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(ClothingProductResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+        assertBodyResponse(this.clothingProductRequestDto, response);
+    }
+
+    /**
+     * Test updating a clothing product with valid id.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateClothingProductValidId() {
         ClothingProductResponseDto response =
                 client.put()
-                        .uri(clothingProductUri, clothingProduct.getId())
-                        .body(new ClothingProductRequestDto("Crewneck", 49.99f, "crewneck.png"))
+                        .uri(clothingProductUri, this.clothingProduct.getId())
+                        .body(this.clothingProductRequestDto)
                         .exchange()
                         .expectStatus()
                         .isOk()
                         .expectBody(ClothingProductResponseDto.class)
                         .returnResult()
                         .getResponseBody();
-        assertEquals(
-                "Crewneck", response.name(), "Clothing product name is different than expected.");
-        assertEquals(
-                49.99f, response.price(), "Clothing product price is different than expected.");
-        assertEquals(
-                "crewneck.png",
-                response.image(),
-                "Clothing product image is different than expected.");
+        assertBodyResponse(this.clothingProductRequestDto, response);
+    }
+
+    /**
+     * Test updating a clothing product with invalid id.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateClothingProductInvalidId() {
+        int invalidId = this.clothingProduct.getId() + 1;
+
+        client.put()
+                .uri(clothingProductUri, invalidId)
+                .body(this.clothingProductRequestDto)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo(String.format("ClothingProduct ID %d was not found.", invalidId));
     }
 }

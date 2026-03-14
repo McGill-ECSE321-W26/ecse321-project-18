@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Test suite for clothing product service class. */
@@ -26,6 +28,7 @@ class ClothingProductServiceTests {
 
     private ClothingProduct clothingProduct;
     private ClothingItem clothingItem;
+    private ClothingProductRequestDto clothingProductRequestDto;
 
     /**
      * Creates and saves a clothing product, and a clothing item.
@@ -50,6 +53,10 @@ class ClothingProductServiceTests {
         clothingItem.setNumInStock(100);
         clothingItemRepository.save(clothingItem);
         this.clothingItem = clothingItem;
+
+        ClothingProductRequestDto clothingProductRequestDto =
+                new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png");
+        this.clothingProductRequestDto = clothingProductRequestDto;
     }
 
     /**
@@ -122,5 +129,57 @@ class ClothingProductServiceTests {
                 clothingItem.getColour(),
                 response.getItem(0).getColour(),
                 "Retrieved clothing product's item does not have correct colour.");
+    }
+
+    /**
+     * Test creating a clothing product with valid parameters.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingProduct() {
+        assertDoesNotThrow(
+                () -> clothingProductService.createClothingProduct(this.clothingProductRequestDto),
+                "Creating a clothing product with valid details should not throw an exception.");
+    }
+
+    /**
+     * Updating a clothing product with valid parameters.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateClothingProduct() {
+        assertDoesNotThrow(
+                () ->
+                        clothingProductService.updateClothingProduct(
+                                this.clothingProductRequestDto, this.clothingProduct.getId()),
+                "Updating a clothing product with a valid request should not throw an exception.");
+    }
+
+    /**
+     * Updating a clothing product with nonexistent clothing product ID.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateNonExistingClothingProduct() {
+        int invalidId = clothingProduct.getId() + 1;
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                clothingProductService.updateClothingProduct(
+                                        this.clothingProductRequestDto, invalidId),
+                        "Updating a clothing product with a nonexistent ID should throw an exception.");
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "Invalid product ID should throw a NOT_FOUND exception.");
+        assertEquals(
+                String.format("ClothingProduct ID %d was not found.", invalidId),
+                e.getMessage(),
+                "Exception message should indicate that the clothing product was not found.");
     }
 }

@@ -12,6 +12,7 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 /** Service class for ClothingItem. */
@@ -40,24 +41,31 @@ public class ClothingItemService {
      * Service method to create a new clothing item
      *
      * @param clothingItemRequestDto Clothing Product Request DTO
-     * @return Clothing Product Response DTO
+     * @return ClothingItem
      * @author Jennifer You (jenni4u)
      */
-    public ClothingItemResponseDto createClothingItem(
-            @Valid ClothingItemRequestDto clothingItemRequestDto) {
+    @Transactional
+    public ClothingItem createClothingItem(
+            @Valid ClothingItemRequestDto clothingItemRequestDto, int productId) {
         // create new clothing item
         ClothingItem clothingItem = new ClothingItem();
         clothingItem.setSize(clothingItemRequestDto.size());
         clothingItem.setColour(clothingItemRequestDto.colour());
         clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
+        if (productId != clothingItemRequestDto.clothingProductId()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "Path variable productId %d does not match clothingProductId in request body %d.",
+                            productId, clothingItemRequestDto.clothingProductId()));
+        }
         ClothingProduct clothingProduct =
-                Utils.findClothingProductById(
-                        this.clothingProductRepository, clothingItemRequestDto.clothingProductId());
+                Utils.findClothingProductById(this.clothingProductRepository, productId);
         clothingItem.setClothingProduct(clothingProduct);
 
         // save clothing item to repository
         clothingItem = this.clothingItemRepository.save(clothingItem);
-        return new ClothingItemResponseDto(clothingItem);
+        return clothingItem;
     }
 
     /**
