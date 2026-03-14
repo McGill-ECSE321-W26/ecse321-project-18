@@ -79,9 +79,6 @@ public class OrderService {
         newOrder.setDeliveryAddress(orderRequestDto.deliveryAddress());
         newOrder.setPrice(orderRequestDto.price());
 
-        // save new order
-        this.orderRepository.save(newOrder);
-
         // assign all items in customer cart to the order
         List<ClothingItem> items = assignOrderItems(newOrder, customer);
 
@@ -125,7 +122,7 @@ public class OrderService {
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
             validateItemQuantities(shoppingCartItem);
             // create order item
-            OrderItem newItem = createOrderItemFromShoppingCartItem(shoppingCartItem, order);
+            OrderItem newItem = createNewOrderItem(shoppingCartItem);
             order.addItem(newItem);
             // update num in stock of clothing item and add to list to save
             int newNumInStock = newItem.getClothingItem().getNumInStock() - newItem.getQuantity();
@@ -145,22 +142,12 @@ public class OrderService {
         }
     }
 
-    /**
-     * Helper method to create an order item from a shopping cart item for a given order.
-     *
-     * @param shoppingCartItem the shopping cart item to convert into an order item
-     * @param order the order to associate with the created order item
-     * @return the created order item with purchase price, clothing item, quantity, and order set
-     */
-    private OrderItem createOrderItemFromShoppingCartItem(
-            ShoppingCartItem shoppingCartItem, Order order) {
+    private OrderItem createNewOrderItem(ShoppingCartItem shoppingCartItem) {
         ClothingItem clothingItem = shoppingCartItem.getClothingItem();
         OrderItem newItem = new OrderItem();
         newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
         newItem.setClothingItem(clothingItem);
         newItem.setQuantity(shoppingCartItem.getQuantity());
-        newItem.setOrder(order);
-
         return newItem;
     }
 
