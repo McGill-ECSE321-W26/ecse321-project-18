@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import ca.mcgill.ecse321.fashionstore.dto.OrderItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
-import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -196,7 +195,8 @@ class OrderIntegrationTests {
         assertOrderResponseDto(order1, orderResponseDto, orderItem1);
     }
 
-    private void assertOrderResponseDto(Order order, OrderResponseDto orderResponseDto, OrderItem orderItem) {
+    private void assertOrderResponseDto(
+            Order order, OrderResponseDto orderResponseDto, OrderItem orderItem) {
         assertEquals(
                 order.getId(), orderResponseDto.id(), "ID of order response DTO is incorrect.");
         assertEquals(
@@ -205,17 +205,10 @@ class OrderIntegrationTests {
                 "Customer ID of order response DTO is incorrect.");
         assertOrderResponseDtoFields(order, orderResponseDto);
         assertEquals(
-                orderItem.getId(),
-                orderResponseDto.orderItems().getFirst().orderId(),
-                "Order item in order response DTO is incorrect.");
-        assertEquals(
-                orderItem.getClothingItem().getId(),
-                orderResponseDto.orderItems().getFirst().clothingItem().id(),
-                "Order item clothing item id in order response DTO is incorrect.");
-        assertEquals(
-                orderItem.getQuantity(),
-                orderResponseDto.orderItems().getFirst().quantity(),
-                "Order item quantity in order response DTO is incorrect.");
+                1,
+                orderResponseDto.orderItems().size(),
+                "Order items does not have correct length in response.");
+        assertOrderItemResponseDto(orderItem, orderResponseDto.orderItems().getFirst());
     }
 
     private void assertOrderResponseDtoFields(Order order, OrderResponseDto orderResponseDto) {
@@ -235,6 +228,22 @@ class OrderIntegrationTests {
                 order.getDeliveryDate(),
                 Date.valueOf(orderResponseDto.deliveryDate()),
                 "Delivery date of order response DTO is incorrect.");
+    }
+
+    private void assertOrderItemResponseDto(
+            OrderItem orderItem, OrderItemResponseDto orderItemResponseDto) {
+        assertEquals(
+                orderItem.getId(),
+                orderItemResponseDto.orderId(),
+                "Order item in order response DTO is incorrect.");
+        assertEquals(
+                orderItem.getClothingItem().getId(),
+                orderItemResponseDto.clothingItem().id(),
+                "Order item clothing item id in order response DTO is incorrect.");
+        assertEquals(
+                orderItem.getQuantity(),
+                orderItemResponseDto.quantity(),
+                "Order item quantity in order response DTO is incorrect.");
     }
 
     /**
@@ -349,9 +358,16 @@ class OrderIntegrationTests {
     }
 
     private void assertNewOrderResponseDto(OrderRequestDto request, OrderResponseDto response) {
-        assertEquals(request.deliveryAddress(), response.deliveryAddress(), "Response delivery address is incorrect.");
-        assertEquals(request.orderDate(), response.orderDate(), "Response order date is incorrect.");
-        assertEquals(request.deliveryDate(), response.deliveryDate(), "Response delivery date is incorrect.");
+        assertEquals(
+                request.deliveryAddress(),
+                response.deliveryAddress(),
+                "Response delivery address is incorrect.");
+        assertEquals(
+                request.orderDate(), response.orderDate(), "Response order date is incorrect.");
+        assertEquals(
+                request.deliveryDate(),
+                response.deliveryDate(),
+                "Response delivery date is incorrect.");
         assertEquals(request.state(), response.state(), "Response state is incorrect.");
         assertEquals(request.price(), response.price(), "Response price is incorrect.");
         assertEquals(1, response.orderItems().size(), "Response order items length is incorrect");
@@ -463,6 +479,9 @@ class OrderIntegrationTests {
                 .jsonPath(errorLoc)
                 .isEqualTo("Clothing item T-shirt does not have enough quantity in stock.");
 
-        assertEquals(CLOTHING_ITEM_2_QUANTITY, clothingItem2.getNumInStock(), "Clothing item num in stock was incorrectly updated.");
+        assertEquals(
+                CLOTHING_ITEM_2_QUANTITY,
+                clothingItem2.getNumInStock(),
+                "Clothing item num in stock was incorrectly updated.");
     }
 }
