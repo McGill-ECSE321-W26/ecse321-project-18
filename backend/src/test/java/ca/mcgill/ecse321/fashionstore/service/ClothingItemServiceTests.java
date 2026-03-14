@@ -51,7 +51,6 @@ class ClothingItemServiceTests {
         clothingProduct.setImage("hoodie.png");
         clothingProduct.setPrice(69.99f);
         clothingProduct.setName("Hoodies");
-        clothingProductRepository.save(clothingProduct);
         this.clothingProduct = clothingProduct;
 
         // create clothing item
@@ -60,7 +59,6 @@ class ClothingItemServiceTests {
         clothingItem.setSize(ClothingItem.Size.M);
         clothingItem.setColour(ClothingItem.Colour.YELLOW);
         clothingItem.setNumInStock(100);
-        clothingItemRepository.save(clothingItem);
         this.clothingItem = clothingItem;
     }
 
