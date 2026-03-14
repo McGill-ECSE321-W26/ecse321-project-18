@@ -48,6 +48,9 @@ class AccountServiceTests {
     private Employee employee;
     private Customer customer;
 
+    // Variables
+    private static final String badEmail = "employe@fashionstore.com";
+
     // Error messages
     private static final String badEmailError =
             """
@@ -142,6 +145,7 @@ class AccountServiceTests {
                 FashionStoreException.class,
                 () -> accountService.accountLoginCheck(accountRequestDto),
                 "Login with nonexistent email should fail.");
+        verify(accountRepository, times(1)).findAccountByEmail(accountRequestDto.email());
     }
 
     /**
@@ -162,6 +166,7 @@ class AccountServiceTests {
                 FashionStoreException.class,
                 () -> accountService.accountLoginCheck(accountRequestDto),
                 "Login with correct email but bad password should fail.");
+        verify(accountRepository, times(1)).findAccountByEmail(accountRequestDto.email());
     }
 
     /**
@@ -202,6 +207,8 @@ class AccountServiceTests {
                 AccountType.EMPLOYEE,
                 accountService.findAccountType(id),
                 "Account type retrieval is wrong for employee.");
+        verify(ownerRepository, times(1)).findOwnerById(id);
+        verify(employeeRepository, times(1)).findEmployeeById(id);
     }
 
     /**
@@ -223,6 +230,8 @@ class AccountServiceTests {
                 AccountType.CUSTOMER,
                 accountService.findAccountType(id),
                 "Account type retrieval is wrong for customer.");
+        verify(ownerRepository, times(1)).findOwnerById(id);
+        verify(employeeRepository, times(1)).findEmployeeById(id);
     }
 
     /**
@@ -252,6 +261,7 @@ class AccountServiceTests {
                         wrongLoginFailureErrorMsg,
                         e.getMessage(),
                         AccountService.badPasswordErrorMsg));
+        verify(accountRepository, times(1)).findAccountByEmail(employee.getEmail());
     }
 
     /**
@@ -265,7 +275,6 @@ class AccountServiceTests {
         FashionStoreException exception =
                 new FashionStoreException(
                         HttpStatus.BAD_REQUEST, AccountService.nonexistentEmailErrorMsg);
-        String badEmail = "employe@fashionstore.com";
         AccountRequestDto accountRequestDto = new AccountRequestDto(badEmail, "employee123");
         when(accountRepository.findAccountByEmail(badEmail)).thenThrow(exception);
 
@@ -284,6 +293,7 @@ class AccountServiceTests {
                         wrongLoginFailureErrorMsg,
                         e.getMessage(),
                         AccountService.nonexistentEmailErrorMsg));
+        verify(accountRepository, times(1)).findAccountByEmail(badEmail);
     }
 
     /**
@@ -313,6 +323,7 @@ class AccountServiceTests {
                         wrongLoginFailureErrorMsg,
                         e.getMessage(),
                         AccountService.badPasswordErrorMsg));
+        verify(accountRepository, times(1)).findAccountByEmail(customer.getEmail());
     }
 
     /**
@@ -327,7 +338,6 @@ class AccountServiceTests {
         FashionStoreException toThrow =
                 new FashionStoreException(
                         HttpStatus.BAD_REQUEST, AccountService.nonexistentEmailErrorMsg);
-        String badEmail = "employe@fashionstore.com";
         AccountRequestDto accountRequestDto = new AccountRequestDto(badEmail, "customer123");
         when(accountRepository.findAccountByEmail(badEmail)).thenThrow(toThrow);
 
@@ -346,6 +356,7 @@ class AccountServiceTests {
                         wrongLoginFailureErrorMsg,
                         e.getMessage(),
                         AccountService.nonexistentEmailErrorMsg));
+        verify(accountRepository, times(1)).findAccountByEmail(badEmail);
     }
 
     /**
@@ -370,5 +381,6 @@ class AccountServiceTests {
                 "Customer login success response email is wrong.");
         assertEquals(
                 customer.getId(), response.getId(), "Customer login success response id is wrong.");
+        verify(accountRepository, times(1)).findAccountByEmail(accountRequestDto.email());
     }
 }
