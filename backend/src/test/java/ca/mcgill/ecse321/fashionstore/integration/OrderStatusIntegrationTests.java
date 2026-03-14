@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
-public class OrderStatusIntegrationTests {
+class OrderStatusIntegrationTests {
 
     private static final String ORDER_STATUS_URI = "/fashionstore/order/{id}/status";
     private static final String ERROR_LOC = "$.errors";

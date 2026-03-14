@@ -38,7 +38,7 @@ import org.springframework.http.HttpStatus;
 /** Order Service class tests. */
 @SpringBootTest
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
-public class OrderServiceTests {
+class OrderServiceTests {
 
     @Mock private OrderRepository orderRepository;
     @Mock private EmployeeRepository employeeRepository;
@@ -46,6 +46,7 @@ public class OrderServiceTests {
 
     @InjectMocks OrderService orderService;
 
+    private static final String ORDER_NOT_NULL_MSG = "Order should not be null.";
     private static final int ORDER_ID = 1;
     private static final int CUSTOMER_ID = 10;
     private static final int EMPLOYEE_ID = 20;
@@ -206,7 +207,7 @@ public class OrderServiceTests {
 
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
-        assertNotNull(result, "Order should not be null.");
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
         assertEquals(State.ASSIGNED, result.getState(), "Order state should be ASSIGNED after update.");
         verify(orderRepository, times(1)).save(any(Order.class));
     }
@@ -256,7 +257,7 @@ public class OrderServiceTests {
 
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
-        assertNotNull(result, "Order should not be null.");
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
         assertEquals(State.PREPARED, result.getState(), "Order state should be PREPARED after update.");
         verify(orderRepository, times(1)).save(any(Order.class));
     }
@@ -304,7 +305,7 @@ public class OrderServiceTests {
 
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
-        assertNotNull(result, "Order should not be null.");
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
         assertEquals(State.CANCELLED, result.getState(), "Order state should be CANCELLED after update.");
         verify(orderRepository, times(1)).save(any(Order.class));
     }
@@ -326,7 +327,7 @@ public class OrderServiceTests {
 
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
-        assertNotNull(result, "Order should not be null.");
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
         assertEquals(State.CANCELLED, result.getState(), "Order state should remain CANCELLED.");
     }
 

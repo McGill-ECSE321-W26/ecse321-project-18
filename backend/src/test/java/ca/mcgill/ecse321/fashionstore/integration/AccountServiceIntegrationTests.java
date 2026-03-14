@@ -45,6 +45,10 @@ class AccountServiceIntegrationTests {
     // Error messages
     private static final String responseNullError = "Response body is null";
 
+    // Emails
+    private static final String EMPLOYEE_EMAIL = "employee@fashionstore.com";
+    private static final String CUSTOMER_EMAIL = "customer@fashionstore.com";
+
     /** Setup for accountService integration tests. */
     @BeforeAll
     void setup() {
@@ -54,11 +58,11 @@ class AccountServiceIntegrationTests {
         owner.setPassword("owner123");
         this.owner = owner;
         Employee employee = new Employee();
-        employee.setEmail("employee@fashionstore.com");
+        employee.setEmail(EMPLOYEE_EMAIL);
         employee.setPassword("employee123");
         this.employee = employee;
         Customer customer = new Customer();
-        customer.setEmail("customer@fashionstore.com");
+        customer.setEmail(CUSTOMER_EMAIL);
         customer.setPassword("customer123");
         this.customer = customer;
 
@@ -114,7 +118,7 @@ class AccountServiceIntegrationTests {
     void accountEmployeeLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("employee@fashionstore.com", "employee123");
+                new AccountRequestDto(EMPLOYEE_EMAIL, "employee123");
 
         // Act
         AccountResponseDto response =
@@ -144,7 +148,7 @@ class AccountServiceIntegrationTests {
     void accountCustomerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("customer@fashionstore.com", "customer123");
+                new AccountRequestDto(CUSTOMER_EMAIL, "customer123");
 
         // Act
         AccountResponseDto response =
@@ -202,7 +206,7 @@ class AccountServiceIntegrationTests {
     void failAccountCustomerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("customer@fashionstore.com", "customer124");
+                new AccountRequestDto(CUSTOMER_EMAIL, "customer124");
 
         // Act
         AccountResponseDto response =
@@ -230,7 +234,7 @@ class AccountServiceIntegrationTests {
     void failAccountEmployeeLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("employee@fashionstore.com", "employee1234");
+                new AccountRequestDto(EMPLOYEE_EMAIL, "employee1234");
 
         // Act
         AccountResponseDto response =
@@ -290,7 +294,7 @@ class AccountServiceIntegrationTests {
     void failCreateEmployeeAccountDuplicateEmail() {
         // Arrange
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("employee@fashionstore.com", "employee001");
+                new AccountRequestDto(EMPLOYEE_EMAIL, "employee001");
 
         // Act
         AccountResponseDto response =
@@ -353,7 +357,7 @@ class AccountServiceIntegrationTests {
     void failCreateCustomerAccountDuplicateEmail() {
         // Arrange
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("customer@fashionstore.com", "customer456");
+                new AccountRequestDto(CUSTOMER_EMAIL, "customer456");
 
         // Act
         AccountResponseDto response =

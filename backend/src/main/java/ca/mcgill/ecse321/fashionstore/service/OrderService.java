@@ -87,10 +87,11 @@ public class OrderService {
     }
 
     /**
-     * Helper method to assign all items from a customer's shopping cart to the new order
+     * Helper method to assign all items from a customer's shopping cart to a new order.
      *
-     * @param order Order instance
-     * @param customer Customer instance that is placing the order
+     * @param order the order to which the shopping cart items will be added
+     * @param customer the customer placing the order
+     * @throws FashionStoreException if the customer's shopping cart is empty
      */
     private void assignOrderItems(Order order, Customer customer) {
         // throw error if no items in shopping cart
@@ -101,14 +102,28 @@ public class OrderService {
 
         // go through customer shopping cart items and add to the order
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
-            ClothingItem clothingItem = shoppingCartItem.getClothingItem();
-            OrderItem newItem = new OrderItem();
-            newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
-            newItem.setClothingItem(clothingItem);
-            newItem.setQuantity(shoppingCartItem.getQuantity());
-            newItem.setOrder(order);
-            order.addItem(newItem);
+            order.addItem(createOrderItemFromShoppingCartItem(shoppingCartItem, order));
         }
+    }
+
+    /**
+     * Helper method to create an order item from a shopping cart item for a given order.
+     *
+     * @param shoppingCartItem the shopping cart item to convert into an order item
+     * @param order the order to associate with the created order item
+     * @return the created order item with purchase price, clothing item, quantity, and order set
+     */
+    private OrderItem createOrderItemFromShoppingCartItem(
+            ShoppingCartItem shoppingCartItem, Order order) {
+        ClothingItem clothingItem = shoppingCartItem.getClothingItem();
+
+        OrderItem newItem = new OrderItem();
+        newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
+        newItem.setClothingItem(clothingItem);
+        newItem.setQuantity(shoppingCartItem.getQuantity());
+        newItem.setOrder(order);
+
+        return newItem;
     }
 
     /**
