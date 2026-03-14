@@ -94,9 +94,9 @@ public class ClothingProductController {
     @GetMapping("/fashionstore/clothingproduct")
     @ResponseBody
     public List<ClothingProductResponseDto> getMatchingClothingProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) List<ClothingItem.Size> sizes,
-            @RequestParam(required = false) List<ClothingItem.Colour> colours) {
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "sizes", required = false) List<ClothingItem.Size> sizes,
+            @RequestParam(value = "colours", required = false) List<ClothingItem.Colour> colours) {
         List<ClothingProduct> clothingProducts =
                 clothingProductService.getMatchingClothingProducts(name, sizes, colours);
 
