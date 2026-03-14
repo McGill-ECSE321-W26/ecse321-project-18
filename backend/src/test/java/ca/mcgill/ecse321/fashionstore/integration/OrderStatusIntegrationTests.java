@@ -252,15 +252,14 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(6)
     void testUpdateOrderStatusCancelDelivered() {
-        Order deliveredOrder =
+        int deliveredOrderId =
                 createOrder(
                         State.DELIVERED,
                         null,
                         LocalDate.now(),
                         LocalDate.now().plusDays(1),
                         "67 Building Trottier",
-                        50.00f);
-        int deliveredOrderId = deliveredOrder.getId();
+                        50.00f).getId();
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
         client.put()
@@ -289,8 +288,7 @@ public class OrderIntegrationTests {
                         LocalDate.now(),
                         LocalDate.now(),
                         "67 Building Trottier",
-                        10.00f)
-                        .getId();
+                        10.00f).getId();
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
         client.put()
@@ -301,7 +299,6 @@ public class OrderIntegrationTests {
                 .isBadRequest()
                 .expectBody()
                 .jsonPath(ERROR_LOC)
-                .isEqualTo(
-                        "Order can only be cancelled at least 24 hours before the delivery date.");
+                .isEqualTo("Order can only be cancelled at least 24 hours before the delivery date.");
     }
 }

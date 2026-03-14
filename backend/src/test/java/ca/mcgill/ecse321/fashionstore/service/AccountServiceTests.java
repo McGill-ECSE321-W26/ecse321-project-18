@@ -2,8 +2,8 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import ca.mcgill.ecse321.fashionstore.controller.AccountController;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
