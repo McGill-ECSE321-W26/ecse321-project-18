@@ -14,7 +14,6 @@ import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -86,12 +85,11 @@ class ClothingProductServiceTests {
     }
 
     /**
-     * Helper asesrt function.
+     * Helper assert function.
      *
      * @author Qiuyu Huang (redacted24)
      */
-    @Disabled("Helper function")
-    void assertClothingProduct(ClothingProduct expected, ClothingProduct actual) {
+    private void assertClothingProduct(ClothingProduct expected, ClothingProduct actual) {
         assertEquals(
                 expected.getImage(),
                 actual.getImage(),
