@@ -21,7 +21,6 @@ import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
-import jakarta.transaction.Transactional;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -37,6 +36,7 @@ import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTe
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.servlet.client.RestTestClient;
+import org.springframework.transaction.annotation.Transactional;
 
 /** ShoppingCartItem Service class tests. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
