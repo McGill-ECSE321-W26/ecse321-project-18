@@ -4,6 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+<<<<<<< HEAD
+=======
+import static org.mockito.ArgumentMatchers.anyIterable;
+import static org.mockito.ArgumentMatchers.argThat;
+>>>>>>> order_unit_integration_tests
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +23,7 @@ import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.model.OrderItem;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
+import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
@@ -44,6 +50,8 @@ class OrderServiceTests {
     @Mock private EmployeeRepository employeeRepository;
     @Mock private CustomerRepository customerRepository;
 
+    @Mock private ClothingItemRepository clothingItemRepository;
+
     @InjectMocks OrderService orderService;
 
     private static final String ORDER_NOT_NULL_MSG = "Order should not be null.";
@@ -55,12 +63,19 @@ class OrderServiceTests {
     private static final int PRODUCT_ID = 50;
     private static final int SHOPPING_CART_ITEM_ID_1 = 3;
     private static final int SHOPPING_CART_ITEM_ID_2 = 4;
+    private static final int SHOPPING_CART_ITEM_ID_3 = 6;
     private static final int QUANTITY_1 = 10;
     private static final int QUANTITY_2 = 20;
+    private static final int QUANTITY_3 = 35;
     private static final int ORDER_ITEM_ID_1 = 1;
     private static final int ORDER_ITEM_ID_2 = 2;
     private static final int CUSTOMER_ID_1 = 11;
     private static final int CUSTOMER_ID_2 = 14;
+<<<<<<< HEAD
+=======
+    private static final int CUSTOMER_ID_3 = 23;
+    private static final int CUSTOMER_ID_4 = 24;
+>>>>>>> order_unit_integration_tests
     private static final int ORDER_ID_1 = 1;
     private static final int ORDER_ID_2 = 2;
 
@@ -72,10 +87,16 @@ class OrderServiceTests {
     private ClothingItem clothingItem2;
     private ShoppingCartItem shoppingCartItem1;
     private ShoppingCartItem shoppingCartItem2;
+    private ShoppingCartItem shoppingCartItem3;
     private OrderItem orderItem1;
     private OrderItem orderItem2;
     private Customer customer1;
     private Customer customer2;
+<<<<<<< HEAD
+=======
+    private Customer customer3;
+    private Customer customer4;
+>>>>>>> order_unit_integration_tests
     private Order order1;
     private Order order2;
 
@@ -86,14 +107,24 @@ class OrderServiceTests {
         employee = createEmployee(EMPLOYEE_ID);
         purchasedOrder = createOrder(ORDER_ID, State.PURCHASED, customer);
         clothingProduct = createClothingProduct(PRODUCT_ID);
-        clothingItem1 = createClothingItem(CLOTHING_ITEM_ID_1, clothingProduct);
-        clothingItem2 = createClothingItem(CLOTHING_ITEM_ID_2, clothingProduct);
+        clothingItem1 = createClothingItem(CLOTHING_ITEM_ID_1, clothingProduct, QUANTITY_1);
+        clothingItem2 = createClothingItem(CLOTHING_ITEM_ID_2, clothingProduct, QUANTITY_2);
         shoppingCartItem1 =
                 createShoppingCartItem(SHOPPING_CART_ITEM_ID_1, QUANTITY_1, clothingItem1);
         shoppingCartItem2 =
                 createShoppingCartItem(SHOPPING_CART_ITEM_ID_2, QUANTITY_2, clothingItem2);
+<<<<<<< HEAD
         customer1 = createCustomerWithCart(CUSTOMER_ID_1, shoppingCartItem1);
         customer2 = createCustomerWithCart(CUSTOMER_ID_2, shoppingCartItem2);
+=======
+        shoppingCartItem3 =
+                createShoppingCartItem(SHOPPING_CART_ITEM_ID_3, QUANTITY_3, clothingItem2);
+        customer1 = createCustomer(CUSTOMER_ID_1, List.of(shoppingCartItem1));
+        customer2 = createCustomer(CUSTOMER_ID_2, List.of(shoppingCartItem2));
+        customer3 = createCustomer(CUSTOMER_ID_3, List.of());
+        customer4 = createCustomer(CUSTOMER_ID_4, List.of(shoppingCartItem3));
+
+>>>>>>> order_unit_integration_tests
         orderItem1 = createOrderItem(ORDER_ITEM_ID_1, shoppingCartItem1);
         orderItem2 = createOrderItem(ORDER_ITEM_ID_2, shoppingCartItem2);
         order1 = createOrderWithItem(ORDER_ID_1, customer1, orderItem1);
@@ -131,10 +162,11 @@ class OrderServiceTests {
         return newProduct;
     }
 
-    private ClothingItem createClothingItem(int id, ClothingProduct product) {
+    private ClothingItem createClothingItem(int id, ClothingProduct product, int numInStock) {
         ClothingItem newItem = new ClothingItem();
         newItem.setId(id);
         newItem.setClothingProduct(product);
+        newItem.setNumInStock(numInStock);
         return newItem;
     }
 
@@ -520,4 +552,217 @@ class OrderServiceTests {
 
         verify(orderRepository, times(1)).findAll();
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Service layer test for creating a new order by valid customer ID, valid request and valid
+     * shopping cart items.
+     *
+     * @author Flavie Qin
+     */
+    @Test
+    void testCreateOrderValid() {
+        // ARRANGE AND ACT
+        Order newOrder = setupCreateOrder();
+
+        // ASSERT
+        assertNotNull(newOrder, "Created order is null.");
+        assertCreateOrder(newOrder);
+
+        OrderItem orderItem = newOrder.getItem(0);
+        assertEquals(
+                QUANTITY_2, orderItem.getQuantity(), "Order item does not have correct quantity.");
+        assertEquals(
+                CLOTHING_ITEM_ID_2,
+                orderItem.getClothingItem().getId(),
+                "Order item clothing item does not have correct ID.");
+        assertEquals(
+                0,
+                orderItem.getClothingItem().getNumInStock(),
+                "Order item clothing item does not have correct num in stock.");
+
+        verifyCreateOrderValidOrderRepo();
+        verifyCreateOrderValidClothingItemRepo();
+    }
+
+    private Order setupCreateOrder() {
+        when(customerRepository.findById(CUSTOMER_ID_2)).thenReturn(Optional.of(customer2));
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+        when(clothingItemRepository.saveAll(anyIterable()))
+                .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+
+        OrderRequestDto orderRequestDto = createValidOrderRequest();
+
+        // ACT
+        return orderService.createOrder(orderRequestDto, CUSTOMER_ID_2);
+    }
+
+    private void assertCreateOrder(Order order) {
+        assertEquals(
+                CUSTOMER_ID_2,
+                order.getCustomer().getId(),
+                "Order does not have correct customer ID.");
+        assertEquals(
+                Date.valueOf(ORDER_DATE),
+                order.getOrderDate(),
+                "Order does not have correct order date.");
+        assertEquals(
+                Date.valueOf(VALID_DELIVERY_DATE),
+                order.getDeliveryDate(),
+                "Order does not have correct delivery date.");
+        assertEquals(
+                ADDRESS,
+                order.getDeliveryAddress(),
+                "Order does not have correct delivery address.");
+        assertEquals(PRICE, order.getPrice(), "Order does not have correct price.");
+        assertEquals(1, order.getItems().size(), "Order list of items does not have length 1.");
+    }
+
+    private void verifyCreateOrderValidOrderRepo() {
+        verify(orderRepository, times(1))
+                .save(
+                        argThat(
+                                (Order order) ->
+                                        order.getCustomer().getId() == CUSTOMER_ID_2
+                                                && order.getOrderDate()
+                                                        .equals(Date.valueOf(ORDER_DATE))
+                                                && order.getDeliveryDate()
+                                                        .equals(Date.valueOf(VALID_DELIVERY_DATE))
+                                                && order.getState() == Order.State.PURCHASED
+                                                && ADDRESS.equals(order.getDeliveryAddress())
+                                                && order.getItems().size() == 1
+                                                && order.getItem(0).getClothingItem().getId()
+                                                        == CLOTHING_ITEM_ID_2));
+    }
+
+    private void verifyCreateOrderValidClothingItemRepo() {
+        verify(clothingItemRepository, times(1))
+                .saveAll(
+                        argThat(
+                                (Iterable<ClothingItem> list) -> {
+                                    ClothingItem item = list.iterator().next();
+
+                                    return item.getNumInStock() == 0
+                                            && item.getId() == CLOTHING_ITEM_ID_2;
+                                }));
+    }
+
+    private OrderRequestDto createValidOrderRequest() {
+        return new OrderRequestDto(
+                Order.State.PURCHASED, ORDER_DATE, VALID_DELIVERY_DATE, ADDRESS, PRICE);
+    }
+
+    private OrderRequestDto createInvalidOrderRequest() {
+        return new OrderRequestDto(
+                Order.State.PURCHASED, ORDER_DATE, INVALID_DELIVERY_DATE, ADDRESS, PRICE);
+    }
+
+    /**
+     * Service layer test for creating a new order by invalid customer ID.
+     *
+     * @author Flavie Qin
+     */
+    @Test
+    void testCreateOrderByInvalidId() {
+        // Arrange
+        when(customerRepository.findById(CUSTOMER_ID_2)).thenReturn(Optional.empty());
+        OrderRequestDto orderRequestDto = createValidOrderRequest();
+
+        // Assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.createOrder(orderRequestDto, CUSTOMER_ID_2));
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "HTTP status is not NOT_FOUND after invalid customer ID request.");
+        assertEquals(
+                String.format("Customer ID %d was not found.", CUSTOMER_ID_2),
+                e.getMessage(),
+                "HTTP message is not correct after invalid customer ID request.");
+    }
+
+    /**
+     * Service layer test for creating a new order by valid customer ID but no shopping cart items.
+     *
+     * @author Flavie Qin
+     */
+    @Test
+    void testCreateOrderByInvalidShoppingCart() {
+        when(customerRepository.findById(CUSTOMER_ID_3)).thenReturn(Optional.of(customer3));
+        OrderRequestDto orderRequestDto = createValidOrderRequest();
+
+        // Assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.createOrder(orderRequestDto, CUSTOMER_ID_3));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status is not BAD_REQUEST after invalid order request DTO.");
+        assertEquals(
+                "Cannot create a new order for no items.",
+                e.getMessage(),
+                "HTTP message is not correct after invalid order request DTO.");
+    }
+
+    /**
+     * Service layer test for creating a new order with invalid delivery date in request.
+     *
+     * @author Flavie Qin
+     */
+    @Test
+    void testCreateOrderByInvalidDates() {
+        OrderRequestDto orderRequestDto = createInvalidOrderRequest();
+
+        // Assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.createOrder(orderRequestDto, CUSTOMER_ID_2));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status is not BAD_REQUEST after invalid order request DTO.");
+        assertEquals(
+                "Delivery date must be at least 24 hours after order date.",
+                e.getMessage(),
+                "HTTP message is not correct after invalid order request DTO.");
+    }
+
+    /**
+     * Service layer test for creating a new order with invalid delivery date in request.
+     *
+     * @author Flavie Qin
+     */
+    @Test
+    void testCreateOrderByInvalidQuantity() {
+        when(customerRepository.findById(CUSTOMER_ID_4)).thenReturn(Optional.of(customer4));
+        OrderRequestDto orderRequestDto = createValidOrderRequest();
+
+        // Assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.createOrder(orderRequestDto, CUSTOMER_ID_4));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status is not BAD_REQUEST after invalid order request DTO.");
+        assertEquals(
+                String.format(
+                        "Clothing item %s does not have enough quantity in stock.",
+                        clothingItem2.getClothingProduct().getName()),
+                e.getMessage(),
+                "HTTP message is not correct after invalid order request DTO.");
+    }
+>>>>>>> order_unit_integration_tests
 }

@@ -10,6 +10,7 @@ import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.model.OrderItem;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
+import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
@@ -32,6 +33,7 @@ public class OrderService {
     private CustomerRepository customerRepository;
     private OrderRepository orderRepository;
     private EmployeeRepository employeeRepository;
+    private ClothingItemRepository clothingItemRepository;
     private static final int CANCELLATION_HOURS_BEFORE_DELIVERY = 24;
 
     /**
@@ -47,10 +49,12 @@ public class OrderService {
     public OrderService(
             CustomerRepository customerRepository,
             OrderRepository orderRepository,
-            EmployeeRepository employeeRepository) {
+            EmployeeRepository employeeRepository,
+            ClothingItemRepository clothingItemRepository) {
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
+        this.clothingItemRepository = clothingItemRepository;
     }
 
     /**
@@ -63,6 +67,7 @@ public class OrderService {
      */
     @Transactional
     public Order createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
+        validateOrderRequest(orderRequestDto);
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
         // create new order object
@@ -78,31 +83,65 @@ public class OrderService {
         this.orderRepository.save(newOrder);
 
         // assign all items in customer cart to the order
-        assignOrderItems(newOrder, customer);
+        List<ClothingItem> items = assignOrderItems(newOrder, customer);
 
-        // save updated object in database and return order
+        // save updated objects in database and return order
         this.orderRepository.save(newOrder);
-
+        this.clothingItemRepository.saveAll(items);
         return newOrder;
     }
 
     /**
-     * Helper method to assign all items from a customer's shopping cart to a new order.
+     * Validate that the delivery date and order date in the OrderRequestDto instance are valid.
      *
-     * @param order the order to which the shopping cart items will be added
-     * @param customer the customer placing the order
-     * @throws FashionStoreException if the customer's shopping cart is empty
+     * @param orderRequestDto OrderRequestDto instance
+     * @author Flavie Qin
      */
-    private void assignOrderItems(Order order, Customer customer) {
+    private void validateOrderRequest(OrderRequestDto orderRequestDto) {
+        if (orderRequestDto.orderDate().plusDays(1).isAfter(orderRequestDto.deliveryDate())) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    "Delivery date must be at least 24 hours after order date.");
+        }
+    }
+
+    /**
+     * Helper method to assign all items from a customer's shopping cart to the new order
+     *
+     * @param order Order instance
+     * @param customer Customer instance that is placing the order
+     * @return List of clothing items with updated num in stock
+     * @author Flavie Qin
+     */
+    private List<ClothingItem> assignOrderItems(Order order, Customer customer) {
         // throw error if no items in shopping cart
         if (customer.getShoppingCartItems().isEmpty()) {
             throw new FashionStoreException(
                     HttpStatus.BAD_REQUEST, "Cannot create a new order for no items.");
         }
 
+        List<ClothingItem> clothingItems = new ArrayList<>();
         // go through customer shopping cart items and add to the order
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
-            order.addItem(createOrderItemFromShoppingCartItem(shoppingCartItem, order));
+            validateItemQuantities(shoppingCartItem);
+            // create order item
+            OrderItem newItem = createOrderItemFromShoppingCartItem(shoppingCartItem, order);
+            order.addItem(newItem);
+            // update num in stock of clothing item and add to list to save
+            int newNumInStock = newItem.getClothingItem().getNumInStock() - newItem.getQuantity();
+            newItem.getClothingItem().setNumInStock(newNumInStock);
+            clothingItems.add(newItem.getClothingItem());
+        }
+        return clothingItems;
+    }
+
+    private void validateItemQuantities(ShoppingCartItem shoppingCartItem) {
+        if (shoppingCartItem.getQuantity() > shoppingCartItem.getClothingItem().getNumInStock()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "Clothing item %s does not have enough quantity in stock.",
+                            shoppingCartItem.getClothingItem().getClothingProduct().getName()));
         }
     }
 
@@ -116,7 +155,6 @@ public class OrderService {
     private OrderItem createOrderItemFromShoppingCartItem(
             ShoppingCartItem shoppingCartItem, Order order) {
         ClothingItem clothingItem = shoppingCartItem.getClothingItem();
-
         OrderItem newItem = new OrderItem();
         newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
         newItem.setClothingItem(clothingItem);
