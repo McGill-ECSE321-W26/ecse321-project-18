@@ -11,11 +11,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
+import ca.mcgill.ecse321.fashionstore.dto.OrderStatusRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
+import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Order;
+import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.model.OrderItem;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
@@ -40,16 +43,18 @@ import org.springframework.http.HttpStatus;
 @SpringBootTest
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class OrderServiceTests {
+
     @Mock private OrderRepository orderRepository;
-
     @Mock private EmployeeRepository employeeRepository;
-
     @Mock private CustomerRepository customerRepository;
-
     @Mock private ClothingItemRepository clothingItemRepository;
 
     @InjectMocks OrderService orderService;
 
+    private static final String ORDER_NOT_NULL_MSG = "Order should not be null.";
+    private static final int ORDER_ID = 1;
+    private static final int CUSTOMER_ID = 10;
+    private static final int EMPLOYEE_ID = 20;
     private static final int CLOTHING_ITEM_ID_1 = 5;
     private static final int CLOTHING_ITEM_ID_2 = 7;
     private static final int PRODUCT_ID = 50;
@@ -74,6 +79,9 @@ class OrderServiceTests {
     private static final LocalDate INVALID_DELIVERY_DATE = LocalDate.now();
     private static final String ADDRESS = "123 Solid State Drive";
 
+    private Customer customer;
+    private Employee employee;
+    private Order purchasedOrder;
     private ClothingProduct clothingProduct;
     private ClothingItem clothingItem1;
     private ClothingItem clothingItem2;
@@ -89,10 +97,12 @@ class OrderServiceTests {
     private Order order1;
     private Order order2;
 
-    /** Setup function for ShoppingCartItem service layer tests. */
+    /** Setup function for Order service layer tests. */
     @BeforeEach
     void setup() {
-        // Arrange
+        customer = createCustomer(CUSTOMER_ID);
+        employee = createEmployee(EMPLOYEE_ID);
+        purchasedOrder = createOrder(ORDER_ID, State.PURCHASED, customer);
         clothingProduct = createClothingProduct(PRODUCT_ID);
         clothingItem1 = createClothingItem(CLOTHING_ITEM_ID_1, clothingProduct, QUANTITY_1);
         clothingItem2 = createClothingItem(CLOTHING_ITEM_ID_2, clothingProduct, QUANTITY_2);
@@ -102,15 +112,44 @@ class OrderServiceTests {
                 createShoppingCartItem(SHOPPING_CART_ITEM_ID_2, QUANTITY_2, clothingItem2);
         shoppingCartItem3 =
                 createShoppingCartItem(SHOPPING_CART_ITEM_ID_3, QUANTITY_3, clothingItem2);
-        customer1 = createCustomer(CUSTOMER_ID_1, List.of(shoppingCartItem1));
-        customer2 = createCustomer(CUSTOMER_ID_2, List.of(shoppingCartItem2));
-        customer3 = createCustomer(CUSTOMER_ID_3, List.of());
-        customer4 = createCustomer(CUSTOMER_ID_4, List.of(shoppingCartItem3));
+        customer1 = createCustomerWithCart(CUSTOMER_ID_1, List.of(shoppingCartItem1));
+        customer2 = createCustomerWithCart(CUSTOMER_ID_2, List.of(shoppingCartItem2));
+        customer3 = createCustomerWithCart(CUSTOMER_ID_3, List.of());
+        customer4 = createCustomerWithCart(CUSTOMER_ID_4, List.of(shoppingCartItem3));
 
+        setupOrders();
+    }
+
+    private void setupOrders() {
         orderItem1 = createOrderItem(ORDER_ITEM_ID_1, shoppingCartItem1);
         orderItem2 = createOrderItem(ORDER_ITEM_ID_2, shoppingCartItem2);
-        order1 = createOrder(ORDER_ID_1, customer1, orderItem1);
-        order2 = createOrder(ORDER_ID_2, customer2, orderItem2);
+        order1 = createOrderWithItem(ORDER_ID_1, customer1, orderItem1);
+        order2 = createOrderWithItem(ORDER_ID_2, customer2, orderItem2);
+    }
+
+    private Customer createCustomer(int id) {
+        Customer c = new Customer();
+        c.setId(id);
+        return c;
+    }
+
+    private Employee createEmployee(int id) {
+        Employee e = new Employee();
+        e.setId(id);
+        return e;
+    }
+
+    private Order createOrder(int id, State state, Customer customer) {
+        Order o = new Order();
+        o.setId(id);
+        o.setState(state);
+        o.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(10)));
+        o.setOrderDate(Date.valueOf(LocalDate.now()));
+        o.setDeliveryAddress("67 Building Trottier");
+        o.setPrice(123.45f);
+        o.setCustomer(customer);
+        o.setEmployee(employee);
+        return o;
     }
 
     private ClothingProduct createClothingProduct(int id) {
@@ -136,7 +175,7 @@ class OrderServiceTests {
         return newItem;
     }
 
-    private Customer createCustomer(int id, List<ShoppingCartItem> shoppingCartItems) {
+    private Customer createCustomerWithCart(int id, List<ShoppingCartItem> shoppingCartItems) {
         Customer newCustomer = new Customer();
         newCustomer.setId(id);
         for (ShoppingCartItem shoppingCartItem : shoppingCartItems) {
@@ -156,7 +195,7 @@ class OrderServiceTests {
         return newOrderItem;
     }
 
-    private Order createOrder(int id, Customer customer, OrderItem orderItem) {
+    private Order createOrderWithItem(int id, Customer customer, OrderItem orderItem) {
         Order newOrder = new Order();
         newOrder.setId(id);
         newOrder.setCustomer(customer);
@@ -475,5 +514,256 @@ class OrderServiceTests {
                         clothingItem2.getClothingProduct().getName()),
                 e.getMessage(),
                 "HTTP message is not correct after invalid order request DTO.");
+    }
+
+    /**
+     * Service layer test for assigning an employee to an order in purchased state.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToAssignedValid() {
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.ASSIGNED, EMPLOYEE_ID);
+
+        Order result = orderService.updateOrderStatus(ORDER_ID, dto);
+
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
+        assertEquals(
+                State.ASSIGNED, result.getState(), "Order state should be ASSIGNED after update.");
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    /**
+     * Service layer test for assigning an employee to an order that is NOT in purchased state.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToAssignedFromInvalidState() {
+        Order assignedOrder = createOrder(ORDER_ID, State.ASSIGNED, customer);
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(assignedOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.ASSIGNED, EMPLOYEE_ID);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.updateOrderStatus(ORDER_ID, dto));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status should be BAD_REQUEST when order is not in PURCHASED state.");
+        assertEquals(
+                "Order must be in purchased state to be assigned.",
+                e.getMessage(),
+                "Error message should indicate that order must be in PURCHASED state.");
+    }
+
+    /**
+     * Service layer test for marking an order as prepared when it is in assigned state.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToPreparedValid() {
+        Order assignedOrder = createOrder(ORDER_ID, State.ASSIGNED, customer);
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(assignedOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.PREPARED, EMPLOYEE_ID);
+
+        Order result = orderService.updateOrderStatus(ORDER_ID, dto);
+
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
+        assertEquals(
+                State.PREPARED, result.getState(), "Order state should be PREPARED after update.");
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    /**
+     * Service layer test for marking an order as prepared when it is NOT in assigned state.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToPreparedFromInvalidState() {
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.PREPARED, EMPLOYEE_ID);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.updateOrderStatus(ORDER_ID, dto));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status should be BAD_REQUEST when order is not in ASSIGNED state.");
+        assertEquals(
+                "Order must be in assigned state to be marked as prepared.",
+                e.getMessage(),
+                "Error message should indicate that order must be in ASSIGNED state.");
+    }
+
+    /**
+     * Service layer test for cancelling an order that is more than 24 hours before delivery.
+     *
+     * @author Aurore Zhang
+     */
+    @Test
+    void testUpdateOrderStatusToCancelledValid() {
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+
+        Order result = orderService.updateOrderStatus(ORDER_ID, dto);
+
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
+        assertEquals(
+                State.CANCELLED,
+                result.getState(),
+                "Order state should be CANCELLED after update.");
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    /**
+     * Service layer test for cancelling an order that is already cancelled.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToCancelledWhenAlreadyCancelled() {
+        Order cancelledOrder = createOrder(ORDER_ID, State.CANCELLED, customer);
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(cancelledOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+        when(orderRepository.save(any(Order.class)))
+                .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+
+        Order result = orderService.updateOrderStatus(ORDER_ID, dto);
+
+        assertNotNull(result, ORDER_NOT_NULL_MSG);
+        assertEquals(State.CANCELLED, result.getState(), "Order state should remain CANCELLED.");
+    }
+
+    /**
+     * Service layer test for cancelling a delivered order.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToCancelledWhenDelivered() {
+        Order deliveredOrder = createOrder(ORDER_ID, State.DELIVERED, customer);
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(deliveredOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.updateOrderStatus(ORDER_ID, dto));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status should be BAD_REQUEST when trying to cancel a delivered order.");
+        assertEquals(
+                "Cannot cancel an order that is delivered.",
+                e.getMessage(),
+                "Error message should indicate that delivered orders cannot be cancelled.");
+    }
+
+    /**
+     * Service layer test for cancelling an order less than 24 hours before delivery.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToCancelledTooLate() {
+        Order urgentOrder = createOrder(ORDER_ID, State.PURCHASED, customer);
+        urgentOrder.setDeliveryDate(Date.valueOf(LocalDate.now()));
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(urgentOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.updateOrderStatus(ORDER_ID, dto));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status should be BAD_REQUEST when cancelling too close to delivery.");
+        assertEquals(
+                "Cannot cancel order within 24 hours of delivery.",
+                e.getMessage(),
+                "Error message should indicate the 24-hour cancellation rule.");
+    }
+
+    /**
+     * Service layer test for transitioning to an invalid state.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusToInvalidTransition() {
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
+        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.DELIVERED, EMPLOYEE_ID);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.updateOrderStatus(ORDER_ID, dto));
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status should be BAD_REQUEST for an unsupported state transition.");
+        assertEquals(
+                String.format("Invalid status transition to %s.", State.DELIVERED),
+                e.getMessage(),
+                "Error message should indicate which state the invalid transition was to.");
+    }
+
+    /**
+     * Service layer test for updating an order with an invalid order ID.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void testUpdateOrderStatusByInvalidOrderId() {
+        when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.empty());
+
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.ASSIGNED, EMPLOYEE_ID);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> orderService.updateOrderStatus(ORDER_ID, dto));
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "HTTP status should be NOT_FOUND for an invalid order ID.");
     }
 }

@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import ca.mcgill.ecse321.fashionstore.controller.AccountController;
@@ -54,6 +55,13 @@ class AccountServiceTests {
             """;
     private static final String badCredentialsLoginSuccessErrorMsg =
             "Login passed with wrong credentials.";
+
+    private static final String wrongCreateFailureErrorMsg =
+            """
+            Account creation failure error message is wrong.%n\
+            Current: %s%n\
+            Should be: %s%n\
+            """;
 
     @BeforeEach
     void loadDatabase() {
@@ -289,5 +297,107 @@ class AccountServiceTests {
                 customer.getEmail(),
                 response.email(),
                 String.format(badEmailError, customer.getEmail(), response.email()));
+    }
+
+    /**
+     * Test employee account creation success.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void successCreateEmployeeAccount() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("newemployee@fashionstore.com", "employee456");
+
+        AccountResponseDto response =
+                assertDoesNotThrow(
+                        () -> accountService.createEmployeeAccount(accountRequestDto),
+                        "Creating a valid employee account should not throw an exception.");
+
+        assertNotNull(response.id(), "Created employee account ID is null.");
+        assertEquals(
+                accountRequestDto.email(),
+                response.email(),
+                String.format(badEmailError, accountRequestDto.email(), response.email()));
+        assertEquals(
+                AccountResponseDto.AccountType.EMPLOYEE,
+                accountService.findAccountType(response.id()),
+                "Created account type is wrong for employee.");
+    }
+
+    /**
+     * Test employee account creation failure due to duplicate email.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void duplicateEmployeeEmailCreateAccount() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto(employee.getEmail(), "employee456");
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountService.createEmployeeAccount(accountRequestDto),
+                        "Creating an employee account with an existing email should fail.");
+
+        String expectedMessage =
+                String.format(
+                        "An account with email %s already exists.", accountRequestDto.email());
+        assertEquals(
+                expectedMessage,
+                e.getMessage(),
+                String.format(wrongCreateFailureErrorMsg, e.getMessage(), expectedMessage));
+    }
+
+    /**
+     * Test customer account creation success.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void successCreateCustomerAccount() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("newcustomer@fashionstore.com", "customer456");
+
+        AccountResponseDto response =
+                assertDoesNotThrow(
+                        () -> accountService.createCustomerAccount(accountRequestDto),
+                        "Creating a valid customer account should not throw an exception.");
+
+        assertNotNull(response.id(), "Created customer account ID is null.");
+        assertEquals(
+                accountRequestDto.email(),
+                response.email(),
+                String.format(badEmailError, accountRequestDto.email(), response.email()));
+        assertEquals(
+                AccountResponseDto.AccountType.CUSTOMER,
+                accountService.findAccountType(response.id()),
+                "Created account type is wrong for customer.");
+    }
+
+    /**
+     * Test customer account creation failure due to duplicate email.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void duplicateCustomerEmailCreateAccount() {
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto(customer.getEmail(), "customer456");
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountService.createCustomerAccount(accountRequestDto),
+                        "Creating a customer account with an existing email should fail.");
+
+        String expectedMessage =
+                String.format(
+                        "An account with email %s already exists.", accountRequestDto.email());
+        assertEquals(
+                expectedMessage,
+                e.getMessage(),
+                String.format(wrongCreateFailureErrorMsg, e.getMessage(), expectedMessage));
     }
 }

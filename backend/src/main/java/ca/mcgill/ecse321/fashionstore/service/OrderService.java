@@ -290,8 +290,7 @@ public class OrderService {
                         order.getDeliveryDate().toLocalDate().atStartOfDay());
         if (hoursUntilDelivery < CANCELLATION_HOURS_BEFORE_DELIVERY) {
             throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST,
-                    "Order can only be cancelled at least 24 hours before the delivery date.");
+                    HttpStatus.BAD_REQUEST, "Cannot cancel order within 24 hours of delivery.");
         }
     }
 }
