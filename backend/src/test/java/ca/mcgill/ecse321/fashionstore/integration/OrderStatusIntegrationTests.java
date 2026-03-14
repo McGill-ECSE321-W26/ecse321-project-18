@@ -41,7 +41,6 @@ class OrderStatusIntegrationTests {
     @Autowired private EmployeeRepository employeeRepository;
 
     private int orderId;
-    private int customerId;
     private int employeeId;
     private static final int INVALID_ORDER_ID = 99999;
     private static final int INVALID_EMPLOYEE_ID = 99999;
@@ -50,7 +49,6 @@ class OrderStatusIntegrationTests {
     @BeforeAll
     public void setup() {
         Customer customer = createCustomer("customer@fashionstore.com", "password123");
-        customerId = customer.getId();
 
         Employee employee = createEmployee("employee@fashionstore.com", "password123");
         employeeId = employee.getId();
@@ -252,14 +250,7 @@ class OrderStatusIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(6)
     void testUpdateOrderStatusCancelDelivered() {
-        int deliveredOrderId =
-                createOrder(
-                        State.DELIVERED,
-                        null,
-                        LocalDate.now(),
-                        LocalDate.now().plusDays(1),
-                        "67 Building Trottier",
-                        50.00f).getId();
+        int deliveredOrderId = createDeliveredOrder().getId();
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
         client.put()
@@ -273,6 +264,16 @@ class OrderStatusIntegrationTests {
                 .isEqualTo("Cannot cancel an order that is delivered.");
     }
 
+    private Order createDeliveredOrder() {
+        return createOrder(
+                State.DELIVERED,
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusDays(1),
+                "67 Building Trottier",
+                50.00f);
+    }
+
     /**
      * Integration test for cancelling an order less than 24 hours before delivery (invalid).
      *
@@ -281,14 +282,7 @@ class OrderStatusIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(7)
     void testUpdateOrderStatusCancelTooLate() {
-        int urgentOrderId =
-                createOrder(
-                        State.PURCHASED,
-                        null,
-                        LocalDate.now(),
-                        LocalDate.now(),
-                        "67 Building Trottier",
-                        10.00f).getId();
+        int urgentOrderId = createUrgentOrder().getId();
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
         client.put()
@@ -299,6 +293,16 @@ class OrderStatusIntegrationTests {
                 .isBadRequest()
                 .expectBody()
                 .jsonPath(ERROR_LOC)
-                .isEqualTo("Order can only be cancelled at least 24 hours before the delivery date.");
+                .isEqualTo("Cannot cancel order within 24 hours of delivery.");
+    }
+
+    private Order createUrgentOrder() {
+        return createOrder(
+                State.PURCHASED,
+                null,
+                LocalDate.now(),
+                LocalDate.now(),
+                "67 Building Trottier",
+                10.00f);
     }
 }

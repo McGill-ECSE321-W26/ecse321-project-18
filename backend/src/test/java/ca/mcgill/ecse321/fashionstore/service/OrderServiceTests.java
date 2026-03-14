@@ -88,8 +88,10 @@ class OrderServiceTests {
         clothingProduct = createClothingProduct(PRODUCT_ID);
         clothingItem1 = createClothingItem(CLOTHING_ITEM_ID_1, clothingProduct);
         clothingItem2 = createClothingItem(CLOTHING_ITEM_ID_2, clothingProduct);
-        shoppingCartItem1 = createShoppingCartItem(SHOPPING_CART_ITEM_ID_1, QUANTITY_1, clothingItem1);
-        shoppingCartItem2 = createShoppingCartItem(SHOPPING_CART_ITEM_ID_2, QUANTITY_2, clothingItem2);
+        shoppingCartItem1 =
+                createShoppingCartItem(SHOPPING_CART_ITEM_ID_1, QUANTITY_1, clothingItem1);
+        shoppingCartItem2 =
+                createShoppingCartItem(SHOPPING_CART_ITEM_ID_2, QUANTITY_2, clothingItem2);
         customer1 = createCustomerWithCart(CUSTOMER_ID_1, shoppingCartItem1);
         customer2 = createCustomerWithCart(CUSTOMER_ID_2, shoppingCartItem2);
         orderItem1 = createOrderItem(ORDER_ITEM_ID_1, shoppingCartItem1);
@@ -136,7 +138,8 @@ class OrderServiceTests {
         return newItem;
     }
 
-    private ShoppingCartItem createShoppingCartItem(int id, int quantity, ClothingItem clothingItem) {
+    private ShoppingCartItem createShoppingCartItem(
+            int id, int quantity, ClothingItem clothingItem) {
         ShoppingCartItem newItem = new ShoppingCartItem();
         newItem.setId(id);
         newItem.setQuantity(quantity);
@@ -169,7 +172,8 @@ class OrderServiceTests {
         return newOrder;
     }
 
-    private void assertGetOrder(Order order, int expectedId, int expectedCustomerId, int expectedSize) {
+    private void assertGetOrder(
+            Order order, int expectedId, int expectedCustomerId, int expectedSize) {
         assertEquals(expectedId, order.getId(), "Order does not have correct ID.");
         assertEquals(
                 expectedCustomerId,
@@ -184,7 +188,8 @@ class OrderServiceTests {
     private void assertGetOrderItem(
             OrderItem item, int expectedId, int expectedQuantity, int expectedClothingItemId) {
         assertEquals(expectedId, item.getId(), "Order item does not have correct ID.");
-        assertEquals(expectedQuantity, item.getQuantity(), "Order item does not have correct quantity.");
+        assertEquals(
+                expectedQuantity, item.getQuantity(), "Order item does not have correct quantity.");
         assertEquals(
                 expectedClothingItemId,
                 item.getClothingItem().getId(),
@@ -208,7 +213,8 @@ class OrderServiceTests {
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
         assertNotNull(result, ORDER_NOT_NULL_MSG);
-        assertEquals(State.ASSIGNED, result.getState(), "Order state should be ASSIGNED after update.");
+        assertEquals(
+                State.ASSIGNED, result.getState(), "Order state should be ASSIGNED after update.");
         verify(orderRepository, times(1)).save(any(Order.class));
     }
 
@@ -258,7 +264,8 @@ class OrderServiceTests {
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
         assertNotNull(result, ORDER_NOT_NULL_MSG);
-        assertEquals(State.PREPARED, result.getState(), "Order state should be PREPARED after update.");
+        assertEquals(
+                State.PREPARED, result.getState(), "Order state should be PREPARED after update.");
         verify(orderRepository, times(1)).save(any(Order.class));
     }
 
@@ -306,7 +313,10 @@ class OrderServiceTests {
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
         assertNotNull(result, ORDER_NOT_NULL_MSG);
-        assertEquals(State.CANCELLED, result.getState(), "Order state should be CANCELLED after update.");
+        assertEquals(
+                State.CANCELLED,
+                result.getState(),
+                "Order state should be CANCELLED after update.");
         verify(orderRepository, times(1)).save(any(Order.class));
     }
 
@@ -383,7 +393,7 @@ class OrderServiceTests {
                 e.getStatus(),
                 "HTTP status should be BAD_REQUEST when cancelling too close to delivery.");
         assertEquals(
-                "Order can only be cancelled at least 24 hours before the delivery date.",
+                "Cannot cancel order within 24 hours of delivery.",
                 e.getMessage(),
                 "Error message should indicate the 24-hour cancellation rule.");
     }
