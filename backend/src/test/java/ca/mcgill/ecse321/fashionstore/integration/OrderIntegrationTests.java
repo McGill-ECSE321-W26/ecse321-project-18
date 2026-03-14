@@ -12,10 +12,8 @@ import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
-
 import java.sql.Date;
 import java.time.LocalDate;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -51,29 +49,20 @@ public class OrderIntegrationTests {
     /** Setup method — creates a customer, employee, and a purchased order in the database. */
     @BeforeAll
     public void setup() {
-        // Create customer
-        Customer customer = new Customer();
-        customer.setEmail("customer@fashionstore.com");
-        customer.setPassword("password123");
-        customer = customerRepository.save(customer);
+        Customer customer = createCustomer("customer@fashionstore.com", "password123");
         customerId = customer.getId();
 
-        // Create employee
-        Employee employee = new Employee();
-        employee.setEmail("employee@fashionstore.com");
-        employee.setPassword("password123");
-        employee = employeeRepository.save(employee);
+        Employee employee = createEmployee("employee@fashionstore.com", "password123");
         employeeId = employee.getId();
 
-        // Create a purchased order
-        Order order = new Order();
-        order.setState(State.PURCHASED);
-        order.setCustomer(customer);
-        order.setOrderDate(Date.valueOf(LocalDate.now()));
-        order.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(10)));
-        order.setDeliveryAddress("67 Building Trottier");
-        order.setPrice(123.45f);
-        order = orderRepository.save(order);
+        Order order =
+                createOrder(
+                        State.PURCHASED,
+                        customer,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(10),
+                        "67 Building Trottier",
+                        123.45f);
         orderId = order.getId();
     }
 
@@ -85,6 +74,37 @@ public class OrderIntegrationTests {
         customerRepository.deleteAll();
     }
 
+    private Customer createCustomer(String email, String password) {
+        Customer customer = new Customer();
+        customer.setEmail(email);
+        customer.setPassword(password);
+        return customerRepository.save(customer);
+    }
+
+    private Employee createEmployee(String email, String password) {
+        Employee employee = new Employee();
+        employee.setEmail(email);
+        employee.setPassword(password);
+        return employeeRepository.save(employee);
+    }
+
+    private Order createOrder(
+            State state,
+            Customer customer,
+            LocalDate orderDate,
+            LocalDate deliveryDate,
+            String deliveryAddress,
+            float price) {
+        Order order = new Order();
+        order.setState(state);
+        order.setCustomer(customer);
+        order.setOrderDate(Date.valueOf(orderDate));
+        order.setDeliveryDate(Date.valueOf(deliveryDate));
+        order.setDeliveryAddress(deliveryAddress);
+        order.setPrice(price);
+        return orderRepository.save(order);
+    }
+
     /**
      * Integration test for updating order status to assigned with valid order and employee ID.
      *
@@ -93,10 +113,8 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(0)
     void testUpdateOrderStatusToAssignedValid() {
-        // Arrange
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.ASSIGNED, employeeId);
 
-        // Act
         OrderResponseDto response =
                 client.put()
                         .uri(ORDER_STATUS_URI, orderId)
@@ -108,7 +126,6 @@ public class OrderIntegrationTests {
                         .returnResult()
                         .getResponseBody();
 
-        // Assert
         assertNotNull(response, "Response body should not be null.");
         assertEquals(State.ASSIGNED, response.state(), "Order state should be ASSIGNED.");
         assertEquals(employeeId, response.employeeId(), "Employee ID should match.");
@@ -122,10 +139,8 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(1)
     void testUpdateOrderStatusToPreparedValid() {
-        // Arrange
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.PREPARED, employeeId);
 
-        // Act
         OrderResponseDto response =
                 client.put()
                         .uri(ORDER_STATUS_URI, orderId)
@@ -137,7 +152,6 @@ public class OrderIntegrationTests {
                         .returnResult()
                         .getResponseBody();
 
-        // Assert
         assertNotNull(response, "Response body should not be null.");
         assertEquals(State.PREPARED, response.state(), "Order state should be PREPARED.");
     }
@@ -150,10 +164,8 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(2)
     void testUpdateOrderStatusToCancelledValid() {
-        // Arrange
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
-        // Act
         OrderResponseDto response =
                 client.put()
                         .uri(ORDER_STATUS_URI, orderId)
@@ -165,7 +177,6 @@ public class OrderIntegrationTests {
                         .returnResult()
                         .getResponseBody();
 
-        // Assert
         assertNotNull(response, "Response body should not be null.");
         assertEquals(State.CANCELLED, response.state(), "Order state should be CANCELLED.");
     }
@@ -178,10 +189,8 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(3)
     void testUpdateOrderStatusInvalidOrderId() {
-        // Arrange
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.ASSIGNED, employeeId);
 
-        // Act + Assert
         client.put()
                 .uri(ORDER_STATUS_URI, INVALID_ORDER_ID)
                 .body(body)
@@ -201,10 +210,8 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(4)
     void testUpdateOrderStatusInvalidEmployeeId() {
-        // Arrange
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.ASSIGNED, INVALID_EMPLOYEE_ID);
 
-        // Act + Assert
         client.put()
                 .uri(ORDER_STATUS_URI, orderId)
                 .body(body)
@@ -224,10 +231,8 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(5)
     void testUpdateOrderStatusInvalidTransition() {
-        // Arrange
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.ASSIGNED, employeeId);
 
-        // Act + Assert
         client.put()
                 .uri(ORDER_STATUS_URI, orderId)
                 .body(body)
@@ -247,20 +252,17 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(6)
     void testUpdateOrderStatusCancelDelivered() {
-        // Arrange
-        Order deliveredOrder = new Order();
-        deliveredOrder.setState(State.DELIVERED);
-
-        deliveredOrder.setOrderDate(Date.valueOf(LocalDate.now()));
-        deliveredOrder.setDeliveryDate(Date.valueOf(LocalDate.now().plusDays(1)));
-        deliveredOrder.setDeliveryAddress("67 Building Trottier");
-        deliveredOrder.setPrice(50.00f);
-        deliveredOrder = orderRepository.save(deliveredOrder);
+        Order deliveredOrder =
+                createOrder(
+                        State.DELIVERED,
+                        null,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(1),
+                        "67 Building Trottier",
+                        50.00f);
         int deliveredOrderId = deliveredOrder.getId();
-
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
-        // Act + Assert
         client.put()
                 .uri(ORDER_STATUS_URI, deliveredOrderId)
                 .body(body)
@@ -280,17 +282,15 @@ public class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(7)
     void testUpdateOrderStatusCancelTooLate() {
-
-        Order urgentOrder = new Order();
-        urgentOrder.setState(State.PURCHASED);
-
-        urgentOrder.setOrderDate(Date.valueOf(LocalDate.now()));
-        urgentOrder.setDeliveryDate(Date.valueOf(LocalDate.now())); // delivery today
-        urgentOrder.setDeliveryAddress("67 Building Trottier");
-        urgentOrder.setPrice(10.00f);
-        urgentOrder = orderRepository.save(urgentOrder);
-        int urgentOrderId = urgentOrder.getId();
-
+        int urgentOrderId =
+                createOrder(
+                        State.PURCHASED,
+                        null,
+                        LocalDate.now(),
+                        LocalDate.now(),
+                        "67 Building Trottier",
+                        10.00f)
+                        .getId();
         OrderStatusRequestDto body = new OrderStatusRequestDto(State.CANCELLED, employeeId);
 
         client.put()

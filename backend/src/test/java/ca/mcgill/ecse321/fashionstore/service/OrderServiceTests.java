@@ -21,12 +21,10 @@ import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
