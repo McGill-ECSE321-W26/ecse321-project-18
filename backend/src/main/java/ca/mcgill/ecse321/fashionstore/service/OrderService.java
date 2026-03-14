@@ -10,6 +10,7 @@ import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.model.OrderItem;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
+import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
@@ -32,6 +33,7 @@ public class OrderService {
     private CustomerRepository customerRepository;
     private OrderRepository orderRepository;
     private EmployeeRepository employeeRepository;
+    private ClothingItemRepository clothingItemRepository;
     private static final int CANCELLATION_HOURS_BEFORE_DELIVERY = 24;
 
     /**
@@ -47,10 +49,11 @@ public class OrderService {
     public OrderService(
             CustomerRepository customerRepository,
             OrderRepository orderRepository,
-            EmployeeRepository employeeRepository) {
+            EmployeeRepository employeeRepository, ClothingItemRepository clothingItemRepository) {
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
+        this.clothingItemRepository = clothingItemRepository;
     }
 
     /**
@@ -76,10 +79,11 @@ public class OrderService {
         newOrder.setPrice(orderRequestDto.price());
 
         // assign all items in customer cart to the order
-        assignOrderItems(newOrder, customer);
+        List<ClothingItem> items = assignOrderItems(newOrder, customer);
 
-        // save updated object in database and return order
+        // save updated objects in database and return order
         this.orderRepository.save(newOrder);
+        this.clothingItemRepository.saveAll(items);
         return newOrder;
     }
 
@@ -102,19 +106,34 @@ public class OrderService {
      *
      * @param order Order instance
      * @param customer Customer instance that is placing the order
+     * @return List of clothing items with updated num in stock
+     * @author Flavie Qin
      */
-    private void assignOrderItems(Order order, Customer customer) {
+    private List<ClothingItem> assignOrderItems(Order order, Customer customer) {
         // throw error if no items in shopping cart
         if (customer.getShoppingCartItems().isEmpty()) {
             throw new FashionStoreException(
                     HttpStatus.BAD_REQUEST, "Cannot create a new order for no items.");
         }
 
+        List<ClothingItem> clothingItems = new ArrayList<>();
         // go through customer shopping cart items and add to the order
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
+            if (shoppingCartItem.getQuantity() > shoppingCartItem.getClothingItem().getNumInStock()) {
+                throw new FashionStoreException(
+                        HttpStatus.BAD_REQUEST,
+                        String.format("Clothing item %s does not have enough quantity in stock.",
+                                shoppingCartItem.getClothingItem().getClothingProduct().getName()));
+            }
+            // create order item
             OrderItem newItem = createNewOrderItem(shoppingCartItem);
             order.addItem(newItem);
+            // update num in stock of clothing item and add to list to save
+            int newNumInStock = newItem.getClothingItem().getNumInStock() - newItem.getQuantity();
+            newItem.getClothingItem().setNumInStock(newNumInStock);
+            clothingItems.add(newItem.getClothingItem());
         }
+        return clothingItems;
     }
 
     private OrderItem createNewOrderItem(ShoppingCartItem shoppingCartItem) {
