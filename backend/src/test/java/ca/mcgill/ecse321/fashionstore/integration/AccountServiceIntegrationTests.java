@@ -39,6 +39,8 @@ class AccountServiceIntegrationTests {
 
     // URI
     private static final String accountLoginUri = "/fashionstore/account/login";
+    private static final String accountCreateEmployeeUri = "/fashionstore/account/employee";
+    private static final String accountCreateCustomerUri = "/fashionstore/account/customer";
 
     // Error messages
     private static final String responseNullError = "Response body is null";
@@ -245,5 +247,131 @@ class AccountServiceIntegrationTests {
         // Asserts
         assertNotNull(response, responseNullError);
         assertNull(response.email(), "Failed employee login should have null email in response.");
+    }
+
+    /**
+     * Test successful employee account creation.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void createEmployeeAccount() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("newemployee@fashionstore.com", "employee001");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountCreateEmployeeUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertNotNull(response.id(), "Created employee account response has null ID.");
+        assertEquals("newemployee@fashionstore.com", response.email(),
+                "Created employee account response has wrong email.");
+        assertNull(response.accountType(),
+                "Created employee account response should have null account type.");
+    }
+
+    /**
+     * Test unsuccessful employee account creation when duplicated email.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void failCreateEmployeeAccountDuplicateEmail() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("employee@fashionstore.com", "employee001");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountCreateEmployeeUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isEqualTo(409)
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertNull(response.id(), "Duplicate employee account creation should have null ID.");
+        assertNull(response.email(), "Duplicate employee account creation should have null email.");
+        assertNull(response.accountType(),
+                "Duplicate employee account creation should have null account type.");
+    }
+
+    /**
+     * Test successful customer account creation.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void createCustomerAccount() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("newcustomer@fashionstore.com", "anonymous007");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountCreateCustomerUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertNotNull(response.id(), "Created customer account response has null ID.");
+        assertEquals("newcustomer@fashionstore.com", response.email(),
+                "Created customer account response has wrong email.");
+        assertNull(response.accountType(),
+                "Created customer account response should have null account type.");
+    }
+
+    /**
+     * Test unsuccessful customer account creation when duplicated email.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void failCreateCustomerAccountDuplicateEmail() {
+        // Arrange
+        AccountRequestDto accountRequestDto =
+                new AccountRequestDto("customer@fashionstore.com", "customer456");
+
+        // Act
+        AccountResponseDto response =
+                client.post()
+                        .uri(accountCreateCustomerUri)
+                        .body(accountRequestDto)
+                        .exchange()
+                        .expectStatus()
+                        .isEqualTo(409)
+                        .expectBody(AccountResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertNull(response.id(), "Duplicate customer account creation should have null ID.");
+        assertNull(response.email(), "Duplicate customer account creation should have null email.");
+        assertNull(response.accountType(),
+                "Duplicate customer account creation should have null account type.");
     }
 }
