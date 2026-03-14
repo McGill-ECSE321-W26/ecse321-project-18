@@ -14,6 +14,7 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,8 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 /** Integration test suite for ClothingProductService. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -51,41 +50,40 @@ class ClothingProductServiceIntegrationTests {
     /** Setup method for the test suite. */
     @BeforeAll
     void createClothingProducts() {
-        // set clothing product first
-        ClothingProduct clothingProduct = new ClothingProduct();
-        clothingProduct.setImage("hoodie.png");
-        clothingProduct.setPrice(69.99f);
-        clothingProduct.setName("Hoodie");
-        clothingProductRepository.save(clothingProduct);
-        this.clothingProduct = clothingProduct;
+        // create clothing products
+        this.clothingProduct = createClothingProduct("hoodie.png", 69.99f, "Hoodie");
+        this.clothingProduct2 = createClothingProduct("sweater.png", 55.55f, "Sweater");
 
-        // create first clothing item
-        ClothingItem clothingItem = new ClothingItem();
-        clothingItem.setClothingProduct(clothingProduct);
-        clothingItem.setSize(ClothingItem.Size.M);
-        clothingItem.setColour(ClothingItem.Colour.YELLOW);
-        clothingItem.setNumInStock(100);
-        clothingItemRepository.save(clothingItem);
-        this.clothingItem = clothingItem;
-
-        // create another clothing product
-        ClothingProduct clothingProduct2 = new ClothingProduct();
-        clothingProduct2.setImage("sweater.png");
-        clothingProduct2.setPrice(55.55f);
-        clothingProduct2.setName("Sweater");
-        clothingProductRepository.save(clothingProduct2);
-        this.clothingProduct2 = clothingProduct2;
-
-        // another clothing item
-        ClothingItem clothingItem2 = new ClothingItem();
-        clothingItem2.setClothingProduct(clothingProduct2);
-        clothingItem2.setSize(ClothingItem.Size.XL);
-        clothingItem2.setColour(ClothingItem.Colour.RED);
-        clothingItem2.setNumInStock(50);
-        clothingItemRepository.save(clothingItem2);
-        this.clothingItem2 = clothingItem2;
+        // create clothing items
+        this.clothingItem =
+                createClothingItem(
+                        clothingProduct, ClothingItem.Size.M, ClothingItem.Colour.YELLOW, 100);
+        this.clothingItem2 =
+                createClothingItem(
+                        clothingProduct2, ClothingItem.Size.XL, ClothingItem.Colour.RED, 50);
 
         this.allClothingProducts = List.of(clothingProduct, clothingProduct2);
+    }
+
+    private ClothingProduct createClothingProduct(String image, float price, String name) {
+        ClothingProduct product = new ClothingProduct();
+        product.setImage(image);
+        product.setPrice(price);
+        product.setName(name);
+        return clothingProductRepository.save(product);
+    }
+
+    private ClothingItem createClothingItem(
+            ClothingProduct product,
+            ClothingItem.Size size,
+            ClothingItem.Colour colour,
+            int stock) {
+        ClothingItem item = new ClothingItem();
+        item.setClothingProduct(product);
+        item.setSize(size);
+        item.setColour(colour);
+        item.setNumInStock(stock);
+        return clothingItemRepository.save(item);
     }
 
     /** Teardown method for test suite. (placeholder, please modify if needed) */
@@ -130,7 +128,7 @@ class ClothingProductServiceIntegrationTests {
      */
     @Test
     void getClothingProductFail() {
-        int productId = clothingProduct.getId() + 1; // nonexistent clothingproduct id
+        int productId = clothingProduct.getId() - 1; // nonexistent clothingproduct id
         ClothingProductResponseDto response =
                 client.get()
                         .uri(clothingProductUri, productId)
@@ -154,14 +152,16 @@ class ClothingProductServiceIntegrationTests {
      */
     @Test
     void testGetAllClothingProducts() {
-        List<ClothingProductResponseDto> expected = clothingProductsToResponseDtos(this.allClothingProducts);
+        List<ClothingProductResponseDto> expected =
+                clothingProductsToResponseDtos(this.allClothingProducts);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(clothingProductsUri);
         List<ClothingProductResponseDto> response =
-            getMatchingClothingProductsResponseBody(builder);
+                getMatchingClothingProductsResponseBody(builder);
 
         assertNotNull(response, "Response body for get all clothing products is null.");
-        assertIterableEquals(expected, response, "Not all clothing products were retrieved correctly.");
+        assertIterableEquals(
+                expected, response, "Not all clothing products were retrieved correctly.");
     }
 
     /**
@@ -171,12 +171,12 @@ class ClothingProductServiceIntegrationTests {
      */
     @Test
     void testSearchNoMatchingClothingProducts() {
-        UriComponentsBuilder builder = UriComponentsBuilder
-            .fromUriString(clothingProductsUri)
-            .queryParam("name", "strawberry");
+        UriComponentsBuilder builder =
+                UriComponentsBuilder.fromUriString(clothingProductsUri)
+                        .queryParam("name", "strawberry");
 
         List<ClothingProductResponseDto> response =
-            getMatchingClothingProductsResponseBody(builder);
+                getMatchingClothingProductsResponseBody(builder);
 
         assertNoMatchingClothingProducts(response);
     }
@@ -188,12 +188,12 @@ class ClothingProductServiceIntegrationTests {
      */
     @Test
     void testFilterSizeNoMatchingClothingProducts() {
-        UriComponentsBuilder builder = UriComponentsBuilder
-            .fromUriString(clothingProductsUri)
-            .queryParam("sizes", List.of(ClothingItem.Size.S, ClothingItem.Size.L));
+        UriComponentsBuilder builder =
+                UriComponentsBuilder.fromUriString(clothingProductsUri)
+                        .queryParam("sizes", List.of(ClothingItem.Size.S, ClothingItem.Size.L));
 
         List<ClothingProductResponseDto> response =
-            getMatchingClothingProductsResponseBody(builder);
+                getMatchingClothingProductsResponseBody(builder);
 
         assertNoMatchingClothingProducts(response);
     }
@@ -205,12 +205,14 @@ class ClothingProductServiceIntegrationTests {
      */
     @Test
     void testFilterColourNoMatchingClothingProducts() {
-        UriComponentsBuilder builder = UriComponentsBuilder
-            .fromUriString(clothingProductsUri)
-            .queryParam("colours", List.of(ClothingItem.Colour.BLUE, ClothingItem.Colour.PURPLE));
+        UriComponentsBuilder builder =
+                UriComponentsBuilder.fromUriString(clothingProductsUri)
+                        .queryParam(
+                                "colours",
+                                List.of(ClothingItem.Colour.BLUE, ClothingItem.Colour.PURPLE));
 
         List<ClothingProductResponseDto> response =
-            getMatchingClothingProductsResponseBody(builder);
+                getMatchingClothingProductsResponseBody(builder);
 
         assertNoMatchingClothingProducts(response);
     }
@@ -222,24 +224,27 @@ class ClothingProductServiceIntegrationTests {
      */
     @Test
     void testMatchingClothingProducts() {
-        List<ClothingProductResponseDto> expected = List.of(new ClothingProductResponseDto(clothingProduct));
+        List<ClothingProductResponseDto> expected =
+                List.of(new ClothingProductResponseDto(clothingProduct));
 
-        UriComponentsBuilder builder = UriComponentsBuilder
-            .fromUriString(clothingProductsUri)
-            .queryParam("name", "hood")
-            .queryParam("sizes", List.of(ClothingItem.Size.M))
-            .queryParam("colours", List.of(ClothingItem.Colour.YELLOW, ClothingItem.Colour.RED));
+        UriComponentsBuilder builder =
+                UriComponentsBuilder.fromUriString(clothingProductsUri)
+                        .queryParam("name", "hood")
+                        .queryParam("sizes", List.of(ClothingItem.Size.M))
+                        .queryParam(
+                                "colours",
+                                List.of(ClothingItem.Colour.YELLOW, ClothingItem.Colour.RED));
 
         List<ClothingProductResponseDto> response =
-            getMatchingClothingProductsResponseBody(builder);
+                getMatchingClothingProductsResponseBody(builder);
 
         assertNotNull(response, "Response body for get matching clothing products is null.");
         assertIterableEquals(expected, response, "Matching clothing products are incorrect.");
     }
 
-    private List<ClothingProductResponseDto> getMatchingClothingProductsResponseBody(UriComponentsBuilder builder) {
-        return
-            client.get()
+    private List<ClothingProductResponseDto> getMatchingClothingProductsResponseBody(
+            UriComponentsBuilder builder) {
+        return client.get()
                 .uri(builder.build().encode().toUri())
                 .exchange()
                 .expectStatus()
@@ -250,7 +255,8 @@ class ClothingProductServiceIntegrationTests {
     }
 
     private void assertNoMatchingClothingProducts(List<ClothingProductResponseDto> response) {
-        assertNotNull(response, "Response body for no matching clothing products should not be null.");
+        assertNotNull(
+                response, "Response body for no matching clothing products should not be null.");
         assertTrue(response.isEmpty(), "List of matching clothing products is not empty.");
     }
 }
