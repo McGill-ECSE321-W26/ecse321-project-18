@@ -54,9 +54,8 @@ class ClothingProductServiceTests {
         clothingItemRepository.save(clothingItem);
         this.clothingItem = clothingItem;
 
-        ClothingProductRequestDto clothingProductRequestDto =
+        this.clothingProductRequestDto =
                 new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png");
-        this.clothingProductRequestDto = clothingProductRequestDto;
     }
 
     /**
