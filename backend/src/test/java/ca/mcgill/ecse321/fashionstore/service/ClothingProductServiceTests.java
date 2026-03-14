@@ -2,14 +2,17 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -122,5 +125,81 @@ class ClothingProductServiceTests {
                 clothingItem.getColour(),
                 response.getItem(0).getColour(),
                 "Retrieved clothing product's item does not have correct colour.");
+    }
+
+    /**
+     * Test running search by name on clothing products, expecting no products that match the given
+     * name.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    @Transactional
+    void testSearchNoMatchingClothingProducts() {
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts("nope", null, null);
+
+        assertTrue(
+                matchingClothingProducts.isEmpty(),
+                "Clothing products matching the name search were incorrectly found.");
+    }
+
+    /**
+     * Test running filter by size on clothing products, expecting no products that match the given
+     * size.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    @Transactional
+    void testFilterSizeNoMatchingClothingProducts() {
+        List<ClothingItem.Size> sizes = List.of(ClothingItem.Size.XL, ClothingItem.Size.S);
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(null, sizes, null);
+
+        assertTrue(
+                matchingClothingProducts.isEmpty(),
+                "Clothing products matching the size filters were incorrectly found.");
+    }
+
+    /**
+     * Test running filter by colour on clothing products, expecting no products that match the
+     * given colour.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    @Transactional
+    void testFilterColourNoMatchingClothingProducts() {
+        List<ClothingItem.Colour> colours =
+                List.of(ClothingItem.Colour.RED, ClothingItem.Colour.BLUE);
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(null, null, colours);
+
+        assertTrue(
+                matchingClothingProducts.isEmpty(),
+                "Clothing products matching the colour filters were incorrectly found.");
+    }
+
+    /**
+     * Test running search and filter on clothing products, expecting a match for the given
+     * (partial) name, size, and colour.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    @Transactional
+    void testMatchingClothingProducts() {
+        String name = "hood";
+        List<ClothingItem.Size> sizes = List.of(ClothingItem.Size.M);
+        List<ClothingItem.Colour> colours = List.of(ClothingItem.Colour.YELLOW);
+
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+
+        assertIterableEquals(
+                List.of(clothingProduct),
+                matchingClothingProducts,
+                "Clothing products matching search by name and filter by size and colour are incorrect.");
     }
 }

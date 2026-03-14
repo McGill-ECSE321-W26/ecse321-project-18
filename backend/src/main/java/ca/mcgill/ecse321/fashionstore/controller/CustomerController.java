@@ -39,7 +39,8 @@ public class CustomerController {
     @PutMapping("/fashionstore/account/customer/{customerId}/loyalty")
     public CustomerResponseDto updateCustomerLoyaltyPts(
             @PathVariable int customerId, @RequestBody CustomerRequestDto customerRequestDto) {
-        Customer customer = customerService.updateCustomerLoyaltyPts(customerId, customerRequestDto);
+        Customer customer =
+                customerService.updateCustomerLoyaltyPts(customerId, customerRequestDto);
         CustomerResponseDto dto = new CustomerResponseDto(customer);
 
         return dto;

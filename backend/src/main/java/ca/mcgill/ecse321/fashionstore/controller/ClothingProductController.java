@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.controller;
 
+import static ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto.clothingProductsToResponseDtos;
+
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
@@ -19,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import static ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto.clothingProductsToResponseDtos;
 
 /** Controller for ClothingProduct REST API endpoints */
 @RestController
@@ -97,7 +97,8 @@ public class ClothingProductController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) List<ClothingItem.Size> sizes,
             @RequestParam(required = false) List<ClothingItem.Colour> colours) {
-        List<ClothingProduct> clothingProducts = clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+        List<ClothingProduct> clothingProducts =
+                clothingProductService.getMatchingClothingProducts(name, sizes, colours);
 
         return clothingProductsToResponseDtos(clothingProducts);
     }

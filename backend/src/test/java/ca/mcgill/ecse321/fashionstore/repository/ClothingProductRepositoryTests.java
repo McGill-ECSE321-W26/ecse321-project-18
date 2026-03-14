@@ -7,14 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Test suite for clothing product persistence in the database.
@@ -131,9 +130,11 @@ class ClothingProductRepositoryTests {
         createSaveClothingProduct("T-shirt", 20.25f, "imagepath2.jpg");
         List<ClothingProduct> expected = List.of(clothingProduct, crewneck);
 
-        List<ClothingProduct> actual = clothingProductRepository.findClothingProductsByNameContainsIgnoreCase(search);
+        List<ClothingProduct> actual =
+                clothingProductRepository.findClothingProductsByNameContainsIgnoreCase(search);
 
-        assertIterableEquals(expected, actual, "Clothing product search by name did not find correct results.");
+        assertIterableEquals(
+                expected, actual, "Clothing product search by name did not find correct results.");
     }
 
     /**
@@ -235,7 +236,6 @@ class ClothingProductRepositoryTests {
      * @param price Price of the new ClothingProduct
      * @param image Image path of the new ClothingProduct
      * @return the newly created and saved ClothingProduct
-     *
      * @author Carolyn Wu (cw118)
      */
     private ClothingProduct createSaveClothingProduct(String name, float price, String image) {

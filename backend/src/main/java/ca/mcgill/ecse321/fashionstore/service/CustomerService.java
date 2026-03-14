@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.CustomerResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
@@ -38,8 +37,7 @@ public class CustomerService {
      * @author Carolyn Wu (cw118)
      */
     @Transactional
-    public Customer updateCustomerLoyaltyPts(
-            int id, @Valid CustomerRequestDto customerRequestDto) {
+    public Customer updateCustomerLoyaltyPts(int id, @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
         customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());
 

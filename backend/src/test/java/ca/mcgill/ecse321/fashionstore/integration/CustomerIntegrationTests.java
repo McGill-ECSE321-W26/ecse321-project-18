@@ -9,15 +9,14 @@ import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTe
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
-/**
- * Customer Service class tests.
- */
+/** Customer Service class tests. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
 class CustomerIntegrationTests {
-    private static final String customerLoyaltyPtsUri = "/fashionstore/account/customer/{customerId}/loyalty";
+    private static final String customerLoyaltyPtsUri =
+            "/fashionstore/account/customer/{customerId}/loyalty";
 
     private int customerId1;
     private int customerId2;

@@ -1,9 +1,18 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,19 +24,7 @@ import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-/**
- * Customer Service class tests.
- */
+/** Customer Service class tests. */
 @SpringBootTest
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class CustomerServiceTests {
@@ -44,9 +41,7 @@ class CustomerServiceTests {
 
     private Customer customer;
 
-    /**
-     * Setup function for Customer service layer tests.
-     */
+    /** Setup function for Customer service layer tests. */
     @BeforeEach
     void setup() {
         customer = createCustomer(CUSTOMER_ID, CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS);
@@ -66,31 +61,32 @@ class CustomerServiceTests {
     void testUpdateLoyaltyPtsByInvalidId() {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.empty());
 
-        CustomerRequestDto customerRequestDto = new CustomerRequestDto(
-            CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS, CUSTOMER_LOYALTY_PTS
-        );
+        CustomerRequestDto customerRequestDto =
+                new CustomerRequestDto(
+                        CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS, CUSTOMER_LOYALTY_PTS);
 
         // assert
-        FashionStoreException e = assertThrows(
-            FashionStoreException.class,
-            () -> customerService.updateCustomerLoyaltyPts(CUSTOMER_ID, customerRequestDto)
-        );
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                customerService.updateCustomerLoyaltyPts(
+                                        CUSTOMER_ID, customerRequestDto));
 
         assertEquals(
-            HttpStatus.NOT_FOUND,
-            e.getStatus(),
-            "HTTP status is not NOT_FOUND after invalid customer ID request."
-        );
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "HTTP status is not NOT_FOUND after invalid customer ID request.");
         assertEquals(
-            String.format("Customer ID %d was not found.", CUSTOMER_ID),
-            e.getMessage(),
-            "HTTP message is incorrect after invalid customer ID request."
-        );
+                String.format("Customer ID %d was not found.", CUSTOMER_ID),
+                e.getMessage(),
+                "HTTP message is incorrect after invalid customer ID request.");
     }
 
     /**
-     * Service layer test for updating a customer's loyalty points with a valid customer ID and number of points.
-     * Invalid (i.e. negative) number of points is already not permitted, a rule enforced by the CustomerRequestDto class.
+     * Service layer test for updating a customer's loyalty points with a valid customer ID and
+     * number of points. Invalid (i.e. negative) number of points is already not permitted, a rule
+     * enforced by the CustomerRequestDto class.
      *
      * @author Carolyn Wu (cw118)
      */
@@ -99,53 +95,46 @@ class CustomerServiceTests {
         // arrange
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
         when(customerRepository.save(any(Customer.class)))
-            .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+                .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
 
         // act
-        CustomerRequestDto customerRequestDto = new CustomerRequestDto(CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS, CUSTOMER_LOYALTY_PTS);
-        Customer updatedCustomer = customerService.updateCustomerLoyaltyPts(CUSTOMER_ID, customerRequestDto);
+        CustomerRequestDto customerRequestDto =
+                new CustomerRequestDto(
+                        CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS, CUSTOMER_LOYALTY_PTS);
+        Customer updatedCustomer =
+                customerService.updateCustomerLoyaltyPts(CUSTOMER_ID, customerRequestDto);
 
         // assert
-        assertEquals(
-            CUSTOMER_LOYALTY_PTS,
-            updatedCustomer.getNumLoyaltyPoints(),
-            "Customer's loyalty points were not updated correctly."
-        );
-        assertEquals(
-            CUSTOMER_ID,
-            updatedCustomer.getId(),
-            "Customer ID is incorrect."
-        );
-        assertEquals(
-            CUSTOMER_EMAIL,
-            updatedCustomer.getEmail(),
-            "Customer email is incorrect."
-        );
-        assertEquals(
-            CUSTOMER_PASSWORD,
-            updatedCustomer.getPassword(),
-            "Customer password is incorrect."
-        );
-        assertEquals(
-            CUSTOMER_ADDRESS,
-            updatedCustomer.getAddress(),
-            "Customer address is incorrect."
-        );
+        assertUpdateLoyaltyPtsValid(updatedCustomer);
         verifyUpdateLoyaltyPtsValid();
+    }
+
+    private void assertUpdateLoyaltyPtsValid(Customer updatedCustomer) {
+        assertEquals(
+                CUSTOMER_LOYALTY_PTS,
+                updatedCustomer.getNumLoyaltyPoints(),
+                "Customer's loyalty points were not updated correctly.");
+        assertEquals(CUSTOMER_ID, updatedCustomer.getId(), "Customer ID is incorrect.");
+        assertEquals(CUSTOMER_EMAIL, updatedCustomer.getEmail(), "Customer email is incorrect.");
+        assertEquals(
+                CUSTOMER_PASSWORD,
+                updatedCustomer.getPassword(),
+                "Customer password is incorrect.");
+        assertEquals(
+                CUSTOMER_ADDRESS, updatedCustomer.getAddress(), "Customer address is incorrect.");
     }
 
     private void verifyUpdateLoyaltyPtsValid() {
         verify(customerRepository, times(1))
-            .save(
-                argThat(
-                    (Customer c) ->
-                        c.getId() == CUSTOMER_ID
-                    && c.getEmail().equals(CUSTOMER_EMAIL)
-                    && c.getPassword().equals(CUSTOMER_PASSWORD)
-                    && c.getAddress().equals(CUSTOMER_ADDRESS)
-                    && c.getNumLoyaltyPoints() == CUSTOMER_LOYALTY_PTS
-                )
-            );
+                .save(
+                        argThat(
+                                (Customer c) ->
+                                        c.getId() == CUSTOMER_ID
+                                                && CUSTOMER_EMAIL.equals(c.getEmail())
+                                                && CUSTOMER_PASSWORD.equals(c.getPassword())
+                                                && CUSTOMER_ADDRESS.equals(c.getAddress())
+                                                && c.getNumLoyaltyPoints()
+                                                        == CUSTOMER_LOYALTY_PTS));
     }
 
     private Customer createCustomer(int id, String email, String password, String address) {
