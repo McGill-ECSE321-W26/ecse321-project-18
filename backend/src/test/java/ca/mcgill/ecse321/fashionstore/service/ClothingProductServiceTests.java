@@ -154,6 +154,7 @@ class ClothingProductServiceTests {
                 response.getItem(0).getColour(),
                 "Retrieved clothing product's item does not have correct colour.");
         verify(clothingProductRepository, times(1)).findById(clothingProduct.getId());
+        verify(clothingProductRepository, times(1)).findById(clothingProduct.getId());
     }
 
     /**
@@ -177,6 +178,8 @@ class ClothingProductServiceTests {
         assertTrue(
                 matchingClothingProducts.isEmpty(),
                 "Clothing products matching the name search were incorrectly found.");
+        verify(clothingProductRepository, times(1))
+                .findClothingProductsByNameContainsIgnoreCase(search);
     }
 
     /**
@@ -199,6 +202,7 @@ class ClothingProductServiceTests {
         assertTrue(
                 matchingClothingProducts.isEmpty(),
                 "Clothing products matching the size filters were incorrectly found.");
+        verify(clothingProductRepository, times(1)).findAll();
     }
 
     /**
@@ -222,6 +226,7 @@ class ClothingProductServiceTests {
         assertTrue(
                 matchingClothingProducts.isEmpty(),
                 "Clothing products matching the colour filters were incorrectly found.");
+        verify(clothingProductRepository, times(1)).findAll();
     }
 
     /**
@@ -248,5 +253,7 @@ class ClothingProductServiceTests {
                 List.of(clothingProduct),
                 matchingClothingProducts,
                 "Clothing products matching search by name and filter by size and colour are incorrect.");
+        verify(clothingProductRepository, times(1))
+                .findClothingProductsByNameContainsIgnoreCase(name);
     }
 }
