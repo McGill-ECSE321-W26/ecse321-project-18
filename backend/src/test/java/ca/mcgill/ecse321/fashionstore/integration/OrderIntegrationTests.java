@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,6 +21,7 @@ import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
+import jakarta.transaction.Transactional;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -334,6 +336,7 @@ class OrderIntegrationTests {
      * @author Flavie Qin
      */
     @Test
+    @Transactional
     @org.junit.jupiter.api.Order(4)
     void testCreateOrderValid() {
         // Arrange
@@ -355,6 +358,7 @@ class OrderIntegrationTests {
         assertNotNull(response, responseNullError);
         assertTrue(response.id() >= 0, "The ID should be a positive int.");
         assertNewOrderResponseDto(request, response);
+        assertShoppingCartEmpty(true, customer1.getId());
     }
 
     private void assertNewOrderResponseDto(OrderRequestDto request, OrderResponseDto response) {
@@ -388,6 +392,24 @@ class OrderIntegrationTests {
                 CLOTHING_ITEM_1_QUANTITY - VALID_QUANTITY_1,
                 orderItem.clothingItem().numInStock(),
                 "Clothing item num in stock was not updated correctly.");
+    }
+
+    private void assertShoppingCartEmpty(boolean empty, int customerId) {
+        if (empty) {
+            assertTrue(
+                    customerRepository
+                            .findCustomerById(customerId)
+                            .getShoppingCartItems()
+                            .isEmpty(),
+                    "Shopping cart was not successfully cleared.");
+        } else {
+            assertFalse(
+                    customerRepository
+                            .findCustomerById(customerId)
+                            .getShoppingCartItems()
+                            .isEmpty(),
+                    "Shopping cart was incorrectly cleared.");
+        }
     }
 
     /**
@@ -463,6 +485,7 @@ class OrderIntegrationTests {
      * @author Flavie Qin
      */
     @Test
+    @Transactional
     @org.junit.jupiter.api.Order(8)
     void testCreateOrderByInvalidQuantity() {
         // Arrange
@@ -483,5 +506,7 @@ class OrderIntegrationTests {
                 CLOTHING_ITEM_2_QUANTITY,
                 clothingItem2.getNumInStock(),
                 "Clothing item num in stock was incorrectly updated.");
+
+        assertShoppingCartEmpty(false, customer3.getId());
     }
 }
