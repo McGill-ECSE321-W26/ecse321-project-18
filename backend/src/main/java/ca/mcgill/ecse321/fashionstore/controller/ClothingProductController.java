@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import static ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto.clothingProductsToResponseDtos;
+
 /** Controller for ClothingProduct REST API endpoints */
 @RestController
 @SuppressFBWarnings("SPRING_ENDPOINT")
@@ -95,7 +97,9 @@ public class ClothingProductController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) List<ClothingItem.Size> sizes,
             @RequestParam(required = false) List<ClothingItem.Colour> colours) {
-        return clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+        List<ClothingProduct> clothingProducts = clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+
+        return clothingProductsToResponseDtos(clothingProducts);
     }
 
     /**

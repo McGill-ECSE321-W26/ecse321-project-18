@@ -32,18 +32,17 @@ public class CustomerService {
     /**
      * Service method to update a customer's loyalty points.
      *
-     * @param id ID of customer whose loyalty points will be updated
-     * @param customerRequestDto Request DTO for customer
-     * @return DTO for the updated customer
+     * @param id ID of customer whose loyalty points will be updated.
+     * @param customerRequestDto Request DTO for customer.
+     * @return The updated customer.
      * @author Carolyn Wu (cw118)
      */
     @Transactional
-    public CustomerResponseDto updateCustomerLoyaltyPts(
+    public Customer updateCustomerLoyaltyPts(
             int id, @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
         customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());
 
-        CustomerResponseDto dto = new CustomerResponseDto(customer);
-        return dto;
+        return customerRepository.save(customer);
     }
 }

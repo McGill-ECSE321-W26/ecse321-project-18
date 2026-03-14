@@ -103,7 +103,7 @@ public class ClothingProductService {
      * @return Clothing products matching search and/or filters.
      * @author Carolyn Wu (cw118)
      */
-    public List<ClothingProductResponseDto> getMatchingClothingProducts(
+    public List<ClothingProduct> getMatchingClothingProducts(
             String name, List<ClothingItem.Size> sizes, List<ClothingItem.Colour> colours) {
         List<ClothingProduct> clothingProducts = searchClothingProductsByName(name);
 
@@ -111,10 +111,7 @@ public class ClothingProductService {
         List<ClothingProduct> matchingClothingProducts =
                 filterClothingProductsBySizeColour(clothingProducts, sizes, colours);
 
-        List<ClothingProductResponseDto> clothingProductResponseDtos =
-                clothingProductsToResponseDtos(matchingClothingProducts);
-
-        return clothingProductResponseDtos;
+        return matchingClothingProducts;
     }
 
     /**

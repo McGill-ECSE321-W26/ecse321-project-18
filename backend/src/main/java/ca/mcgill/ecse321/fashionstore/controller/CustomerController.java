@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.controller;
 
 import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.CustomerResponseDto;
+import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.service.CustomerService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class CustomerController {
     @PutMapping("/fashionstore/account/customer/{customerId}/loyalty")
     public CustomerResponseDto updateCustomerLoyaltyPts(
             @PathVariable int customerId, @RequestBody CustomerRequestDto customerRequestDto) {
-        return customerService.updateCustomerLoyaltyPts(customerId, customerRequestDto);
+        Customer customer = customerService.updateCustomerLoyaltyPts(customerId, customerRequestDto);
+        CustomerResponseDto dto = new CustomerResponseDto(customer);
+
+        return dto;
     }
 }
