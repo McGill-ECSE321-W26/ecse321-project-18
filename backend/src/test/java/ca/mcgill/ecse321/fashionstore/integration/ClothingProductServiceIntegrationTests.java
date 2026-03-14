@@ -43,7 +43,6 @@ class ClothingProductServiceIntegrationTests {
     private static final String clothingProductsUri = "/fashionstore/clothingproduct";
 
     private ClothingItem clothingItem;
-    private ClothingItem clothingItem2;
     private static final String clothingItemUri =
             "/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}";
 
@@ -58,9 +57,7 @@ class ClothingProductServiceIntegrationTests {
         this.clothingItem =
                 createClothingItem(
                         clothingProduct, ClothingItem.Size.M, ClothingItem.Colour.YELLOW, 100);
-        this.clothingItem2 =
-                createClothingItem(
-                        clothingProduct2, ClothingItem.Size.XL, ClothingItem.Colour.RED, 50);
+        createClothingItem(clothingProduct2, ClothingItem.Size.XL, ClothingItem.Colour.RED, 50);
 
         this.allClothingProducts = List.of(clothingProduct, clothingProduct2);
     }
