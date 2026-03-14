@@ -74,9 +74,6 @@ public class OrderService {
         newOrder.setDeliveryAddress(orderRequestDto.deliveryAddress());
         newOrder.setPrice(orderRequestDto.price());
 
-        // save new order
-        this.orderRepository.save(newOrder);
-
         // assign all items in customer cart to the order
         assignOrderItems(newOrder, customer);
 

@@ -148,16 +148,27 @@ class OrderServiceTests {
         // Assert
         assertNotNull(result, "List of orders is null.");
         assertEquals(1, result.size(), "List of orders does not have length 1.");
+
         Order order = result.getFirst();
-        assertEquals(ORDER_ID_1, order.getId(), "Order does not have correct ID.");
-        assertEquals(
-                CUSTOMER_ID_1,
-                order.getCustomer().getId(),
-                "Order does not have correct customer ID.");
-        assertEquals(1, order.getItems().size(), "Order list of items does not have length 1.");
+        assertGetOrder(order, ORDER_ID_1, CUSTOMER_ID_1, 1);
+
         OrderItem item = order.getItem(0);
         assertGetOrderItem(item, ORDER_ITEM_ID_1, QUANTITY_1, CLOTHING_ITEM_ID_1);
+
         verify(customerRepository, times(1)).findById(CUSTOMER_ID_1);
+    }
+
+    private void assertGetOrder(
+            Order order, int expectedId, int expectedCustomerId, int expectedSize) {
+        assertEquals(expectedId, order.getId(), "Order does not have correct ID.");
+        assertEquals(
+                expectedCustomerId,
+                order.getCustomer().getId(),
+                "Order does not have correct customer ID.");
+        assertEquals(
+                expectedSize,
+                order.getItems().size(),
+                String.format("Order list of items does not have length %d.", expectedSize));
     }
 
     private void assertGetOrderItem(
@@ -194,5 +205,34 @@ class OrderServiceTests {
                 String.format("Customer ID %d was not found.", CUSTOMER_ID_2),
                 e.getMessage(),
                 "HTTP message is not correct after invalid customer ID request.");
+    }
+
+    /**
+     * Service layer test for getting a list of all orders in the system.
+     *
+     * @author Flavie Qin
+     */
+    @Test
+    void testGetAllOrders() {
+        when(orderRepository.findAll()).thenReturn(List.of(this.order1, this.order2));
+
+        // Act
+        List<Order> result = orderService.getAllOrders();
+
+        // Assert
+        assertNotNull(result, "List of orders is null.");
+        assertEquals(2, result.size(), "List of orders does not have length 2.");
+
+        Order order1 = result.get(0);
+        assertGetOrder(order1, ORDER_ID_1, CUSTOMER_ID_1, 1);
+        OrderItem orderItem1 = order1.getItem(0);
+        assertGetOrderItem(orderItem1, ORDER_ITEM_ID_1, QUANTITY_1, CLOTHING_ITEM_ID_1);
+
+        Order order2 = result.get(1);
+        assertGetOrder(order2, ORDER_ID_2, CUSTOMER_ID_2, 1);
+        OrderItem orderItem2 = order2.getItem(0);
+        assertGetOrderItem(orderItem2, ORDER_ITEM_ID_2, QUANTITY_2, CLOTHING_ITEM_ID_2);
+
+        verify(orderRepository, times(1)).findAll();
     }
 }
