@@ -54,8 +54,8 @@ public record OrderResponseDto(
                 order.getDeliveryAddress(),
                 order.getPrice(),
                 OrderItemResponseDto.orderItemResponseDtos(order.getItems()),
-                order.getCustomer().getId(),
-                order.getEmployee().getId());
+                order.getCustomer() != null ? order.getCustomer().getId() : null,
+                order.getEmployee() != null ? order.getEmployee().getId() : null);
     }
 
     @Override

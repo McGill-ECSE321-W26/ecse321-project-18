@@ -49,7 +49,8 @@ public class OrderService {
     public OrderService(
             CustomerRepository customerRepository,
             OrderRepository orderRepository,
-            EmployeeRepository employeeRepository, ClothingItemRepository clothingItemRepository) {
+            EmployeeRepository employeeRepository,
+            ClothingItemRepository clothingItemRepository) {
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
@@ -119,12 +120,7 @@ public class OrderService {
         List<ClothingItem> clothingItems = new ArrayList<>();
         // go through customer shopping cart items and add to the order
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
-            if (shoppingCartItem.getQuantity() > shoppingCartItem.getClothingItem().getNumInStock()) {
-                throw new FashionStoreException(
-                        HttpStatus.BAD_REQUEST,
-                        String.format("Clothing item %s does not have enough quantity in stock.",
-                                shoppingCartItem.getClothingItem().getClothingProduct().getName()));
-            }
+            validateItemQuantities(shoppingCartItem);
             // create order item
             OrderItem newItem = createNewOrderItem(shoppingCartItem);
             order.addItem(newItem);
@@ -134,6 +130,16 @@ public class OrderService {
             clothingItems.add(newItem.getClothingItem());
         }
         return clothingItems;
+    }
+
+    private void validateItemQuantities(ShoppingCartItem shoppingCartItem) {
+        if (shoppingCartItem.getQuantity() > shoppingCartItem.getClothingItem().getNumInStock()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "Clothing item %s does not have enough quantity in stock.",
+                            shoppingCartItem.getClothingItem().getClothingProduct().getName()));
+        }
     }
 
     private OrderItem createNewOrderItem(ShoppingCartItem shoppingCartItem) {

@@ -358,9 +358,7 @@ class OrderServiceTests {
 
                                     return item.getNumInStock() == 0
                                             && item.getId() == CLOTHING_ITEM_ID_2;
-                                }
-                        )
-                );
+                                }));
     }
 
     private OrderRequestDto createValidOrderRequest() {
@@ -472,7 +470,8 @@ class OrderServiceTests {
                 e.getStatus(),
                 "HTTP status is not BAD_REQUEST after invalid order request DTO.");
         assertEquals(
-                String.format("Clothing item %s does not have enough quantity in stock.",
+                String.format(
+                        "Clothing item %s does not have enough quantity in stock.",
                         clothingItem2.getClothingProduct().getName()),
                 e.getMessage(),
                 "HTTP message is not correct after invalid order request DTO.");
