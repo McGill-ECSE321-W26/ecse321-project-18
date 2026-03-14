@@ -21,7 +21,6 @@ import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
-import jakarta.transaction.Transactional;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Comparator;
