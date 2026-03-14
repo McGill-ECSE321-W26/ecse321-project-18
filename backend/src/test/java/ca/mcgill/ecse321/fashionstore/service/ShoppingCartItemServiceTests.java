@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -180,7 +179,7 @@ class ShoppingCartItemServiceTests {
      *
      * @author Cyrus Fung (cfung89)
      */
-    private ShoppingCartItemResponseDto addShoppingCartItemSetup() {
+    private ShoppingCartItem addShoppingCartItemSetup() {
         // Arrange
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
         when(clothingItemRepository.findById(CLOTHING_ITEM_ID_2))
@@ -191,10 +190,8 @@ class ShoppingCartItemServiceTests {
         // Act
         ShoppingCartItemRequestDto createdShoppingCartItem =
                 new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_2, QUANTITY_2);
-        ShoppingCartItem shoppingCartItem =
-                shoppingCartItemService.addShoppingCartItem(CUSTOMER_ID, createdShoppingCartItem);
 
-        return new ShoppingCartItemResponseDto(shoppingCartItem);
+        return shoppingCartItemService.addShoppingCartItem(CUSTOMER_ID, createdShoppingCartItem);
     }
 
     /**
@@ -205,22 +202,22 @@ class ShoppingCartItemServiceTests {
     @Test
     void testAddShoppingCartItem() {
         // Arrange and act
-        ShoppingCartItemResponseDto shoppingCartItemResponseDto = addShoppingCartItemSetup();
+        ShoppingCartItem shoppingCartItem = addShoppingCartItemSetup();
 
         // Assert
-        assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
+        assertNotNull(shoppingCartItem, "ShoppingCartItem is null.");
         assertEquals(
                 QUANTITY_2,
-                shoppingCartItemResponseDto.quantity(),
-                "ShoppingCartItemResponseDto does not contain correct quantity.");
+                shoppingCartItem.getQuantity(),
+                "ShoppingCartItem does not contain correct quantity.");
         assertEquals(
                 CUSTOMER_ID,
-                shoppingCartItemResponseDto.customerId(),
-                "ShoppingCartItemResponseDto does not contain correct Customer ID.");
+                shoppingCartItem.getCustomer().getId(),
+                "ShoppingCartItem does not contain correct Customer ID.");
         assertEquals(
                 CLOTHING_ITEM_ID_2,
-                shoppingCartItemResponseDto.clothingItem().id(),
-                "ShoppingCartItemResponseDto does not contain correct ClothingItem ID.");
+                shoppingCartItem.getClothingItem().getId(),
+                "ShoppingCartItem does not contain correct ClothingItem ID.");
         verifyAddShoppingCartItem();
     }
 
@@ -240,7 +237,7 @@ class ShoppingCartItemServiceTests {
      *
      * @author Cyrus Fung (cfung89)
      */
-    private ShoppingCartItemResponseDto updateShoppingCartItemSetup() {
+    private ShoppingCartItem updateShoppingCartItemSetup() {
         // Arrange
         when(shoppingCartItemRepository.findById(SHOPPING_CART_ITEM_ID_1))
                 .thenReturn(Optional.of(shoppingCartItem1));
@@ -250,11 +247,9 @@ class ShoppingCartItemServiceTests {
         // Act
         ShoppingCartItemRequestDto updatedShoppingCartItem =
                 new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_1, QUANTITY_2);
-        ShoppingCartItem shoppingCartItem =
-                shoppingCartItemService.updateShoppingCartItem(
-                        SHOPPING_CART_ITEM_ID_1, updatedShoppingCartItem);
 
-        return new ShoppingCartItemResponseDto(shoppingCartItem);
+        return shoppingCartItemService.updateShoppingCartItem(
+                SHOPPING_CART_ITEM_ID_1, updatedShoppingCartItem);
     }
 
     /**
@@ -265,22 +260,22 @@ class ShoppingCartItemServiceTests {
     @Test
     void testUpdateShoppingCartItemByValidId() {
         // Arrange and act
-        ShoppingCartItemResponseDto shoppingCartItemResponseDto = updateShoppingCartItemSetup();
+        ShoppingCartItem shoppingCartItem = updateShoppingCartItemSetup();
 
         // Assert
-        assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
+        assertNotNull(shoppingCartItem, "ShoppingCartItem is null.");
         assertEquals(
                 QUANTITY_2,
-                shoppingCartItemResponseDto.quantity(),
-                "ShoppingCartItemResponseDto did not update the quantity correctly.");
+                shoppingCartItem.getQuantity(),
+                "ShoppingCartItem did not update the quantity correctly.");
         assertEquals(
                 CUSTOMER_ID,
-                shoppingCartItemResponseDto.customerId(),
-                "ShoppingCartItemResponseDto does not contain correct Customer ID.");
+                shoppingCartItem.getCustomer().getId(),
+                "ShoppingCartItem does not contain correct Customer ID.");
         assertEquals(
                 CLOTHING_ITEM_ID_1,
-                shoppingCartItemResponseDto.clothingItem().id(),
-                "ShoppingCartItemResponseDto does not contain correct ClothingItem ID.");
+                shoppingCartItem.getClothingItem().getId(),
+                "ShoppingCartItem does not contain correct ClothingItem ID.");
         verifyUpdateShoppingCartItemByValidId();
     }
 

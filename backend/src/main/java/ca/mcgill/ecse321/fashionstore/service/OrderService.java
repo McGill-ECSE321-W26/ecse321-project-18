@@ -63,6 +63,7 @@ public class OrderService {
      */
     @Transactional
     public Order createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
+        validateOrderRequest(orderRequestDto);
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
         // create new order object
@@ -79,8 +80,21 @@ public class OrderService {
 
         // save updated object in database and return order
         this.orderRepository.save(newOrder);
-
         return newOrder;
+    }
+
+    /**
+     * Validate that the delivery date and order date in the OrderRequestDto instance are valid.
+     *
+     * @param orderRequestDto OrderRequestDto instance
+     * @author Flavie Qin
+     */
+    private void validateOrderRequest(OrderRequestDto orderRequestDto) {
+        if (orderRequestDto.orderDate().plusDays(1).isAfter(orderRequestDto.deliveryDate())) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    "Delivery date must be at least 24 hours after order date.");
+        }
     }
 
     /**

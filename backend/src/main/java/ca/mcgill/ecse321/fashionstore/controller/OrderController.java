@@ -5,6 +5,7 @@ import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderStatusRequestDto;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.service.OrderService;
+import ca.mcgill.ecse321.fashionstore.service.ShoppingCartItemService;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SuppressFBWarnings("SPRING_ENDPOINT")
 public class OrderController {
     private OrderService orderService;
+    private ShoppingCartItemService shoppingCartItemService;
 
     /**
      * Constructor for OrderController
@@ -31,12 +33,15 @@ public class OrderController {
      * @author Flavie Qin
      */
     @Autowired
-    public OrderController(OrderService orderService) {
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
+    public OrderController(
+            OrderService orderService, ShoppingCartItemService shoppingCartItemService) {
         this.orderService = orderService;
+        this.shoppingCartItemService = shoppingCartItemService;
     }
 
     /**
-     * Creates a new order placed by a customer
+     * Creates a new order placed by a customer and clears the customer's shopping cart.
      *
      * @param orderRequestDto the details of the new order to create
      * @param id customer id of the customer that is placing the order
@@ -48,6 +53,7 @@ public class OrderController {
     public OrderResponseDto createOrder(
             @RequestBody OrderRequestDto orderRequestDto, @PathVariable int id) {
         Order order = orderService.createOrder(orderRequestDto, id);
+        shoppingCartItemService.deleteShoppingCartItems(id);
         return new OrderResponseDto(order);
     }
 

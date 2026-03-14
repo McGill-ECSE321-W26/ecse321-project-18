@@ -20,6 +20,6 @@ import java.time.LocalDate;
 public record OrderRequestDto(
         @NotNull(message = "State must not be null.") State state,
         @NotNull(message = "Order date must not be null.") @PastOrPresent(message = "Order date must be today or before.") LocalDate orderDate,
-        @NotNull(message = "Delivery date must not be null.") @Future(message = "Delivery date must be today or before.") LocalDate deliveryDate,
+        @NotNull(message = "Delivery date must not be null.") @Future(message = "Delivery date must be today or after.") LocalDate deliveryDate,
         @NotBlank(message = "Delivery address must not be blank.") String deliveryAddress,
         @NotNull(message = "Price must not be null.") @DecimalMin("0.01") Float price) {}
