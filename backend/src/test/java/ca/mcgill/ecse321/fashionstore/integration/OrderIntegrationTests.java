@@ -2,10 +2,12 @@ package ca.mcgill.ecse321.fashionstore.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ca.mcgill.ecse321.fashionstore.dto.OrderItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
-import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -67,7 +69,6 @@ class OrderIntegrationTests {
     private ClothingItem clothingItem2;
     private ShoppingCartItem shoppingCartItem1;
     private ShoppingCartItem shoppingCartItem2;
-    private ShoppingCartItem shoppingCartItem3;
     private Order order1;
     private OrderItem orderItem1;
     private Order order2;
@@ -100,11 +101,11 @@ class OrderIntegrationTests {
         order1 = createOrder(customer1);
         orderItem1 = createOrderItem(order1, shoppingCartItem1);
 
-        shoppingCartItem2 = createShoppingCartItem(VALID_QUANTITY_2, clothingItem1, customer2);
+        shoppingCartItem2 = createShoppingCartItem(VALID_QUANTITY_2, clothingItem2, customer2);
         order2 = createOrder(customer2);
-        orderItem1 = createOrderItem(order2, shoppingCartItem2);
+        orderItem2 = createOrderItem(order2, shoppingCartItem2);
 
-        shoppingCartItem3 = createShoppingCartItem(INVALID_QUANTITY, clothingItem1, customer3);
+        createShoppingCartItem(INVALID_QUANTITY, clothingItem2, customer3);
     }
 
     private Customer createCustomer(String email, String password) {
@@ -116,6 +117,8 @@ class OrderIntegrationTests {
 
     private ClothingProduct createClothingProduct() {
         ClothingProduct clothingProduct = new ClothingProduct();
+        clothingProduct.setName("T-shirt");
+        clothingProduct.setPrice(25.99f);
         return clothingProductRepository.save(clothingProduct);
     }
 
@@ -324,7 +327,51 @@ class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(4)
     void testCreateOrderValid() {
-        // TODO
+        // Arrange
+        OrderRequestDto request = createValidOrderRequest();
+
+        // Act
+        OrderResponseDto response =
+                client.post()
+                        .uri(customerOrderUri, customer1.getId())
+                        .body(request)
+                        .exchange()
+                        .expectStatus()
+                        .isCreated()
+                        .expectBody(OrderResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertTrue(response.id() >= 0, "The ID should be a positive int.");
+        assertNewOrderResponseDto(request, response);
+    }
+
+    private void assertNewOrderResponseDto(OrderRequestDto request, OrderResponseDto response) {
+        assertEquals(request.deliveryAddress(), response.deliveryAddress(), "Response delivery address is incorrect.");
+        assertEquals(request.orderDate(), response.orderDate(), "Response order date is incorrect.");
+        assertEquals(request.deliveryDate(), response.deliveryDate(), "Response delivery date is incorrect.");
+        assertEquals(request.state(), response.state(), "Response state is incorrect.");
+        assertEquals(request.price(), response.price(), "Response price is incorrect.");
+        assertEquals(1, response.orderItems().size(), "Response order items length is incorrect");
+        assertNewOrderItemsResponseDto(response.orderItems().getFirst());
+    }
+
+    private void assertNewOrderItemsResponseDto(OrderItemResponseDto orderItem) {
+        assertTrue(orderItem.id() >= 0, "The ID should be a positive int.");
+        assertEquals(
+                clothingItem1.getId(),
+                orderItem.clothingItem().id(),
+                "Order item clothing item id in order response DTO is incorrect.");
+        assertEquals(
+                shoppingCartItem1.getQuantity(),
+                orderItem.quantity(),
+                "Order item quantity in order response DTO is incorrect.");
+        assertEquals(
+                CLOTHING_ITEM_1_QUANTITY - VALID_QUANTITY_1,
+                orderItem.clothingItem().numInStock(),
+                "Clothing item num in stock was not updated correctly.");
     }
 
     /**
@@ -357,7 +404,18 @@ class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(6)
     void testCreateOrderByInvalidRequestDates() {
-        // TODO
+        OrderRequestDto request = createInvalidOrderRequest();
+
+        // Act and assert
+        client.post()
+                .uri(customerOrderUri, customer2.getId())
+                .body(request)
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("Delivery date must be at least 24 hours after order date.");
     }
 
     /**
@@ -391,6 +449,20 @@ class OrderIntegrationTests {
     @Test
     @org.junit.jupiter.api.Order(8)
     void testCreateOrderByInvalidQuantity() {
-        // TODO
+        // Arrange
+        OrderRequestDto request = createValidOrderRequest();
+
+        // Act and assert
+        client.post()
+                .uri(customerOrderUri, customer3.getId())
+                .body(request)
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("Clothing item T-shirt does not have enough quantity in stock.");
+
+        assertEquals(CLOTHING_ITEM_2_QUANTITY, clothingItem2.getNumInStock(), "Clothing item num in stock was incorrectly updated.");
     }
 }
