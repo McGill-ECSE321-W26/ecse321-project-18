@@ -1,13 +1,16 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -23,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 /** Test suite for clothing product service class. */
 @SpringBootTest
@@ -35,6 +39,7 @@ class ClothingProductServiceTests {
 
     private ClothingProduct clothingProduct;
     private ClothingItem clothingItem;
+    private ClothingProductRequestDto clothingProductRequestDto;
 
     /**
      * Creates and saves a clothing product, and a clothing item.
@@ -57,6 +62,9 @@ class ClothingProductServiceTests {
         clothingItem.setColour(ClothingItem.Colour.YELLOW);
         clothingItem.setNumInStock(100);
         this.clothingItem = clothingItem;
+
+        this.clothingProductRequestDto =
+                new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png");
     }
 
     /**
@@ -255,5 +263,60 @@ class ClothingProductServiceTests {
                 "Clothing products matching search by name and filter by size and colour are incorrect.");
         verify(clothingProductRepository, times(1))
                 .findClothingProductsByNameContainsIgnoreCase(name);
+    }
+
+    /**
+     * Test creating a clothing product with valid parameters.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingProductSuccess() {
+        when(clothingProductRepository.save(any(ClothingProduct.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        assertDoesNotThrow(
+                () -> clothingProductService.createClothingProduct(this.clothingProductRequestDto),
+                "Creating a clothing product with valid details should not throw an exception.");
+    }
+
+    /**
+     * Updating a clothing product with valid parameters.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateClothingProductSuccess() {
+        when(clothingProductRepository.findById(clothingProduct.getId()))
+                .thenReturn(Optional.of(clothingProduct));
+        when(clothingProductRepository.save(any(ClothingProduct.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        assertDoesNotThrow(
+                () ->
+                        clothingProductService.updateClothingProduct(
+                                this.clothingProductRequestDto, this.clothingProduct.getId()),
+                "Updating a clothing product with a valid request should not throw an exception.");
+    }
+
+    /**
+     * Updating a clothing product with nonexistent clothing product ID.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void updateNonExistingClothingProduct() {
+        int invalidId = clothingProduct.getId() + 1;
+        when(clothingProductRepository.findById(invalidId)).thenReturn(Optional.empty());
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                clothingProductService.updateClothingProduct(
+                                        this.clothingProductRequestDto, invalidId),
+                        "Updating a clothing product with a nonexistent ID should throw an exception.");
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "Invalid product ID should throw a NOT_FOUND exception.");
     }
 }
