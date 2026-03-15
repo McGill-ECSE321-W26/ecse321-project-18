@@ -266,6 +266,33 @@ class ClothingProductServiceTests {
     }
 
     /**
+     * Test deleting an existing ClothingProduct (valid request).
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingProduct_success() {
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+
+        assertDoesNotThrow(() -> clothingProductService.deleteClothingProduct(1));
+
+        verify(clothingProductRepository, times(1)).delete(clothingProduct);
+    }
+
+    /**
+     * Test deleting a non-existent ClothingProduct (invalid request).
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingProduct_nonExistent() {
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.empty());
+
+        assertThrows(
+                FashionStoreException.class, () -> clothingProductService.deleteClothingProduct(1));
+    }
+
+    /**
      * Test creating a clothing product with valid parameters.
      *
      * @author Jennifer You (jenni4u)

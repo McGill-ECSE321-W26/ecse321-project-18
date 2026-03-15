@@ -2,6 +2,7 @@ package ca.mcgill.ecse321.fashionstore.integration;
 
 import static ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto.clothingProductsToResponseDtos;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -143,6 +144,38 @@ class ClothingProductIntegrationTests {
         assertNull(
                 response.name(),
                 "Response name should be null for a failed GET for clothing product.");
+    }
+
+    /**
+     * Test successful DELETE for a ClothingProduct.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingProductOk() {
+        int productId = clothingProduct.getId();
+
+        client.delete().uri(clothingProductUri, productId).exchange().expectStatus().isNoContent();
+
+        assertFalse(
+                clothingProductRepository.existsById(productId),
+                "ClothingProduct should be deleted after DELETE request.");
+
+        assertFalse(
+                clothingItemRepository.existsById(clothingItem.getId()),
+                "Associated ClothingItems should also be deleted.");
+    }
+
+    /**
+     * Test invalid DELETE for a ClothingProduct (nonexistent ID).
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingProductInvalid() {
+        int badId = clothingProduct.getId() + 999;
+
+        client.delete().uri(clothingProductUri, badId).exchange().expectStatus().isNotFound();
     }
 
     /**

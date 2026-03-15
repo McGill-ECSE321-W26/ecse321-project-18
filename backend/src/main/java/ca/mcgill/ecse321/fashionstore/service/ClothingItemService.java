@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -77,7 +76,7 @@ public class ClothingItemService {
      * @return clothingItemResponseDto updated ClothingItem Response DTO
      * @author Kenneth Wang (KennethWang6)
      */
-    public ClothingItemResponseDto updateClothingItemStock(
+    public ClothingItem updateClothingItemStock(
             int productId, int itemId, @Valid ClothingItemRequestDto clothingItemRequestDto) {
 
         ClothingProduct product =
@@ -99,7 +98,7 @@ public class ClothingItemService {
 
         item = clothingItemRepository.save(item);
 
-        return new ClothingItemResponseDto(item);
+        return item;
     }
 
     /**
