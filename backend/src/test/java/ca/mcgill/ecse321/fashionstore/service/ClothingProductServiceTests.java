@@ -1,7 +1,9 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,6 +13,7 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -151,5 +154,106 @@ class ClothingProductServiceTests {
                 response.getItem(0).getColour(),
                 "Retrieved clothing product's item does not have correct colour.");
         verify(clothingProductRepository, times(1)).findById(clothingProduct.getId());
+        verify(clothingProductRepository, times(1)).findById(clothingProduct.getId());
+    }
+
+    /**
+     * Test running search by name on clothing products, expecting no products that match the given
+     * name.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    void testSearchNoMatchingClothingProducts() {
+        // arrange
+        String search = "nope";
+        when(clothingProductRepository.findClothingProductsByNameContainsIgnoreCase(search))
+                .thenReturn(List.of());
+
+        // act
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(search, null, null);
+
+        // assert
+        assertTrue(
+                matchingClothingProducts.isEmpty(),
+                "Clothing products matching the name search were incorrectly found.");
+        verify(clothingProductRepository, times(1))
+                .findClothingProductsByNameContainsIgnoreCase(search);
+    }
+
+    /**
+     * Test running filter by size on clothing products, expecting no products that match the given
+     * size.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    void testFilterSizeNoMatchingClothingProducts() {
+        // arrange
+        List<ClothingItem.Size> sizes = List.of(ClothingItem.Size.XL, ClothingItem.Size.S);
+        when(clothingProductRepository.findAll()).thenReturn(List.of(clothingProduct));
+
+        // act
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(null, sizes, null);
+
+        // assert
+        assertTrue(
+                matchingClothingProducts.isEmpty(),
+                "Clothing products matching the size filters were incorrectly found.");
+        verify(clothingProductRepository, times(1)).findAll();
+    }
+
+    /**
+     * Test running filter by colour on clothing products, expecting no products that match the
+     * given colour.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    void testFilterColourNoMatchingClothingProducts() {
+        // arrange
+        List<ClothingItem.Colour> colours =
+                List.of(ClothingItem.Colour.RED, ClothingItem.Colour.BLUE);
+        when(clothingProductRepository.findAll()).thenReturn(List.of(clothingProduct));
+
+        // act
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(null, null, colours);
+
+        // assert
+        assertTrue(
+                matchingClothingProducts.isEmpty(),
+                "Clothing products matching the colour filters were incorrectly found.");
+        verify(clothingProductRepository, times(1)).findAll();
+    }
+
+    /**
+     * Test running search and filter on clothing products, expecting a match for the given
+     * (partial) name, size, and colour.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    void testMatchingClothingProducts() {
+        // arrange
+        String name = "hood";
+        List<ClothingItem.Size> sizes = List.of(ClothingItem.Size.M);
+        List<ClothingItem.Colour> colours = List.of(ClothingItem.Colour.YELLOW);
+        when(clothingProductRepository.findClothingProductsByNameContainsIgnoreCase(name))
+                .thenReturn(List.of(clothingProduct));
+
+        // act
+        List<ClothingProduct> matchingClothingProducts =
+                clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+
+        // assert
+        assertIterableEquals(
+                List.of(clothingProduct),
+                matchingClothingProducts,
+                "Clothing products matching search by name and filter by size and colour are incorrect.");
+        verify(clothingProductRepository, times(1))
+                .findClothingProductsByNameContainsIgnoreCase(name);
     }
 }

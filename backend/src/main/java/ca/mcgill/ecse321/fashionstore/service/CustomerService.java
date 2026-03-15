@@ -1,13 +1,14 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.CustomerResponseDto;
+import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -32,18 +33,23 @@ public class CustomerService {
     /**
      * Service method to update a customer's loyalty points.
      *
-     * @param id ID of customer whose loyalty points will be updated
-     * @param customerRequestDto Request DTO for customer
-     * @return DTO for the updated customer
+     * @param id ID of customer whose loyalty points will be updated.
+     * @param customerRequestDto Request DTO for customer.
+     * @return The updated customer.
      * @author Carolyn Wu (cw118)
      */
     @Transactional
-    public CustomerResponseDto updateCustomerLoyaltyPts(
-            int id, @Valid CustomerRequestDto customerRequestDto) {
+    public Customer updateCustomerLoyaltyPts(int id, @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
+        int updatedLoyaltyPts = customerRequestDto.numOfLoyaltyPoints();
+
+        if (updatedLoyaltyPts < 0) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Number of loyalty points must be positive or zero.");
+        }
+
         customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());
 
-        CustomerResponseDto dto = new CustomerResponseDto(customer);
-        return dto;
+        return customerRepository.save(customer);
     }
 }
