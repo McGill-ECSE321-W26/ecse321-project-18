@@ -85,8 +85,7 @@ class CustomerServiceTests {
 
     /**
      * Service layer test for updating a customer's loyalty points with a valid customer ID and
-     * number of points. Invalid (i.e. negative) number of points is already not permitted, a rule
-     * enforced by the CustomerRequestDto class.
+     * number of points.
      *
      * @author Carolyn Wu (cw118)
      */
@@ -107,6 +106,30 @@ class CustomerServiceTests {
         // assert
         assertUpdateLoyaltyPtsValid(updatedCustomer);
         verifyUpdateLoyaltyPtsValid();
+    }
+
+    /**
+     * Service layer test for updating a customer's loyalty points with a valid customer ID but
+     * invalid number of points.
+     */
+    @Test
+    void testUpdateLoyaltyPtsInvalid() {
+        // arrange
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
+
+        CustomerRequestDto customerRequestDto =
+                new CustomerRequestDto(
+                        CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS, LOYALTY_PTS_INVALID);
+
+        // assert
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                customerService.updateCustomerLoyaltyPts(
+                                        CUSTOMER_ID, customerRequestDto));
+
+        assertUpdateLoyaltyPtsInvalid(e);
     }
 
     private void assertUpdateLoyaltyPtsValid(Customer updatedCustomer) {
@@ -135,6 +158,17 @@ class CustomerServiceTests {
                                                 && CUSTOMER_ADDRESS.equals(c.getAddress())
                                                 && c.getNumLoyaltyPoints()
                                                         == CUSTOMER_LOYALTY_PTS));
+    }
+
+    private void assertUpdateLoyaltyPtsInvalid(FashionStoreException e) {
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "HTTP status is not BAD_REQUEST after customer request DTO with invalid loyalty points.");
+        assertEquals(
+                "Number of loyalty points must be non-negative.",
+                e.getMessage(),
+                "HTTP message is incorrect after customer request DTO with invalid loyalty points.");
     }
 
     private Customer createCustomer(int id, String email, String password, String address) {

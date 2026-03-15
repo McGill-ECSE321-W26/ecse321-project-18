@@ -1,12 +1,14 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.CustomerRequestDto;
+import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -39,6 +41,13 @@ public class CustomerService {
     @Transactional
     public Customer updateCustomerLoyaltyPts(int id, @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
+        int updatedLoyaltyPts = customerRequestDto.numOfLoyaltyPoints();
+
+        if (updatedLoyaltyPts < 0) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Number of loyalty points must be non-negative.");
+        }
+
         customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());
 
         return customerRepository.save(customer);
