@@ -69,12 +69,11 @@ public class AccountService {
         Account account = accountRepository.findAccountByEmail(requestDto.email());
         // Email check
         if (account == null) {
-            throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST, "An account with that email does not exist.");
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, nonexistentEmailErrorMsg);
         }
 
         // Password check
-        if (!account.getPassword().equals(requestDto.password())) {
+        if (!(account.getPassword().equals(requestDto.password()))) {
             throw new FashionStoreException(HttpStatus.BAD_REQUEST, badPasswordErrorMsg);
         }
 
