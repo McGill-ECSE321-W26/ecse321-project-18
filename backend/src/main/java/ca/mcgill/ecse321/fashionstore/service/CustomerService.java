@@ -45,7 +45,7 @@ public class CustomerService {
 
         if (updatedLoyaltyPts < 0) {
             throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST, "Number of loyalty points must be non-negative.");
+                    HttpStatus.BAD_REQUEST, "Number of loyalty points must be positive or zero.");
         }
 
         customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());

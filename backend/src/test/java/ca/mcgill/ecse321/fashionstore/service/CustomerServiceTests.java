@@ -166,7 +166,7 @@ class CustomerServiceTests {
                 e.getStatus(),
                 "HTTP status is not BAD_REQUEST after customer request DTO with invalid loyalty points.");
         assertEquals(
-                "Number of loyalty points must be non-negative.",
+                "Number of loyalty points must be positive or zero.",
                 e.getMessage(),
                 "HTTP message is incorrect after customer request DTO with invalid loyalty points.");
     }

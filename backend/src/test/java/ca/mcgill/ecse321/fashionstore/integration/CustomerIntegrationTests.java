@@ -25,15 +25,16 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
 class CustomerIntegrationTests {
-    private static final String customerLoyaltyPtsUri =
+    private static final String CUSTOMER_LOYALTY_PTS_URI =
             "/fashionstore/account/customer/{customerId}/loyalty";
-    private static final String errorLoc = "$.errors";
+    private static final String ERROR_LOC = "$.errors";
     private static final String RESPONSE_NULL_ERROR = "Response body is null.";
 
     private static final String CUSTOMER_EMAIL = "customer@example.com";
     private static final String CUSTOMER_PASSWORD = "canthackthis";
     private static final String CUSTOMER_ADDRESS = "29 Fashion Dr";
     private static final int CUSTOMER_LOYALTY_PTS = 15;
+    private static final int LOYALTY_PTS_INVALID = -1;
 
     private int customerId;
 
@@ -71,18 +72,18 @@ class CustomerIntegrationTests {
 
         // act
         client.put()
-                .uri(customerLoyaltyPtsUri, invalidCustomerId)
+                .uri(CUSTOMER_LOYALTY_PTS_URI, invalidCustomerId)
                 .body(body)
                 .exchange()
                 .expectStatus()
                 .isNotFound()
                 .expectBody()
-                .jsonPath(errorLoc)
+                .jsonPath(ERROR_LOC)
                 .isEqualTo(String.format("Customer ID %d was not found.", invalidCustomerId));
     }
 
     /**
-     * Integration test to update loyalty points with a valid customer ID.
+     * Integration test to update loyalty points with a valid customer ID and valid loyalty points.
      *
      * @author Carolyn Wu (cw118)
      */
@@ -97,7 +98,7 @@ class CustomerIntegrationTests {
         // act
         CustomerResponseDto response =
                 client.put()
-                        .uri(customerLoyaltyPtsUri, customerId)
+                        .uri(CUSTOMER_LOYALTY_PTS_URI, customerId)
                         .body(body)
                         .exchange()
                         .expectStatus()
@@ -109,6 +110,32 @@ class CustomerIntegrationTests {
         // assert
         assertUpdateLoyaltyPtsValid(
                 response, CUSTOMER_EMAIL, CUSTOMER_ADDRESS, CUSTOMER_LOYALTY_PTS);
+    }
+
+    /**
+     * Integration test to update loyalty points with a valid customer ID but invalid loyalty
+     * points.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    @Order(2)
+    void testUpdateLoyaltyPtsInvalid() {
+        // arrange
+        CustomerRequestDto body =
+                new CustomerRequestDto(
+                        CUSTOMER_EMAIL, CUSTOMER_PASSWORD, CUSTOMER_ADDRESS, LOYALTY_PTS_INVALID);
+
+        // act and assert
+        client.put()
+                .uri(CUSTOMER_LOYALTY_PTS_URI, customerId)
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody()
+                .jsonPath(ERROR_LOC)
+                .isEqualTo("Number of loyalty points must be positive or zero.");
     }
 
     private Customer createCustomer(String email, String password, String address) {
