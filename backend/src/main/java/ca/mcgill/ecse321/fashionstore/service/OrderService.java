@@ -181,7 +181,7 @@ public class OrderService {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
         // get all orders associated with a certain customer and return in list
-        return new ArrayList<>(customer.getPurchasedOrders());
+        return customer.getPurchasedOrders();
     }
 
     /**
