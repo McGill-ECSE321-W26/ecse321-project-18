@@ -478,8 +478,8 @@ class AccountServiceTests {
     }
 
     /**
-     * Helper method to simulate database ID assignment for mocked repository save operations.
-     * Sets the given ID on the account and returns it, like auto-generated IDs in tests.
+     * Helper method to simulate database ID assignment for mocked repository save operations. Sets
+     * the given ID on the account and returns it, like auto-generated IDs in tests.
      *
      * @param <T> the type of account, must extend Account
      * @param account the account to assign the ID to
@@ -492,10 +492,3 @@ class AccountServiceTests {
         return account;
     }
 }
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
