@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
@@ -11,10 +14,15 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -23,10 +31,12 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author Qiuyu Huang (redacted24)
  */
 @SpringBootTest
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 class ClothingItemServiceTests {
-    @Autowired private ClothingItemService clothingItemService;
-    @Autowired private ClothingProductRepository clothingProductRepository;
-    @Autowired private ClothingItemRepository clothingItemRepository;
+    @Mock private ClothingProductRepository clothingProductRepository;
+    @Mock private ClothingItemRepository clothingItemRepository;
+
+    @InjectMocks private ClothingItemService clothingItemService;
 
     private ClothingProduct clothingProduct;
     private ClothingItem clothingItem;
@@ -43,7 +53,6 @@ class ClothingItemServiceTests {
         clothingProduct.setImage("hoodie.png");
         clothingProduct.setPrice(69.99f);
         clothingProduct.setName("Hoodies");
-        clothingProductRepository.save(clothingProduct);
         this.clothingProduct = clothingProduct;
 
         // create clothing item
@@ -52,7 +61,6 @@ class ClothingItemServiceTests {
         clothingItem.setSize(ClothingItem.Size.M);
         clothingItem.setColour(ClothingItem.Colour.YELLOW);
         clothingItem.setNumInStock(100);
-        clothingItemRepository.save(clothingItem);
         this.clothingItem = clothingItem;
     }
 
@@ -74,13 +82,36 @@ class ClothingItemServiceTests {
      */
     @Test
     void getNonExistentClothingItem() {
+        // Arrange
         // use any other item id than the one currently in db
-        int id = clothingItem.getId() + 1;
+        int id = 200;
+        when(clothingItemRepository.findById(id)).thenReturn(Optional.empty());
 
+        // Act
+        // Assert
         assertThrows(
                 FashionStoreException.class,
                 () -> clothingItemService.getClothingItem(clothingProduct.getId(), id),
                 "Trying to find non existent clothing item ID should not find anything.");
+    }
+
+    /**
+     * Helper assert function.
+     *
+     * @author Qiuyu Huang (redacted24)
+     */
+    @Disabled("Helper function")
+    void assertClothingItem(ClothingItem expected, ClothingItem actual) {
+        assertEquals(
+                actual.getColour(),
+                expected.getColour(),
+                "Response ClothingItem's colour does not match.");
+        assertEquals(
+                actual.getClothingProduct(),
+                expected.getClothingProduct(),
+                "Response ClothingItem's ClothingProduct does not match.");
+        assertEquals(
+                actual.getId(), expected.getId(), "Response ClothingItem's id does not match.");
     }
 
     /**
@@ -90,11 +121,24 @@ class ClothingItemServiceTests {
      */
     @Test
     void getExistingClothingItem() {
-        assertDoesNotThrow(
-                () ->
-                        clothingItemService.getClothingItem(
-                                clothingProduct.getId(), clothingItem.getId()),
-                "Trying to get an existing clothing item returns it.");
+        // Arrange
+        when(clothingProductRepository.findById(clothingProduct.getId()))
+                .thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(clothingItem.getId()))
+                .thenReturn(Optional.of(clothingItem));
+        // Act
+        // Assert
+        ClothingItem response =
+                assertDoesNotThrow(
+                        () ->
+                                clothingItemService.getClothingItem(
+                                        clothingProduct.getId(), clothingItem.getId()),
+                        "Trying to get a valid, existing clothing item throws an exception.");
+
+        assertClothingItem(clothingItem, response);
+
+        verify(clothingProductRepository, times(1)).findById(clothingProduct.getId());
+        verify(clothingItemRepository, times(1)).findById(clothingItem.getId());
     }
 
     /**

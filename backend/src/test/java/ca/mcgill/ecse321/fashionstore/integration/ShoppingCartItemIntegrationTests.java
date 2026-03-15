@@ -15,6 +15,7 @@ import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
+import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -92,6 +93,7 @@ class ShoppingCartItemIntegrationTests {
 
     private Customer createCustomer() {
         Customer customer = new Customer();
+        customer.setEmail("hello@email.com");
         return customerRepository.save(customer);
     }
 
@@ -126,6 +128,7 @@ class ShoppingCartItemIntegrationTests {
     private void assertGetShoppingCartItemsByValidId(List<ShoppingCartItemResponseDto> response) {
         assertNotNull(response, responseNullError);
         assertEquals(response.size(), 2, "Response body has incorrect number of DTO objects.");
+        response.sort(Comparator.comparing(ShoppingCartItemResponseDto::id));
         assertGetShoppingCartItemsByValidId2(
                 response.get(0), shoppingCartItemId1, VALID_QUANTITY_1, clothingItemId1);
         assertGetShoppingCartItemsByValidId2(
