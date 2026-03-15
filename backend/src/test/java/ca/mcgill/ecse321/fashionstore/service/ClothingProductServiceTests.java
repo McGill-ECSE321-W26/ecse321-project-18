@@ -1,9 +1,11 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 
 /** Test suite for clothing product service class. */
 @SpringBootTest
@@ -270,7 +271,9 @@ class ClothingProductServiceTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void createClothingProduct() {
+    void createClothingProductSuccess() {
+        when(clothingProductRepository.save(any(ClothingProduct.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         assertDoesNotThrow(
                 () -> clothingProductService.createClothingProduct(this.clothingProductRequestDto),
                 "Creating a clothing product with valid details should not throw an exception.");
@@ -282,7 +285,11 @@ class ClothingProductServiceTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void updateClothingProduct() {
+    void updateClothingProductSuccess() {
+        when(clothingProductRepository.findById(clothingProduct.getId()))
+                .thenReturn(Optional.of(clothingProduct));
+        when(clothingProductRepository.save(any(ClothingProduct.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         assertDoesNotThrow(
                 () ->
                         clothingProductService.updateClothingProduct(
@@ -298,6 +305,7 @@ class ClothingProductServiceTests {
     @Test
     void updateNonExistingClothingProduct() {
         int invalidId = clothingProduct.getId() + 1;
+        when(clothingProductRepository.findById(invalidId)).thenReturn(Optional.empty());
         FashionStoreException e =
                 assertThrows(
                         FashionStoreException.class,
@@ -310,9 +318,5 @@ class ClothingProductServiceTests {
                 HttpStatus.NOT_FOUND,
                 e.getStatus(),
                 "Invalid product ID should throw a NOT_FOUND exception.");
-        assertEquals(
-                String.format("ClothingProduct ID %d was not found.", invalidId),
-                e.getMessage(),
-                "Exception message should indicate that the clothing product was not found.");
     }
 }

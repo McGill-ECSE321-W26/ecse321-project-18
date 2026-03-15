@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.fashionstore.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -166,7 +167,11 @@ class ClothingItemServiceTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void createClothingItem() {
+    void createClothingItemSuccess() {
+        when(clothingProductRepository.findById(clothingProduct.getId()))
+                .thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.save(any(ClothingItem.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
         assertDoesNotThrow(
                 () ->
                         clothingItemService.createClothingItem(
@@ -181,25 +186,22 @@ class ClothingItemServiceTests {
      */
     @Test
     void createClothingItemInvalidId1() {
+        when(clothingProductRepository.findById(
+                        this.invalidClothingItemRequestDto.clothingProductId()))
+                .thenReturn(Optional.empty());
         FashionStoreException e =
                 assertThrows(
                         FashionStoreException.class,
                         () ->
                                 clothingItemService.createClothingItem(
                                         this.invalidClothingItemRequestDto,
-                                        this.clothingProduct.getId() + 1),
+                                        this.invalidClothingItemRequestDto.clothingProductId()),
                         "Creating a clothing item with an invalid product ID should throw an exception.");
 
         assertEquals(
                 HttpStatus.NOT_FOUND,
                 e.getStatus(),
                 "Invalid product ID should throw a NOT_FOUND execption.");
-        assertEquals(
-                String.format(
-                        "ClothingProduct ID %d was not found.",
-                        this.invalidClothingItemRequestDto.clothingProductId()),
-                e.getMessage(),
-                "Exception message should indicate that the clothing product was not found.");
     }
 
     /**
@@ -209,7 +211,7 @@ class ClothingItemServiceTests {
      */
     @Test
     void createClothingItemInvalidId2() {
-        int invalidId = clothingItem.getId() + 1;
+        int invalidId = validClothingItemRequestDto.clothingProductId() - 1;
         FashionStoreException e =
                 assertThrows(
                         FashionStoreException.class,

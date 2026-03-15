@@ -1,7 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;

@@ -15,11 +15,9 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import java.util.List;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +38,8 @@ class ClothingProductIntegrationTests {
     @Autowired private ClothingItemRepository clothingItemRepository;
 
     private ClothingProduct clothingProduct;
-    private ClothingProductRequestDto clothingProductRequestDto;
     private ClothingProduct clothingProduct2;
+    private ClothingProductRequestDto clothingProductRequestDto;
     private List<ClothingProduct> allClothingProducts;
     private static final String clothingProductUri = "/fashionstore/clothingproduct/{id}";
     private static final String clothingProductsUri = "/fashionstore/clothingproduct";
@@ -66,6 +64,9 @@ class ClothingProductIntegrationTests {
         createClothingItem(clothingProduct2, ClothingItem.Size.XL, ClothingItem.Colour.RED, 50);
 
         this.allClothingProducts = List.of(clothingProduct, clothingProduct2);
+
+        this.clothingProductRequestDto =
+                new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png");
     }
 
     private ClothingProduct createClothingProduct(String image, float price, String name) {
@@ -87,17 +88,6 @@ class ClothingProductIntegrationTests {
         item.setColour(colour);
         item.setNumInStock(stock);
         return clothingItemRepository.save(item);
-        // create first clothing item
-        ClothingItem clothingItem = new ClothingItem();
-        clothingItem.setClothingProduct(clothingProduct);
-        clothingItem.setSize(ClothingItem.Size.M);
-        clothingItem.setColour(ClothingItem.Colour.YELLOW);
-        clothingItem.setNumInStock(100);
-        clothingItemRepository.save(clothingItem);
-        this.clothingItem = clothingItem;
-
-        this.clothingProductRequestDto =
-                new ClothingProductRequestDto("T-Shirt", 29.99f, "tshirt.png");
     }
 
     /** Teardown method for test suite. (placeholder, please modify if needed) */
@@ -298,7 +288,7 @@ class ClothingProductIntegrationTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void createClothingProduct() {
+    void createClothingProductSuccess() {
         ClothingProductResponseDto response =
                 client.post()
                         .uri("/fashionstore/clothingproduct")
@@ -339,7 +329,7 @@ class ClothingProductIntegrationTests {
      */
     @Test
     void updateClothingProductInvalidId() {
-        int invalidId = this.clothingProduct.getId() + 1;
+        int invalidId = this.clothingProduct.getId() - 1;
 
         client.put()
                 .uri(clothingProductUri, invalidId)
