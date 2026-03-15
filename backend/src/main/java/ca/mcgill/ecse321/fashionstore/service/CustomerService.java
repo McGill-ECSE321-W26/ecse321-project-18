@@ -31,6 +31,18 @@ public class CustomerService {
     }
 
     /**
+     * Service method to get the information of a customer.
+     *
+     * @param id ID of customer
+     * @return Customer instance
+     * @author Flavie Qin
+     */
+    @Transactional
+    public Customer getCustomer(int id) {
+        return Utils.findCustomerById(customerRepository, id);
+    }
+
+    /**
      * Service method to update a customer's loyalty points.
      *
      * @param id ID of customer whose loyalty points will be updated.

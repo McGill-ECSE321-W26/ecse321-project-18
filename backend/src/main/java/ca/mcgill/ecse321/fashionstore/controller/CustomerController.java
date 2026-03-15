@@ -29,6 +29,20 @@ public class CustomerController {
     }
 
     /**
+     * Gets the information of a customer.
+     *
+     * @param customerId Customer ID.
+     * @return A DTO representing the customer.
+     * @author Flavie Qin
+     */
+    @PutMapping("/fashionstore/account/customer/{customerId}")
+    public CustomerResponseDto getCustomer(@PathVariable int customerId) {
+        Customer customer = customerService.getCustomer(customerId);
+
+        return new CustomerResponseDto(customer);
+    }
+
+    /**
      * Updates the number of loyalty points for a customer.
      *
      * @param customerId Customer ID.
