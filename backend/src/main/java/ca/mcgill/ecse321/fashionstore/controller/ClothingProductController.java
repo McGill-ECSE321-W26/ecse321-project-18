@@ -1,5 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.controller;
 
+import static ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto.clothingProductsToResponseDtos;
+
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
@@ -96,10 +98,13 @@ public class ClothingProductController {
     @GetMapping("/fashionstore/clothingproduct")
     @ResponseBody
     public List<ClothingProductResponseDto> getMatchingClothingProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) List<ClothingItem.Size> sizes,
-            @RequestParam(required = false) List<ClothingItem.Colour> colours) {
-        return clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "sizes", required = false) List<ClothingItem.Size> sizes,
+            @RequestParam(value = "colours", required = false) List<ClothingItem.Colour> colours) {
+        List<ClothingProduct> clothingProducts =
+                clothingProductService.getMatchingClothingProducts(name, sizes, colours);
+
+        return clothingProductsToResponseDtos(clothingProducts);
     }
 
     /**

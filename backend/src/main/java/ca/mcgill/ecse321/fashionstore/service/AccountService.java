@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.fashionstore.service;
 import static ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto.AccountType;
 
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -70,12 +69,11 @@ public class AccountService {
         Account account = accountRepository.findAccountByEmail(requestDto.email());
         // Email check
         if (account == null) {
-            throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST, "An account with that email does not exist.");
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, nonexistentEmailErrorMsg);
         }
 
         // Password check
-        if (!account.getPassword().equals(requestDto.password())) {
+        if (!(account.getPassword().equals(requestDto.password()))) {
             throw new FashionStoreException(HttpStatus.BAD_REQUEST, badPasswordErrorMsg);
         }
 
@@ -110,7 +108,7 @@ public class AccountService {
      * @author Aurore Zhang (ororio0)
      */
     @Transactional
-    public AccountResponseDto createEmployeeAccount(@Valid AccountRequestDto accountRequestDto) {
+    public Account createEmployeeAccount(@Valid AccountRequestDto accountRequestDto) {
         if (accountRepository.existsByEmail(accountRequestDto.email())) {
             throw new FashionStoreException(
                     HttpStatus.CONFLICT,
@@ -121,8 +119,7 @@ public class AccountService {
         employee.setEmail(accountRequestDto.email());
         employee.setPassword(accountRequestDto.password());
         employee = employeeRepository.save(employee);
-        AccountResponseDto dto = new AccountResponseDto(employee);
-        return dto;
+        return employee;
     }
 
     /**
@@ -132,7 +129,7 @@ public class AccountService {
      * @author Aurore Zhang (ororio0)
      */
     @Transactional
-    public AccountResponseDto createCustomerAccount(@Valid AccountRequestDto accountRequestDto) {
+    public Account createCustomerAccount(@Valid AccountRequestDto accountRequestDto) {
         if (accountRepository.existsByEmail(accountRequestDto.email())) {
             throw new FashionStoreException(
                     HttpStatus.CONFLICT,
@@ -143,7 +140,6 @@ public class AccountService {
         customer.setEmail(accountRequestDto.email());
         customer.setPassword(accountRequestDto.password());
         customer = customerRepository.save(customer);
-        AccountResponseDto dto = new AccountResponseDto(customer);
-        return dto;
+        return customer;
     }
 }

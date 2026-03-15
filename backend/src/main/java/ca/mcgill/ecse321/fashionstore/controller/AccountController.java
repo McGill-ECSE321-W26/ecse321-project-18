@@ -56,7 +56,9 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public AccountResponseDto createEmployeeAccount(
             @RequestBody AccountRequestDto accountRequestDto) {
-        return accountService.createEmployeeAccount(accountRequestDto);
+        Account account = accountService.createEmployeeAccount(accountRequestDto);
+        return new AccountResponseDto(
+                account.getId(), account.getEmail(), AccountResponseDto.AccountType.EMPLOYEE);
     }
 
     /**
@@ -70,6 +72,8 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CREATED)
     public AccountResponseDto createCustomerAccount(
             @RequestBody AccountRequestDto accountRequestDto) {
-        return accountService.createCustomerAccount(accountRequestDto);
+        Account account = accountService.createCustomerAccount(accountRequestDto);
+        return new AccountResponseDto(
+                account.getId(), account.getEmail(), AccountResponseDto.AccountType.CUSTOMER);
     }
 }

@@ -1,11 +1,13 @@
 package ca.mcgill.ecse321.fashionstore.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,6 +118,26 @@ class ClothingProductRepositoryTests {
     }
 
     /**
+     * Test finding clothing products by name using a case-insensitive contains.
+     *
+     * @author Carolyn Wu (cw118)
+     */
+    @Test
+    void findClothingProductsByNameCaseInsensitive() {
+        // create clothing products and prepare to search
+        String search = "cReW";
+        ClothingProduct crewneck = createSaveClothingProduct("CRewneck", 50.0f, "imagepath.jpg");
+        createSaveClothingProduct("T-shirt", 20.25f, "imagepath2.jpg");
+        List<ClothingProduct> expected = List.of(clothingProduct, crewneck);
+
+        List<ClothingProduct> actual =
+                clothingProductRepository.findClothingProductsByNameContainsIgnoreCase(search);
+
+        assertIterableEquals(
+                expected, actual, "Clothing product search by name did not find correct results.");
+    }
+
+    /**
      * Test updating clothing product name reflects in database.
      *
      * @author Qiuyu Huang (redacted24)
@@ -205,5 +227,26 @@ class ClothingProductRepositoryTests {
         assertNull(
                 clothingItemFromDb,
                 "Clothing item still exists even if associated clothing product is deleted.");
+    }
+
+    /**
+     * Helper method to create and save a clothing product with the specified details.
+     *
+     * @param name Name of the new ClothingProduct
+     * @param price Price of the new ClothingProduct
+     * @param image Image path of the new ClothingProduct
+     * @return the newly created and saved ClothingProduct
+     * @author Carolyn Wu (cw118)
+     */
+    private ClothingProduct createSaveClothingProduct(String name, float price, String image) {
+        ClothingProduct product = new ClothingProduct();
+        product.setName(name);
+        product.setPrice(price);
+        product.setImage(image);
+
+        // save to database
+        clothingProductRepository.save(product);
+
+        return product;
     }
 }
