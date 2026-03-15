@@ -258,8 +258,7 @@ class AccountServiceIntegrationTests {
      */
     @Test
     void createEmployeeAccount() {
-        AccountRequestDto accountRequestDto =
-                new AccountRequestDto(NEW_EMPLOYEE_EMAIL, "employee001");
+        AccountRequestDto accountRequestDto = new AccountRequestDto(NEW_EMPLOYEE_EMAIL, "worker01");
         AccountResponseDto response =
                 client.post()
                         .uri(accountCreateEmployeeUri)
@@ -288,7 +287,7 @@ class AccountServiceIntegrationTests {
     @Test
     void failCreateEmployeeAccountDuplicateEmail() {
         // Arrange
-        AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "employee001");
+        AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "worker01");
 
         // Act
         AccountResponseDto response =
@@ -318,8 +317,7 @@ class AccountServiceIntegrationTests {
      */
     @Test
     void createCustomerAccount() {
-        AccountRequestDto accountRequestDto =
-                new AccountRequestDto(NEW_CUSTOMER_EMAIL, "anonymous007");
+        AccountRequestDto accountRequestDto = new AccountRequestDto(NEW_CUSTOMER_EMAIL, "client01");
         AccountResponseDto response =
                 client.post()
                         .uri(accountCreateCustomerUri)
@@ -348,7 +346,7 @@ class AccountServiceIntegrationTests {
     @Test
     void failCreateCustomerAccountDuplicateEmail() {
         // Arrange
-        AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "customer456");
+        AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "client01");
 
         // Act
         AccountResponseDto response =
