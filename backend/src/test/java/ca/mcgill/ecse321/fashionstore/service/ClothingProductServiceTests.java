@@ -1,8 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -266,19 +265,11 @@ class ClothingProductServiceTests {
      */
     @Test
     void deleteClothingProduct_success() {
-        int id = clothingProduct.getId();
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
 
-        assertDoesNotThrow(
-                () -> clothingProductService.deleteClothingProduct(id),
-                "Deleting an existing ClothingProduct should not throw.");
+        assertDoesNotThrow(() -> clothingProductService.deleteClothingProduct(1));
 
-        assertFalse(
-                clothingProductRepository.existsById(id),
-                "ClothingProduct should be deleted from the database.");
-
-        assertFalse(
-                clothingItemRepository.existsById(clothingItem.getId()),
-                "Associated ClothingItems should also be deleted.");
+        verify(clothingProductRepository, times(1)).delete(clothingProduct);
     }
 
     /**
@@ -288,11 +279,9 @@ class ClothingProductServiceTests {
      */
     @Test
     void deleteClothingProduct_nonExistent() {
-        int badId = clothingProduct.getId() + 93;
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(
-                FashionStoreException.class,
-                () -> clothingProductService.deleteClothingProduct(badId),
-                "Deleting a non-existent ClothingProduct should throw.");
+                FashionStoreException.class, () -> clothingProductService.deleteClothingProduct(1));
     }
 }

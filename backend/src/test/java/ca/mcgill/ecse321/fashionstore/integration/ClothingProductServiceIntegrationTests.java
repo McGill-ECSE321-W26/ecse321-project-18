@@ -16,8 +16,8 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import java.util.List;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ class ClothingProductServiceIntegrationTests {
             "/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}";
 
     /** Setup method for the test suite. */
-    @BeforeAll
+    @BeforeEach
     void createClothingProducts() {
         // create clothing products
         this.clothingProduct = createClothingProduct("hoodie.png", 69.99f, "Hoodie");
@@ -85,7 +85,7 @@ class ClothingProductServiceIntegrationTests {
     }
 
     /** Teardown method for test suite. (placeholder, please modify if needed) */
-    @AfterAll
+    @AfterEach
     void clearDatabase() {
         clothingItemRepository.deleteAll();
         clothingProductRepository.deleteAll();
@@ -173,6 +173,9 @@ class ClothingProductServiceIntegrationTests {
         int badId = clothingProduct.getId() + 999;
 
         client.delete().uri(clothingProductUri, badId).exchange().expectStatus().isNotFound();
+    }
+
+    /**
      * Test retrieving all clothing products by providing no search and no filters.
      *
      * @author Carolyn Wu (cw118)

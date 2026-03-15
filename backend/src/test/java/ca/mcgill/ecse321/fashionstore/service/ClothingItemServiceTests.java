@@ -2,7 +2,6 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -155,11 +154,20 @@ class ClothingItemServiceTests {
                         50,
                         clothingProduct.getId());
 
-        ClothingItem updated =
-                clothingItemService.updateClothingItemStock(
-                        clothingProduct.getId(), clothingItem.getId(), dto);
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+        when(clothingItemRepository.save(clothingItem)).thenReturn(clothingItem);
 
-        assertEquals(50, updated.getNumInStock(), "Stock should update to 50.");
+        ClothingItem updated =
+                assertDoesNotThrow(
+                        () -> clothingItemService.updateClothingItemStock(1, 10, dto),
+                        "Updating stock of a valid clothing item should not throw.");
+
+        assertEquals(
+                50,
+                updated.getNumInStock(),
+                "Updated ClothingItem should have the new stock value.");
+        verify(clothingItemRepository, times(1)).save(clothingItem);
     }
 
     /**
@@ -176,14 +184,13 @@ class ClothingItemServiceTests {
                         50,
                         clothingProduct.getId());
 
-        int badId = clothingItem.getId() + 999;
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.empty());
 
         assertThrows(
                 FashionStoreException.class,
-                () ->
-                        clothingItemService.updateClothingItemStock(
-                                clothingProduct.getId(), badId, dto),
-                "Updating a non-existent clothing item should throw.");
+                () -> clothingItemService.updateClothingItemStock(1, 10, dto),
+                "Updating stock of a non-existent clothing item should throw.");
     }
 
     /**
@@ -194,10 +201,12 @@ class ClothingItemServiceTests {
     @Test
     void updateClothingItemStock_wrongProduct() {
         ClothingProduct otherProduct = new ClothingProduct();
-        otherProduct.setImage("shirt.png");
-        otherProduct.setPrice(29.99f);
+        otherProduct.setId(2);
         otherProduct.setName("Shirts");
-        clothingProductRepository.save(otherProduct);
+        otherProduct.setPrice(29.99f);
+        otherProduct.setImage("shirt.png");
+
+        clothingItem.setClothingProduct(otherProduct);
 
         ClothingItemRequestDto dto =
                 new ClothingItemRequestDto(
@@ -206,11 +215,12 @@ class ClothingItemServiceTests {
                         50,
                         clothingProduct.getId());
 
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+
         assertThrows(
                 FashionStoreException.class,
-                () ->
-                        clothingItemService.updateClothingItemStock(
-                                otherProduct.getId(), clothingItem.getId(), dto),
+                () -> clothingItemService.updateClothingItemStock(1, 10, dto),
                 "Updating an item under the wrong product should throw.");
     }
 
@@ -221,36 +231,14 @@ class ClothingItemServiceTests {
      */
     @Test
     void deleteClothingItem_success() {
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+
         assertDoesNotThrow(
-                () ->
-                        clothingItemService.deleteClothingItem(
-                                clothingProduct.getId(), clothingItem.getId()),
+                () -> clothingItemService.deleteClothingItem(1, 10),
                 "Deleting an existing clothing item should not throw.");
 
-        assertFalse(
-                clothingItemRepository.existsById(clothingItem.getId()),
-                "Clothing item should be deleted.");
-    }
-
-    /**
-     * Test deleting a clothing item under the wrong product.
-     *
-     * @author Kenneth Wang (KennethWang6)
-     */
-    @Test
-    void deleteClothingItem_wrongProduct() {
-        ClothingProduct otherProduct = new ClothingProduct();
-        otherProduct.setImage("pants.png");
-        otherProduct.setPrice(49.99f);
-        otherProduct.setName("Pants");
-        clothingProductRepository.save(otherProduct);
-
-        assertThrows(
-                FashionStoreException.class,
-                () ->
-                        clothingItemService.deleteClothingItem(
-                                otherProduct.getId(), clothingItem.getId()),
-                "Deleting under the wrong product should throw.");
+        verify(clothingItemRepository, times(1)).delete(clothingItem);
     }
 
     /**
@@ -260,11 +248,32 @@ class ClothingItemServiceTests {
      */
     @Test
     void deleteClothingItem_nonExistent() {
-        int badId = clothingItem.getId() + 28;
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.empty());
 
         assertThrows(
                 FashionStoreException.class,
-                () -> clothingItemService.deleteClothingItem(clothingProduct.getId(), badId),
+                () -> clothingItemService.deleteClothingItem(1, 10),
                 "Deleting a non-existent clothing item should throw.");
+    }
+
+    /**
+     * Test deleting a clothing item under the wrong product.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingItem_wrongProduct() {
+        ClothingProduct other = new ClothingProduct();
+        other.setId(2);
+        clothingItem.setClothingProduct(other);
+
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> clothingItemService.deleteClothingItem(1, 10),
+                "Deleting a clothing item under the wrong product should throw.");
     }
 }
