@@ -2,7 +2,10 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -382,5 +385,110 @@ class AccountServiceTests {
         assertEquals(
                 customer.getId(), response.getId(), "Customer login success response id is wrong.");
         verify(accountRepository, times(1)).findAccountByEmail(accountRequestDto.email());
+    }
+
+    /**
+     * Test employee account creation success.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void successCreateEmployeeAccount() {
+        AccountRequestDto request =
+                new AccountRequestDto("newemployee@fashionstore.com", "employee456");
+        when(accountRepository.existsByEmail(request.email())).thenReturn(false);
+        when(employeeRepository.save(any(Employee.class)))
+                .thenAnswer(invocation -> withId(invocation.getArgument(0), 101));
+
+        Account response = assertDoesNotThrow(() -> accountService.createEmployeeAccount(request));
+
+        assertNotNull(response, "Created employee account response should not be null.");
+        assertEquals(
+                request.email(),
+                response.getEmail(),
+                "Created employee account response has wrong email.");
+        assertTrue(response instanceof Employee, "Created account should be an Employee instance.");
+    }
+
+    /**
+     * Test employee account creation failure due to duplicate email.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void duplicateEmployeeEmailCreateAccount() {
+        AccountRequestDto request = new AccountRequestDto(employee.getEmail(), "employee456");
+        when(accountRepository.existsByEmail(request.email())).thenReturn(true);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountService.createEmployeeAccount(request),
+                        "Exception for duplicate employee email.");
+
+        assertEquals(
+                String.format("An account with email %s already exists.", request.email()),
+                e.getMessage(),
+                "Exception message should indicate duplicate email.");
+    }
+
+    /**
+     * Test customer account creation success.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void successCreateCustomerAccount() {
+        AccountRequestDto request =
+                new AccountRequestDto("newcustomer@fashionstore.com", "customer456");
+        when(accountRepository.existsByEmail(request.email())).thenReturn(false);
+        when(customerRepository.save(any(Customer.class)))
+                .thenAnswer(invocation -> withId(invocation.getArgument(0), 202));
+
+        Account response = assertDoesNotThrow(() -> accountService.createCustomerAccount(request));
+
+        assertNotNull(response, "Created customer account response should not be null.");
+        assertEquals(
+                request.email(),
+                response.getEmail(),
+                "Created customer account response has wrong email.");
+        assertTrue(response instanceof Customer, "Created account should be a Customer instance.");
+    }
+
+    /**
+     * Test customer account creation failure due to duplicate email.
+     *
+     * @author Aurore Zhang (ororio0)
+     */
+    @Test
+    void duplicateCustomerEmailCreateAccount() {
+        AccountRequestDto request = new AccountRequestDto(customer.getEmail(), "customer456");
+        when(accountRepository.existsByEmail(request.email())).thenReturn(true);
+
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountService.createCustomerAccount(request),
+                        "Exception for duplicate customer email.");
+
+        assertEquals(
+                String.format("An account with email %s already exists.", request.email()),
+                e.getMessage(),
+                "Exception message should indicate duplicate email.");
+    }
+
+    /**
+     * Helper method to simulate database ID assignment for mocked repository save operations. Sets
+     * the given ID on the account and returns it, like auto-generated IDs in tests.
+     *
+     * @param <T> the type of account, must extend Account
+     * @param account the account to assign the ID to
+     * @param id the ID to assign to the account
+     * @return the account with the assigned ID
+     * @author Aurore Zhang (ororio0)
+     */
+    private <T extends Account> T withId(T account, int id) {
+        assertTrue(account.setId(id), "Setting account ID should return true.");
+        return account;
     }
 }

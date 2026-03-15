@@ -1,13 +1,16 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.OrderRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.OrderResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.OrderStatusRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
+import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
+import ca.mcgill.ecse321.fashionstore.model.OrderItem;
+import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
+import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
@@ -30,6 +33,7 @@ public class OrderService {
     private CustomerRepository customerRepository;
     private OrderRepository orderRepository;
     private EmployeeRepository employeeRepository;
+    private ClothingItemRepository clothingItemRepository;
     private static final int CANCELLATION_HOURS_BEFORE_DELIVERY = 24;
 
     /**
@@ -45,10 +49,12 @@ public class OrderService {
     public OrderService(
             CustomerRepository customerRepository,
             OrderRepository orderRepository,
-            EmployeeRepository employeeRepository) {
+            EmployeeRepository employeeRepository,
+            ClothingItemRepository clothingItemRepository) {
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
+        this.clothingItemRepository = clothingItemRepository;
     }
 
     /**
@@ -56,11 +62,12 @@ public class OrderService {
      *
      * @param orderRequestDto Order Request DTO
      * @param customerId Customer ID of customer to associate order with
-     * @return Order Response DTO
+     * @return new Order instance
      * @author Flavie Qin
      */
     @Transactional
-    public OrderResponseDto createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
+    public Order createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
+        validateOrderRequest(orderRequestDto);
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
         // create new order object
@@ -72,24 +79,91 @@ public class OrderService {
         newOrder.setDeliveryAddress(orderRequestDto.deliveryAddress());
         newOrder.setPrice(orderRequestDto.price());
 
-        // save object in database and return response
+        // assign all items in customer cart to the order
+        List<ClothingItem> items = assignOrderItems(newOrder, customer);
+
+        // save updated objects in database and return order
         this.orderRepository.save(newOrder);
-        return new OrderResponseDto(newOrder);
+        this.clothingItemRepository.saveAll(items);
+        return newOrder;
+    }
+
+    /**
+     * Validate that the delivery date and order date in the OrderRequestDto instance are valid.
+     *
+     * @param orderRequestDto OrderRequestDto instance
+     * @author Flavie Qin
+     */
+    private void validateOrderRequest(OrderRequestDto orderRequestDto) {
+        if (orderRequestDto.orderDate().plusDays(1).isAfter(orderRequestDto.deliveryDate())) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    "Delivery date must be at least 24 hours after order date.");
+        }
+    }
+
+    /**
+     * Helper method to assign all items from a customer's shopping cart to the new order
+     *
+     * @param order Order instance
+     * @param customer Customer instance that is placing the order
+     * @return List of clothing items with updated num in stock
+     * @author Flavie Qin
+     */
+    private List<ClothingItem> assignOrderItems(Order order, Customer customer) {
+        // throw error if no items in shopping cart
+        if (customer.getShoppingCartItems().isEmpty()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Cannot create a new order for no items.");
+        }
+
+        List<ClothingItem> clothingItems = new ArrayList<>();
+        // go through customer shopping cart items and add to the order
+        for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
+            validateItemQuantities(shoppingCartItem);
+            // create order item
+            OrderItem newItem = createNewOrderItem(shoppingCartItem);
+            order.addItem(newItem);
+            // update num in stock of clothing item and add to list to save
+            int newNumInStock = newItem.getClothingItem().getNumInStock() - newItem.getQuantity();
+            newItem.getClothingItem().setNumInStock(newNumInStock);
+            clothingItems.add(newItem.getClothingItem());
+        }
+        return clothingItems;
+    }
+
+    private void validateItemQuantities(ShoppingCartItem shoppingCartItem) {
+        if (shoppingCartItem.getQuantity() > shoppingCartItem.getClothingItem().getNumInStock()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST,
+                    String.format(
+                            "Clothing item %s does not have enough quantity in stock.",
+                            shoppingCartItem.getClothingItem().getClothingProduct().getName()));
+        }
+    }
+
+    private OrderItem createNewOrderItem(ShoppingCartItem shoppingCartItem) {
+        ClothingItem clothingItem = shoppingCartItem.getClothingItem();
+        OrderItem newItem = new OrderItem();
+        newItem.setPurchasePrice(clothingItem.getClothingProduct().getPrice());
+        newItem.setClothingItem(clothingItem);
+        newItem.setQuantity(shoppingCartItem.getQuantity());
+        return newItem;
     }
 
     /**
      * Service method to get all orders in the system
      *
-     * @return List of Order Response DTOs
+     * @return List of Order
      * @author Flavie Qin
      */
     @Transactional
-    public List<OrderResponseDto> getAllOrders() {
-        List<OrderResponseDto> list = new ArrayList<>();
+    public List<Order> getAllOrders() {
+        List<Order> list = new ArrayList<>();
 
-        // get all orders from database and save in list as response DTOs
+        // get all orders from database and save in list
         for (Order order : orderRepository.findAll()) {
-            list.add(new OrderResponseDto(order));
+            list.add(order);
         }
 
         return list;
@@ -99,21 +173,15 @@ public class OrderService {
      * Service method to get all orders placed by a certain customer
      *
      * @param customerId Customer ID of customer to get orders from
-     * @return List of Order Response DTOs
+     * @return List of Order
      * @author Flavie Qin
      */
     @Transactional
-    public List<OrderResponseDto> getAllOrdersByCustomer(int customerId) {
+    public List<Order> getAllOrdersByCustomer(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
-        List<OrderResponseDto> list = new ArrayList<>();
-
-        // get all orders associated with a certain customer and save in list as response DTOs
-        for (Order order : customer.getPurchasedOrders()) {
-            list.add(new OrderResponseDto(order));
-        }
-
-        return list;
+        // get all orders associated with a certain customer and return in list
+        return customer.getPurchasedOrders();
     }
 
     /**
@@ -121,10 +189,11 @@ public class OrderService {
      *
      * @param orderId Order ID to update.
      * @param orderStatusRequestDto OrderStatusRequestDto (state, employeeId).
+     * @return update Order instance
      * @author Aurore Zhang
      */
     @Transactional
-    public OrderResponseDto updateOrderStatus(
+    public Order updateOrderStatus(
             int orderId, @Valid OrderStatusRequestDto orderStatusRequestDto) {
         Order order = Utils.findOrderById(orderRepository, orderId);
         Employee employee =
@@ -141,8 +210,7 @@ public class OrderService {
         }
         order.setState(newState);
         order = orderRepository.save(order);
-        OrderResponseDto dto = new OrderResponseDto(order);
-        return dto;
+        return order;
     }
 
     /**
@@ -222,8 +290,7 @@ public class OrderService {
                         order.getDeliveryDate().toLocalDate().atStartOfDay());
         if (hoursUntilDelivery < CANCELLATION_HOURS_BEFORE_DELIVERY) {
             throw new FashionStoreException(
-                    HttpStatus.BAD_REQUEST,
-                    "Order can only be cancelled at least 24 hours before the delivery date.");
+                    HttpStatus.BAD_REQUEST, "Cannot cancel order within 24 hours of delivery.");
         }
     }
 }
