@@ -258,11 +258,7 @@ class AccountServiceIntegrationTests {
      */
     @Test
     void createEmployeeAccount() {
-        // Arrange
-        AccountRequestDto accountRequestDto =
-                new AccountRequestDto(NEW_EMPLOYEE_EMAIL, "employee001");
-
-        // Act
+        AccountRequestDto accountRequestDto = new AccountRequestDto(NEW_EMPLOYEE_EMAIL, "worker01");
         AccountResponseDto response =
                 client.post()
                         .uri(accountCreateEmployeeUri)
@@ -274,11 +270,13 @@ class AccountServiceIntegrationTests {
                         .returnResult()
                         .getResponseBody();
 
-        // Assert
         assertNotNull(response, responseNullError);
         assertNotNull(response.id(), "Created employee account response has null ID.");
         assertEquals(NEW_EMPLOYEE_EMAIL, response.email(), "Wrong email.");
-        assertNull(response.accountType(), "Account type should be null.");
+        assertEquals(
+                AccountResponseDto.AccountType.EMPLOYEE,
+                response.accountType(),
+                "Wrong account type.");
     }
 
     /**
@@ -289,7 +287,7 @@ class AccountServiceIntegrationTests {
     @Test
     void failCreateEmployeeAccountDuplicateEmail() {
         // Arrange
-        AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "employee001");
+        AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "worker01");
 
         // Act
         AccountResponseDto response =
@@ -319,11 +317,7 @@ class AccountServiceIntegrationTests {
      */
     @Test
     void createCustomerAccount() {
-        // Arrange
-        AccountRequestDto accountRequestDto =
-                new AccountRequestDto(NEW_CUSTOMER_EMAIL, "anonymous007");
-
-        // Act
+        AccountRequestDto accountRequestDto = new AccountRequestDto(NEW_CUSTOMER_EMAIL, "client01");
         AccountResponseDto response =
                 client.post()
                         .uri(accountCreateCustomerUri)
@@ -335,11 +329,13 @@ class AccountServiceIntegrationTests {
                         .returnResult()
                         .getResponseBody();
 
-        // Assert
         assertNotNull(response, responseNullError);
         assertNotNull(response.id(), "Created customer account response has null ID.");
         assertEquals(NEW_CUSTOMER_EMAIL, response.email(), "Wrong email.");
-        assertNull(response.accountType(), "Account type should be null.");
+        assertEquals(
+                AccountResponseDto.AccountType.CUSTOMER,
+                response.accountType(),
+                "Wrong account type.");
     }
 
     /**
@@ -350,7 +346,7 @@ class AccountServiceIntegrationTests {
     @Test
     void failCreateCustomerAccountDuplicateEmail() {
         // Arrange
-        AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "customer456");
+        AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "client01");
 
         // Act
         AccountResponseDto response =
