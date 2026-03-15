@@ -9,6 +9,7 @@ import ca.mcgill.ecse321.fashionstore.controller.AccountController;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
+import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Owner;
@@ -309,19 +310,19 @@ class AccountServiceTests {
         AccountRequestDto accountRequestDto =
                 new AccountRequestDto("newemployee@fashionstore.com", "employee456");
 
-        AccountResponseDto response =
+        Account response =
                 assertDoesNotThrow(
                         () -> accountService.createEmployeeAccount(accountRequestDto),
                         "Creating a valid employee account should not throw an exception.");
 
-        assertNotNull(response.id(), "Created employee account ID is null.");
+        assertNotNull(response.getId(), "Created employee account ID is null.");
         assertEquals(
                 accountRequestDto.email(),
-                response.email(),
-                String.format(badEmailError, accountRequestDto.email(), response.email()));
+                response.getEmail(),
+                String.format(badEmailError, accountRequestDto.email(), response.getEmail()));
         assertEquals(
                 AccountResponseDto.AccountType.EMPLOYEE,
-                accountService.findAccountType(response.id()),
+                accountService.findAccountType(response.getId()),
                 "Created account type is wrong for employee.");
     }
 
@@ -360,19 +361,19 @@ class AccountServiceTests {
         AccountRequestDto accountRequestDto =
                 new AccountRequestDto("newcustomer@fashionstore.com", "customer456");
 
-        AccountResponseDto response =
+        Account response =
                 assertDoesNotThrow(
                         () -> accountService.createCustomerAccount(accountRequestDto),
                         "Creating a valid customer account should not throw an exception.");
 
-        assertNotNull(response.id(), "Created customer account ID is null.");
+        assertNotNull(response.getId(), "Created customer account ID is null.");
         assertEquals(
                 accountRequestDto.email(),
-                response.email(),
-                String.format(badEmailError, accountRequestDto.email(), response.email()));
+                response.getEmail(),
+                String.format(badEmailError, accountRequestDto.email(), response.getEmail()));
         assertEquals(
                 AccountResponseDto.AccountType.CUSTOMER,
-                accountService.findAccountType(response.id()),
+                accountService.findAccountType(response.getId()),
                 "Created account type is wrong for customer.");
     }
 
