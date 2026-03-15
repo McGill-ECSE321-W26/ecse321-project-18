@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ca.mcgill.ecse321.fashionstore.controller.ClothingProductController;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ClothingProductResponseDto;
@@ -33,7 +32,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @AutoConfigureRestTestClient
 class ClothingProductIntegrationTests {
     @Autowired RestTestClient client;
-    @Autowired ClothingProductController clothingProductController;
     @Autowired private ClothingProductRepository clothingProductRepository;
     @Autowired private ClothingItemRepository clothingItemRepository;
 
@@ -45,8 +43,6 @@ class ClothingProductIntegrationTests {
     private static final String clothingProductsUri = "/fashionstore/clothingproduct";
 
     private ClothingItem clothingItem;
-    private static final String clothingItemUri =
-            "/fashionstore/clothingproduct/{productId}/clothingitem/{itemId}";
 
     private static final String errorLoc = "$.errors";
 
