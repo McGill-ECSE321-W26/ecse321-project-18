@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 class CustomerIntegrationTests {
     private static final String CUSTOMER_LOYALTY_PTS_URI =
             "/fashionstore/account/customer/{customerId}/loyalty";
+    private static final String CUSTOMER_GET_URI = "/fashionstore/account/customer/{customerId}";
     private static final String ERROR_LOC = "$.errors";
     private static final String RESPONSE_NULL_ERROR = "Response body is null.";
 
@@ -166,5 +167,64 @@ class CustomerIntegrationTests {
                 customerLoyaltyPts,
                 (int) response.numOfLoyaltyPoints(),
                 "The number of loyalty points was not updated.");
+    }
+
+    /**
+     * Helper for: Integration test to retrieve a customer by a valid ID.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    private void assertCustomerDetails(CustomerResponseDto response) {
+        assertEquals(
+                CUSTOMER_EMAIL, response.email(), "Customer email does not match expected value.");
+        assertEquals(
+                CUSTOMER_ADDRESS,
+                response.address(),
+                "Customer address does not match expected value.");
+        assertEquals(
+                CUSTOMER_LOYALTY_PTS,
+                (int) response.numOfLoyaltyPoints(),
+                "Customer loyalty points do not match expected value.");
+    }
+
+    /**
+     * Integration test to retrieve a customer by a valid ID.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    @Order(3)
+    void testGetCustomerByValidId() {
+        CustomerResponseDto response =
+                client.get()
+                        .uri(CUSTOMER_GET_URI, customerId)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(CustomerResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+        assertNotNull(response, RESPONSE_NULL_ERROR);
+        assertCustomerDetails(response);
+    }
+
+    /**
+     * Integration test to retrieve a customer using an invalid ID.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    @Order(4)
+    void testGetCustomerByInvalidId() {
+        int invalidCustomerId = customerId + 28;
+
+        client.get()
+                .uri(CUSTOMER_GET_URI, invalidCustomerId)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath(ERROR_LOC)
+                .isEqualTo(String.format("Customer ID %d was not found.", invalidCustomerId));
     }
 }
