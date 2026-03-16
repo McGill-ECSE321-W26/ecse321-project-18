@@ -6,6 +6,7 @@ import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.service.CustomerService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,10 +36,9 @@ public class CustomerController {
      * @return A DTO representing the customer.
      * @author Flavie Qin
      */
-    @PutMapping("/fashionstore/account/customer/{customerId}")
+    @GetMapping("/fashionstore/account/customer/{customerId}")
     public CustomerResponseDto getCustomer(@PathVariable int customerId) {
         Customer customer = customerService.getCustomer(customerId);
-
         return new CustomerResponseDto(customer);
     }
 

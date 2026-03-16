@@ -1,6 +1,8 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -179,5 +181,66 @@ class CustomerServiceTests {
         newCustomer.setAddress(address);
 
         return newCustomer;
+    }
+
+    /**
+     * Helper for: Service layer test for retrieving a customer by a valid ID.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    private void assertCustomerDetails(Customer expected, Customer actual) {
+        assertEquals(
+                expected.getId(), actual.getId(), "Customer ID does not match expected value.");
+        assertEquals(
+                expected.getEmail(),
+                actual.getEmail(),
+                "Customer email does not match expected value.");
+        assertEquals(
+                expected.getPassword(),
+                actual.getPassword(),
+                "Customer password does not match expected value.");
+        assertEquals(
+                expected.getAddress(),
+                actual.getAddress(),
+                "Customer address does not match expected value.");
+        assertEquals(
+                expected.getNumLoyaltyPoints(),
+                actual.getNumLoyaltyPoints(),
+                "Customer loyalty points do not match expected value.");
+    }
+
+    /**
+     * Service layer test for retrieving a customer by a valid ID.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void testGetCustomerByValidId() {
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
+        Customer response =
+                assertDoesNotThrow(
+                        () -> customerService.getCustomer(CUSTOMER_ID),
+                        "Trying to get a valid, existing customer throws an exception.");
+
+        assertNotNull(response, "Returned customer should not be null.");
+        assertCustomerDetails(customer, response);
+
+        verify(customerRepository, times(1)).findById(CUSTOMER_ID);
+    }
+
+    /**
+     * Service layer test for retrieving a customer by an invalid ID.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void testGetCustomerByInvalidId() {
+        int id = customer.getId() + 28;
+        when(customerRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> customerService.getCustomer(id),
+                "Trying to find non existent customer ID should not find anything.");
     }
 }
