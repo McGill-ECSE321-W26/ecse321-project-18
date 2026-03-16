@@ -75,7 +75,7 @@ public class ShoppingCartItemService {
     }
 
     /**
-     * Service method to update a customer's.
+     * Service method to update the quantity of a shopping cart item.
      *
      * @param id ShoppingCartItem ID to be updated.
      * @param shoppingCartItemRequestDto ShoppingCartItem request DTO.
