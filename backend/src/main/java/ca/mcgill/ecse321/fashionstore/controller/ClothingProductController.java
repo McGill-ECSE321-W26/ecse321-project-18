@@ -69,7 +69,9 @@ public class ClothingProductController {
     public ClothingProductResponseDto updateClothingProduct(
             @RequestBody ClothingProductRequestDto clothingProductRequestDto,
             @PathVariable int productId) {
-        return clothingProductService.updateClothingProduct(clothingProductRequestDto, productId);
+        ClothingProduct product =
+                clothingProductService.updateClothingProduct(clothingProductRequestDto, productId);
+        return new ClothingProductResponseDto(product);
     }
 
     /**
