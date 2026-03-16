@@ -58,16 +58,16 @@ public class ClothingProductController {
      * Updates an existing clothing product
      *
      * @param clothingProductRequestDto the details of the clothing product to update
-     * @param id the id of the clothing product to update
+     * @param productId the id of the clothing product to update
      * @return a ClothingProductResponseDto
      * @author Jennifer You (jenni4u)
      */
-    @PutMapping("/fashionstore/clothingproduct/{id}")
+    @PutMapping("/fashionstore/clothingproduct/{productId}")
     @ResponseStatus(HttpStatus.OK)
     public ClothingProductResponseDto updateClothingProduct(
             @RequestBody ClothingProductRequestDto clothingProductRequestDto,
-            @PathVariable int id) {
-        return clothingProductService.updateClothingProduct(clothingProductRequestDto, id);
+            @PathVariable int productId) {
+        return clothingProductService.updateClothingProduct(clothingProductRequestDto, productId);
     }
 
     /**
