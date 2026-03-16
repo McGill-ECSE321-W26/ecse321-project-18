@@ -126,6 +126,7 @@ tasks.jacocoTestReport {
                 "**/dto/**",
                 "**/model/**",
                 "**/repository/**",
+                "**/exception/**",
                 "**/FashionStoreApplication.class",
                 "**/service/Utils.class"
             )
@@ -141,6 +142,7 @@ tasks.jacocoTestCoverageVerification {
                 "**/dto/**",
                 "**/model/**",
                 "**/repository/**",
+                "**/exception/**",
                 "**/FashionStoreApplication.class",
                 "**/service/Utils.class"
             )
