@@ -77,7 +77,7 @@ class EmployeeServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void testGetExistingEmployee() {
+    void getExistingEmployeeSuccess() {
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
         Employee response =
@@ -95,7 +95,7 @@ class EmployeeServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void getNonExistentEmployee() {
+    void getNonExistentEmployeeFail() {
         int id = employee.getId() + 28;
         when(employeeRepository.findById(id)).thenReturn(Optional.empty());
 

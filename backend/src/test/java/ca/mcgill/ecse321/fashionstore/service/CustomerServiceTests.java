@@ -60,7 +60,7 @@ class CustomerServiceTests {
      * @author Carolyn Wu (cw118)
      */
     @Test
-    void testUpdateLoyaltyPtsByInvalidId() {
+    void updateLoyaltyPtsByInvalidId() {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.empty());
 
         CustomerRequestDto customerRequestDto =
@@ -92,7 +92,7 @@ class CustomerServiceTests {
      * @author Carolyn Wu (cw118)
      */
     @Test
-    void testUpdateLoyaltyPtsValid() {
+    void updateLoyaltyPtsValid() {
         // arrange
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
         when(customerRepository.save(any(Customer.class)))
@@ -115,7 +115,7 @@ class CustomerServiceTests {
      * invalid number of points.
      */
     @Test
-    void testUpdateLoyaltyPtsInvalid() {
+    void updateLoyaltyPtsInvalid() {
         // arrange
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
 
@@ -215,7 +215,7 @@ class CustomerServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void testGetCustomerByValidId() {
+    void getCustomerByValidIdSuccess() {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
         Customer response =
                 assertDoesNotThrow(
@@ -234,7 +234,7 @@ class CustomerServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void testGetCustomerByInvalidId() {
+    void getCustomerByInvalidIdFail() {
         int id = customer.getId() + 28;
         when(customerRepository.findById(id)).thenReturn(Optional.empty());
 

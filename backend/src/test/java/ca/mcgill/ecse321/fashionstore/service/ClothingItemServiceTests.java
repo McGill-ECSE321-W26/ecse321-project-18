@@ -17,7 +17,6 @@ import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -101,7 +100,7 @@ class ClothingItemServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void getNonExistentClothingItem() {
+    void getNonExistingClothingItem() {
         // Arrange
         // use any other item id than the one currently in db
         int id = 200;
@@ -120,8 +119,7 @@ class ClothingItemServiceTests {
      *
      * @author Qiuyu Huang (redacted24)
      */
-    @Disabled("Helper function")
-    void assertClothingItem(ClothingItem expected, ClothingItem actual) {
+    private void assertClothingItem(ClothingItem expected, ClothingItem actual) {
         assertEquals(
                 actual.getColour(),
                 expected.getColour(),
@@ -167,7 +165,7 @@ class ClothingItemServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void updateClothingItemStock_success() {
+    void updateClothingItemStockSuccess() {
         ClothingItemRequestDto dto =
                 new ClothingItemRequestDto(
                         clothingItem.getSize(),
@@ -197,7 +195,7 @@ class ClothingItemServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void updateClothingItemStock_nonExistentItem() {
+    void updateClothingItemStockFailNonExistentItem() {
         ClothingItemRequestDto dto =
                 new ClothingItemRequestDto(
                         clothingItem.getSize(),
@@ -220,7 +218,7 @@ class ClothingItemServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void updateClothingItemStock_wrongProduct() {
+    void updateClothingItemStockFailWrongProduct() {
         ClothingProduct otherProduct = new ClothingProduct();
         otherProduct.setId(2);
         otherProduct.setName("Shirts");
@@ -251,7 +249,7 @@ class ClothingItemServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void deleteClothingItem_success() {
+    void deleteClothingItemSuccess() {
         when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
         when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
 
@@ -268,7 +266,7 @@ class ClothingItemServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void deleteClothingItem_nonExistent() {
+    void deleteClothingItemFailNonExistentClothingItem() {
         when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
         when(clothingItemRepository.findById(10)).thenReturn(Optional.empty());
 
@@ -284,7 +282,7 @@ class ClothingItemServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void deleteClothingItem_wrongProduct() {
+    void deleteClothingItemFailWrongClothingProduct() {
         ClothingProduct other = new ClothingProduct();
         other.setId(2);
         clothingItem.setClothingProduct(other);

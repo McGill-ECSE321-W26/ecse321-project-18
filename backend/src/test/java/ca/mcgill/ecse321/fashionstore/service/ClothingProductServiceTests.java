@@ -121,7 +121,7 @@ class ClothingProductServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void getClothingProductOnly() {
+    void getClothingProduct() {
         // Arrange
         int id = clothingProduct.getId();
         when(clothingProductRepository.findById(id)).thenReturn(Optional.of(clothingProduct));
@@ -172,7 +172,7 @@ class ClothingProductServiceTests {
      * @author Carolyn Wu (cw118)
      */
     @Test
-    void testSearchNoMatchingClothingProducts() {
+    void searchNoMatchingClothingProducts() {
         // arrange
         String search = "nope";
         when(clothingProductRepository.findClothingProductsByNameContainsIgnoreCase(search))
@@ -197,7 +197,7 @@ class ClothingProductServiceTests {
      * @author Carolyn Wu (cw118)
      */
     @Test
-    void testFilterSizeNoMatchingClothingProducts() {
+    void filterSizeNoMatchingClothingProducts() {
         // arrange
         List<ClothingItem.Size> sizes = List.of(ClothingItem.Size.XL, ClothingItem.Size.S);
         when(clothingProductRepository.findAll()).thenReturn(List.of(clothingProduct));
@@ -220,7 +220,7 @@ class ClothingProductServiceTests {
      * @author Carolyn Wu (cw118)
      */
     @Test
-    void testFilterColourNoMatchingClothingProducts() {
+    void filterColourNoMatchingClothingProducts() {
         // arrange
         List<ClothingItem.Colour> colours =
                 List.of(ClothingItem.Colour.RED, ClothingItem.Colour.BLUE);
@@ -244,7 +244,7 @@ class ClothingProductServiceTests {
      * @author Carolyn Wu (cw118)
      */
     @Test
-    void testMatchingClothingProducts() {
+    void matchingClothingProducts() {
         // arrange
         String name = "hood";
         List<ClothingItem.Size> sizes = List.of(ClothingItem.Size.M);
@@ -271,7 +271,7 @@ class ClothingProductServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void deleteClothingProduct_success() {
+    void deleteClothingProductSuccess() {
         when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
 
         assertDoesNotThrow(() -> clothingProductService.deleteClothingProduct(1));
@@ -285,7 +285,7 @@ class ClothingProductServiceTests {
      * @author Kenneth Wang (KennethWang6)
      */
     @Test
-    void deleteClothingProduct_nonExistent() {
+    void deleteClothingProductFailNonExistentClothingProduct() {
         when(clothingProductRepository.findById(1)).thenReturn(Optional.empty());
 
         assertThrows(
@@ -330,7 +330,7 @@ class ClothingProductServiceTests {
      * @author Jennifer You (jenni4u)
      */
     @Test
-    void updateNonExistingClothingProduct() {
+    void updateFailNonExistingClothingProduct() {
         int invalidId = clothingProduct.getId() + 1;
         when(clothingProductRepository.findById(invalidId)).thenReturn(Optional.empty());
         FashionStoreException e =
