@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18.1-alpine
+    image: postgres:18.2-alpine
     container_name: fashionstore_db
     restart: always
     environment:

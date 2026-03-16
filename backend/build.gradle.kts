@@ -110,6 +110,7 @@ tasks.withType<Test> {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
+    finalizedBy(tasks.jacocoTestCoverageVerification)
 }
 
 tasks.jacocoTestReport {
@@ -118,5 +119,36 @@ tasks.jacocoTestReport {
         xml.required = false
         csv.required = false
         html.outputLocation = layout.buildDirectory.dir("reports/jacoco")
+    }
+    classDirectories.setFrom(
+        sourceSets.main.get().output.classesDirs.map { dir ->
+            fileTree(dir).exclude(
+                "**/dto/**",
+                "**/model/**",
+                "**/repository/**",
+                "**/FashionStoreApplication.class"
+            )
+        }
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.test)
+    classDirectories.setFrom(
+        sourceSets.main.get().output.classesDirs.map { dir ->
+            fileTree(dir).exclude(
+                "**/dto/**",
+                "**/model/**",
+                "**/repository/**",
+                "**/FashionStoreApplication.class"
+            )
+        }
+    )
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.75".toBigDecimal()
+            }
+        }
     }
 }
