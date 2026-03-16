@@ -209,7 +209,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testGetOrdersByValidId() {
+    void getOrdersByValidIdSuccess() {
         when(customerRepository.findById(CUSTOMER_ID_1)).thenReturn(Optional.of(customer1));
 
         // Act
@@ -258,7 +258,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testGetShoppingCartItemsByInvalidId() {
+    void getShoppingCartItemsByInvalidIdFail() {
         when(customerRepository.findById(CUSTOMER_ID_2)).thenReturn(Optional.empty());
 
         // Assert
@@ -283,7 +283,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testGetAllOrders() {
+    void getAllOrdersSuccess() {
         when(orderRepository.findAll()).thenReturn(List.of(this.order1, this.order2));
 
         // Act
@@ -313,7 +313,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testCreateOrderValid() {
+    void createOrderValidCustomerIdSuccess() {
         // ARRANGE AND ACT
         Order newOrder = setupCreateOrder();
 
@@ -416,7 +416,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testCreateOrderByInvalidId() {
+    void createOrderByInvalidIdFail() {
         // Arrange
         when(customerRepository.findById(CUSTOMER_ID_2)).thenReturn(Optional.empty());
         OrderRequestDto orderRequestDto = createValidOrderRequest();
@@ -443,7 +443,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testCreateOrderByInvalidShoppingCart() {
+    void createOrderByInvalidShoppingCartSuccess() {
         when(customerRepository.findById(CUSTOMER_ID_3)).thenReturn(Optional.of(customer3));
         OrderRequestDto orderRequestDto = createValidOrderRequest();
 
@@ -469,7 +469,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testCreateOrderByInvalidDates() {
+    void createOrderByInvalidDatesFail() {
         OrderRequestDto orderRequestDto = createInvalidOrderRequest();
 
         // Assert
@@ -494,7 +494,7 @@ class OrderServiceTests {
      * @author Flavie Qin
      */
     @Test
-    void testCreateOrderByInvalidQuantity() {
+    void createOrderByInvalidQuantityFail() {
         when(customerRepository.findById(CUSTOMER_ID_4)).thenReturn(Optional.of(customer4));
         OrderRequestDto orderRequestDto = createValidOrderRequest();
 
@@ -522,7 +522,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToAssignedValid() {
+    void updateOrderStatusToAssignedValidIdSuccess() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
         when(orderRepository.save(any(Order.class)))
@@ -544,7 +544,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToAssignedFromInvalidState() {
+    void updateOrderStatusToAssignedFromInvalidStateFail() {
         Order assignedOrder = createOrder(ORDER_ID, State.ASSIGNED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(assignedOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
@@ -572,7 +572,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToPreparedValid() {
+    void updateOrderStatusToPreparedValidSuccess() {
         Order assignedOrder = createOrder(ORDER_ID, State.ASSIGNED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(assignedOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
@@ -595,7 +595,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToPreparedFromInvalidState() {
+    void updateOrderStatusToPreparedFromInvalidStateFail() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
@@ -622,7 +622,7 @@ class OrderServiceTests {
      * @author Aurore Zhang
      */
     @Test
-    void testUpdateOrderStatusToCancelledValid() {
+    void updateOrderStatusToCancelledSuccess() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
         when(orderRepository.save(any(Order.class)))
@@ -646,7 +646,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToCancelledWhenAlreadyCancelled() {
+    void updateOrderStatusToCancelledWhenAlreadyCancelledSuccess() {
         Order cancelledOrder = createOrder(ORDER_ID, State.CANCELLED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(cancelledOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
@@ -667,7 +667,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToCancelledWhenDelivered() {
+    void updateOrderStatusToCancelledWhenDeliveredFail() {
         Order deliveredOrder = createOrder(ORDER_ID, State.DELIVERED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(deliveredOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
@@ -695,7 +695,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToCancelledTooLate() {
+    void updateOrderStatusToCancelledTooLateFail() {
         Order urgentOrder = createOrder(ORDER_ID, State.PURCHASED, customer);
         urgentOrder.setDeliveryDate(Date.valueOf(LocalDate.now()));
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(urgentOrder));
@@ -724,7 +724,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusToInvalidTransition() {
+    void updateOrderStatusToInvalidTransitionFail() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
         when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
@@ -751,7 +751,7 @@ class OrderServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void testUpdateOrderStatusByInvalidOrderId() {
+    void updateOrderStatusByInvalidOrderIdFail() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.empty());
 
         OrderStatusRequestDto dto = new OrderStatusRequestDto(State.ASSIGNED, EMPLOYEE_ID);

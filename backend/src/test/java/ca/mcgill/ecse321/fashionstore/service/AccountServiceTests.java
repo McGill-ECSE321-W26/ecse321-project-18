@@ -22,7 +22,6 @@ import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -88,8 +87,7 @@ class AccountServiceTests {
      * @return A mock Employee.
      * @author Qiuyu Huang (redacted24)
      */
-    @Disabled("Helper function")
-    Employee createEmployee() {
+    private Employee createEmployee() {
         // Dummy employee
         Employee newEmployee = new Employee();
         newEmployee.setEmail("employee@fashionstore.com");
@@ -103,8 +101,7 @@ class AccountServiceTests {
      *
      * @author Qiuyu Huang (redacted24)
      */
-    @Disabled("Helper function")
-    Owner createOwner() {
+    private Owner createOwner() {
         // Dummy owner
         Owner newOwner = new Owner();
         newOwner.setEmail("owner@fashionstore.com");
@@ -117,8 +114,7 @@ class AccountServiceTests {
      *
      * @author Qiuyu Huang (redacted24)
      */
-    @Disabled("Helper function")
-    Customer createCustomer() {
+    private Customer createCustomer() {
         // Dummy customer
         Customer newCustomer = new Customer();
         newCustomer.setEmail("customer@fashionstore.com");
@@ -243,7 +239,7 @@ class AccountServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void badEmployeePasswordAccountLogin() {
+    void accountLoginBadEmployeePassword() {
         // Arrange
         AccountRequestDto accountRequestDto =
                 new AccountRequestDto("employee@fashionstore.com", "employee1233");
@@ -273,7 +269,7 @@ class AccountServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void badEmployeeEmailAccountLogin() {
+    void accountLoginBadEmployeeEmail() {
         // Arrange
         FashionStoreException exception =
                 new FashionStoreException(
@@ -305,7 +301,7 @@ class AccountServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void badCustomerPasswordAccountLogin() {
+    void accountLoginBadCustomerPassword() {
         // Arrange
         AccountRequestDto accountRequestDto =
                 new AccountRequestDto(customer.getEmail(), "randompassword123");
@@ -335,7 +331,7 @@ class AccountServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void badCustomerEmailAccountLogin() {
+    void accountLoginBadCustomerEmail() {
         // Arrange
         // Create exception to be thrown
         FashionStoreException toThrow =
@@ -368,7 +364,7 @@ class AccountServiceTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
-    void successCustomerAccountLogin() {
+    void accountLoginSuccessCustomer() {
         // Arrange
         AccountRequestDto accountRequestDto =
                 new AccountRequestDto(customer.getEmail(), customer.getPassword());
@@ -393,7 +389,7 @@ class AccountServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void successCreateEmployeeAccount() {
+    void accountCreationSuccessEmployee() {
         AccountRequestDto request =
                 new AccountRequestDto("newemployee@fashionstore.com", "employee456");
         when(accountRepository.existsByEmail(request.email())).thenReturn(false);
@@ -416,7 +412,7 @@ class AccountServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void duplicateEmployeeEmailCreateAccount() {
+    void accountCreationFailDuplicateEmployeeEmail() {
         AccountRequestDto request = new AccountRequestDto(employee.getEmail(), "employee456");
         when(accountRepository.existsByEmail(request.email())).thenReturn(true);
 
@@ -438,7 +434,7 @@ class AccountServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void successCreateCustomerAccount() {
+    void accountCreationSuccessCustomer() {
         AccountRequestDto request =
                 new AccountRequestDto("newcustomer@fashionstore.com", "customer456");
         when(accountRepository.existsByEmail(request.email())).thenReturn(false);
@@ -461,7 +457,7 @@ class AccountServiceTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
-    void duplicateCustomerEmailCreateAccount() {
+    void accountCreationFailDuplicateCustomerEmail() {
         AccountRequestDto request = new AccountRequestDto(customer.getEmail(), "customer456");
         when(accountRepository.existsByEmail(request.email())).thenReturn(true);
 

@@ -111,7 +111,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testGetShoppingCartItemsByValidId() {
+    void getShoppingCartItemsByValidIdSuccess() {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
 
         // Act
@@ -156,7 +156,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testGetShoppingCartItemsByInvalidId() {
+    void getShoppingCartItemsByInvalidIdFail() {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.empty());
 
         // Assert
@@ -203,7 +203,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testAddShoppingCartItem() {
+    void addShoppingCartItemSuccess() {
         // Arrange and act
         ShoppingCartItemResponseDto shoppingCartItemResponseDto = addShoppingCartItemSetup();
 
@@ -263,7 +263,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testUpdateShoppingCartItemByValidId() {
+    void updateShoppingCartItemByValidIdSuccess() {
         // Arrange and act
         ShoppingCartItemResponseDto shoppingCartItemResponseDto = updateShoppingCartItemSetup();
 
@@ -301,7 +301,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testUpdateShoppingCartItemByInvalidId() {
+    void updateShoppingCartItemByInvalidIdFail() {
         when(shoppingCartItemRepository.findById(SHOPPING_CART_ITEM_ID_1))
                 .thenReturn(Optional.empty());
 
@@ -332,7 +332,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testDeleteShoppingCartItem() {
+    void deleteShoppingCartItemSuccess() {
         shoppingCartItemService.deleteShoppingCartItem(SHOPPING_CART_ITEM_ID_1);
         verify(shoppingCartItemRepository, times(1)).deleteById(SHOPPING_CART_ITEM_ID_1);
     }
@@ -343,7 +343,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testDeleteShoppingCartItemsByValidId() {
+    void deleteShoppingCartItemsByValidIdSuccess() {
         // Arrange
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
 
@@ -360,7 +360,7 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    void testDeleteShoppingCartItemsByInvalidId() {
+    void deleteShoppingCartItemsByInvalidIdFail() {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.empty());
 
         // Assert
