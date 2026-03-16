@@ -51,7 +51,9 @@ public class ClothingProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public ClothingProductResponseDto createClothingProduct(
             @RequestBody ClothingProductRequestDto clothingProductRequestDto) {
-        return clothingProductService.createClothingProduct(clothingProductRequestDto);
+        ClothingProduct clothingProduct =
+                clothingProductService.createClothingProduct(clothingProductRequestDto);
+        return new ClothingProductResponseDto(clothingProduct);
     }
 
     /**

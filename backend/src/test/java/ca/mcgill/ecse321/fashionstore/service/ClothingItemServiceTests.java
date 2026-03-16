@@ -3,10 +3,12 @@ package ca.mcgill.ecse321.fashionstore.service;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -22,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 /**
  * Test suite for clothing item service class.
@@ -38,6 +41,8 @@ class ClothingItemServiceTests {
 
     private ClothingProduct clothingProduct;
     private ClothingItem clothingItem;
+    private ClothingItemRequestDto validClothingItemRequestDto;
+    private ClothingItemRequestDto invalidClothingItemRequestDto;
 
     /**
      * Creates and saves a clothing item.
@@ -60,6 +65,23 @@ class ClothingItemServiceTests {
         clothingItem.setColour(ClothingItem.Colour.YELLOW);
         clothingItem.setNumInStock(100);
         this.clothingItem = clothingItem;
+
+        createClothingItemDtos();
+    }
+
+    private void createClothingItemDtos() {
+        this.validClothingItemRequestDto =
+                new ClothingItemRequestDto(
+                        ClothingItem.Size.S,
+                        ClothingItem.Colour.BLACK,
+                        50,
+                        this.clothingProduct.getId());
+        this.invalidClothingItemRequestDto =
+                new ClothingItemRequestDto(
+                        ClothingItem.Size.S,
+                        ClothingItem.Colour.BLACK,
+                        50,
+                        this.clothingProduct.getId() + 1);
     }
 
     /**
@@ -137,5 +159,213 @@ class ClothingItemServiceTests {
 
         verify(clothingProductRepository, times(1)).findById(clothingProduct.getId());
         verify(clothingItemRepository, times(1)).findById(clothingItem.getId());
+    }
+
+    /**
+     * Test updating stock of an existing clothing item.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void updateClothingItemStock_success() {
+        ClothingItemRequestDto dto =
+                new ClothingItemRequestDto(
+                        clothingItem.getSize(),
+                        clothingItem.getColour(),
+                        50,
+                        clothingProduct.getId());
+
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+        when(clothingItemRepository.save(clothingItem)).thenReturn(clothingItem);
+
+        ClothingItem updated =
+                assertDoesNotThrow(
+                        () -> clothingItemService.updateClothingItemStock(1, 10, dto),
+                        "Updating stock of a valid clothing item should not throw.");
+
+        assertEquals(
+                50,
+                updated.getNumInStock(),
+                "Updated ClothingItem should have the new stock value.");
+        verify(clothingItemRepository, times(1)).save(clothingItem);
+    }
+
+    /**
+     * Test updating stock of a non-existent clothing item.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void updateClothingItemStock_nonExistentItem() {
+        ClothingItemRequestDto dto =
+                new ClothingItemRequestDto(
+                        clothingItem.getSize(),
+                        clothingItem.getColour(),
+                        50,
+                        clothingProduct.getId());
+
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.empty());
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> clothingItemService.updateClothingItemStock(1, 10, dto),
+                "Updating stock of a non-existent clothing item should throw.");
+    }
+
+    /**
+     * Test updating stock under the wrong product.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void updateClothingItemStock_wrongProduct() {
+        ClothingProduct otherProduct = new ClothingProduct();
+        otherProduct.setId(2);
+        otherProduct.setName("Shirts");
+        otherProduct.setPrice(29.99f);
+        otherProduct.setImage("shirt.png");
+
+        clothingItem.setClothingProduct(otherProduct);
+
+        ClothingItemRequestDto dto =
+                new ClothingItemRequestDto(
+                        clothingItem.getSize(),
+                        clothingItem.getColour(),
+                        50,
+                        clothingProduct.getId());
+
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> clothingItemService.updateClothingItemStock(1, 10, dto),
+                "Updating an item under the wrong product should throw.");
+    }
+
+    /**
+     * Test deleting an existing clothing item.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingItem_success() {
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+
+        assertDoesNotThrow(
+                () -> clothingItemService.deleteClothingItem(1, 10),
+                "Deleting an existing clothing item should not throw.");
+
+        verify(clothingItemRepository, times(1)).delete(clothingItem);
+    }
+
+    /**
+     * Test deleting a non-existent clothing item.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingItem_nonExistent() {
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.empty());
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> clothingItemService.deleteClothingItem(1, 10),
+                "Deleting a non-existent clothing item should throw.");
+    }
+
+    /**
+     * Test deleting a clothing item under the wrong product.
+     *
+     * @author Kenneth Wang (KennethWang6)
+     */
+    @Test
+    void deleteClothingItem_wrongProduct() {
+        ClothingProduct other = new ClothingProduct();
+        other.setId(2);
+        clothingItem.setClothingProduct(other);
+
+        when(clothingProductRepository.findById(1)).thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.findById(10)).thenReturn(Optional.of(clothingItem));
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> clothingItemService.deleteClothingItem(1, 10),
+                "Deleting a clothing item under the wrong product should throw.");
+    }
+
+    /**
+     * Test creating a clothing item.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingItemSuccess() {
+        when(clothingProductRepository.findById(clothingProduct.getId()))
+                .thenReturn(Optional.of(clothingProduct));
+        when(clothingItemRepository.save(any(ClothingItem.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        assertDoesNotThrow(
+                () ->
+                        clothingItemService.createClothingItem(
+                                this.validClothingItemRequestDto, this.clothingProduct.getId()),
+                "Creating a clothing item with valid details should not throw an exception.");
+    }
+
+    /**
+     * Test creating a clothing item with invalid product ID.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingItemInvalidId1() {
+        when(clothingProductRepository.findById(
+                        this.invalidClothingItemRequestDto.clothingProductId()))
+                .thenReturn(Optional.empty());
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                clothingItemService.createClothingItem(
+                                        this.invalidClothingItemRequestDto,
+                                        this.invalidClothingItemRequestDto.clothingProductId()),
+                        "Creating a clothing item with an invalid product ID should throw an exception.");
+
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                e.getStatus(),
+                "Invalid product ID should throw a NOT_FOUND execption.");
+    }
+
+    /**
+     * Test creating a clothing item with different product IDs.
+     *
+     * @author Jennifer You (jenni4u)
+     */
+    @Test
+    void createClothingItemInvalidId2() {
+        int invalidId = validClothingItemRequestDto.clothingProductId() - 1;
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () ->
+                                clothingItemService.createClothingItem(
+                                        this.validClothingItemRequestDto, invalidId),
+                        "Creating a clothing item with different product IDs should throw an exception.");
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                e.getStatus(),
+                "Different product IDs should throw a BAD_REQUEST exception.");
+        assertEquals(
+                String.format(
+                        "Path variable productId %d does not match clothingProductId in request body %d.",
+                        invalidId, this.validClothingItemRequestDto.clothingProductId()),
+                e.getMessage(),
+                "Exception message should indicate that the clothing product IDs do not match.");
     }
 }

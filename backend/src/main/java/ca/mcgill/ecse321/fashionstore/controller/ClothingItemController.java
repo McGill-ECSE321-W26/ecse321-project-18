@@ -44,8 +44,10 @@ public class ClothingItemController {
     @PostMapping("/fashionstore/clothingproduct/{id}/clothingitem")
     @ResponseStatus(HttpStatus.CREATED)
     public ClothingItemResponseDto createClothingItem(
-            @RequestBody ClothingItemRequestDto clothingItemRequestDto) {
-        return this.clothingItemService.createClothingItem(clothingItemRequestDto);
+            @RequestBody ClothingItemRequestDto clothingItemRequestDto, @PathVariable int id) {
+        ClothingItem clothingItem =
+                this.clothingItemService.createClothingItem(clothingItemRequestDto, id);
+        return new ClothingItemResponseDto(clothingItem);
     }
 
     /**
@@ -64,8 +66,10 @@ public class ClothingItemController {
             @PathVariable int itemId,
             @RequestBody ClothingItemRequestDto clothingItemRequestDto) {
 
-        return clothingItemService.updateClothingItemStock(
-                productId, itemId, clothingItemRequestDto);
+        ClothingItem item =
+                clothingItemService.updateClothingItemStock(
+                        productId, itemId, clothingItemRequestDto);
+        return new ClothingItemResponseDto(item);
     }
 
     /**
