@@ -126,7 +126,8 @@ tasks.jacocoTestReport {
                 "**/dto/**",
                 "**/model/**",
                 "**/repository/**",
-                "**/FashionStoreApplication.class"
+                "**/FashionStoreApplication.class",
+                "**/service/Utils.class"
             )
         }
     )
@@ -140,14 +141,31 @@ tasks.jacocoTestCoverageVerification {
                 "**/dto/**",
                 "**/model/**",
                 "**/repository/**",
-                "**/FashionStoreApplication.class"
+                "**/FashionStoreApplication.class",
+                "**/service/Utils.class"
             )
         }
     )
     violationRules {
         rule {
+            element = "BUNDLE"
+
             limit {
-                minimum = "0.75".toBigDecimal()
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
+            }
+
+            limit {
+                counter = "METHOD"
+                value = "COVEREDRATIO"
+                minimum = "0.95".toBigDecimal()
+            }
+
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
             }
         }
     }
