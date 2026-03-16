@@ -59,7 +59,17 @@ Here is an overview of our team's progress and contributions across all delivera
 
 ### Deliverable 2
 
-Not started yet - coming soon!
+**See also our [deliverable/sprint 2 report](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki/Project-report:-deliverable-2) in the wiki.**
+
+| Name         | Contributions | Hours |
+| ------------ | ------------- | ----- |
+| Cyrus Fung   | |  |
+| Qiuyu Huang  | |  |
+| Flavie Qin   | |  |
+| Kenneth Wang | |  |
+| Carolyn Wu   | |  |
+| Jennifer You | | 67 |
+| Aurore Zhang | |  |
 
 ### Deliverable 3
 
