@@ -33,7 +33,7 @@ Each team member and their role are presented in the table below.
 
 Here is an overview of our team's progress and contributions across all deliverables/sprints (see also individual breakdowns below):
 
-| Name         | Role               | [Deliverable 1](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki/Project-report:-deliverable-1) | Deliverable 2 (not started) | Deliverable 3 (not started) |
+| Name         | Role               | [Deliverable 1](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki/Project-report:-deliverable-1) | [Deliverable 2](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki/Project-report:-deliverable-2) | Deliverable 3 (not started) |
 |--------------|--------------------|----|----|----|
 | Cyrus Fung   | Software lead      | 28 |    |    |
 | Qiuyu Huang  | Testing lead       | 15 |    |    |
