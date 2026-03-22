@@ -1,17 +1,18 @@
-name: ESLint and Prettier checks
+name: Build frontend with npm
 
 on:
   push:
-    paths: &lint_format_paths
-      - "frontend/**/*"
+    paths-ignore:
+      - "**/*.md"
     branches: ["main"]
   pull_request:
     branches: ["main"]
-    paths: *lint_format_paths
+    paths:
+      - "frontend/**/*"
   workflow_dispatch:
 
 jobs:
-  linter-formatter-check:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,9 +23,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
-      - name: Run linter and formatter checks
+      - name: Build frontend
         run: |
           cd frontend
           npm ci
-          npm run lint
-          npm run check
+          npm run build
