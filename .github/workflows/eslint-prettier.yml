@@ -1,12 +1,13 @@
-name: ESLint and Prettier frontend checks
+name: ESLint and Prettier checks
 
 on:
   push:
-    paths:
+    paths: &lint_format_paths
       - "frontend/**/*"
     branches: ["main"]
   pull_request:
     branches: ["main"]
+    paths: *lint_format_paths
   workflow_dispatch:
 
 jobs:
@@ -21,8 +22,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
-        working-directory: ./frontend
-        run: |
+      - run: |
+          cd frontend
           npm ci
           npm run lint
           npm run check

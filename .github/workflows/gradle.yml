@@ -2,8 +2,8 @@ name: Gradle build
 
 on:
   push:
-    paths:
-      - "backend/**/*"
+    paths-ignore:
+      - "**/*.md"
     branches: ["main"]
   pull_request:
     branches: ["main"]
