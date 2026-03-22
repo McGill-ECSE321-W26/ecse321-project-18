@@ -3,3 +3,4 @@ pgdata/
 
 # Other
 .tms.toml
+node_modules

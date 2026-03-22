@@ -2,13 +2,8 @@ name: Gradle build
 
 on:
   push:
-    paths-ignore:
-      - "**/*.md"
-      - "frontend/**/*"
-      - "**/*.tsx"
-      - "**/*.ts"
-      - "**/*.jsx"
-      - "**/*.js"
+    paths:
+      - "backend/**/*"
     branches: ["main"]
   pull_request:
     branches: ["main"]

@@ -11,12 +11,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
-    "format": "prettier --write . && eslint . --ext .js,.ts,.jsx,.tsx --fix",
+    "format": "eslint . --ext .js,.ts,.jsx,.tsx --fix && prettier --write .",
     "check": "prettier --check .",
-    "prepare": "husky"
-  },
-  "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "prepare": "cd .. && husky frontend/.husky"
   },
   "dependencies": {
     "@heroui/react": "^3.0.1",
