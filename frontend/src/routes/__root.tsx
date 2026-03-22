@@ -28,7 +28,9 @@ export const Route = createRootRoute({
       <HeadContent />
 
       <TopNav />
-      <Outlet />
+      <main className="page-wrap px-4 pb-8 pt-14">
+        <Outlet />
+      </main>
       <Footer />
 
       <TanStackDevtools
