@@ -1,13 +1,22 @@
-import { HeadContent, Outlet, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
+import type { AuthContext } from "#/auth";
 import TopNav from "#/components/TopNav";
 import Footer from "#/components/Footer";
 
 import "../styles.css";
 
-export const Route = createRootRoute({
+interface FashionStoreContext {
+  auth: AuthContext;
+}
+
+export const Route = createRootRouteWithContext<FashionStoreContext>()({
   head: () => ({
     meta: [
       {

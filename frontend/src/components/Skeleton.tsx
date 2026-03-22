@@ -1,3 +1,3 @@
 export default function Skeleton() {
-  return <h3>Loading</h3>;
+  return <h3 className="text-lg">Loading...</h3>;
 }

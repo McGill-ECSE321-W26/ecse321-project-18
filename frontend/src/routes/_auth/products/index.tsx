@@ -6,22 +6,24 @@ import {
 } from "@tanstack/react-query";
 
 import { Card } from "@heroui/react";
+
+import type { ClothingProductResponse } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { getRequest } from "#/utils/httpClient";
 
 const queryClient = new QueryClient();
 
-export const Route = createFileRoute("/products/")({
+export const Route = createFileRoute("/_auth/products/")({
   head: () => ({
     meta: [
       {
-        title: "Home | Fashion Store",
+        title: "Products | Fashion Store",
       },
     ],
   }),
   component: () => (
     <QueryClientProvider client={queryClient}>
-      <App />
+      <Products />
     </QueryClientProvider>
   ),
 });
@@ -33,10 +35,10 @@ function useClothingProducts() {
   });
 }
 
-function App() {
-  const { isPending, error, data } = useClothingProducts();
+function Products() {
+  const { isLoading, error, data } = useClothingProducts();
 
-  if (isPending) return <Skeleton />;
+  if (isLoading) return <Skeleton />;
 
   if (error) return "An error has occurred: " + error.message;
 

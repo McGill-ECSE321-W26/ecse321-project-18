@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from "./routes/__root";
 import { Route as LoginRouteImport } from "./routes/login";
+import { Route as AuthRouteImport } from "./routes/_auth";
 import { Route as IndexRouteImport } from "./routes/index";
-import { Route as ProductsIndexRouteImport } from "./routes/products/index";
+import { Route as AuthProductsIndexRouteImport } from "./routes/_auth/products/index";
+import { Route as AuthAdminIndexRouteImport } from "./routes/_auth/admin/index";
 
 const LoginRoute = LoginRouteImport.update({
   id: "/login",
   path: "/login",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const AuthRoute = AuthRouteImport.update({
+  id: "/_auth",
   getParentRoute: () => rootRouteImport,
 } as any);
 const IndexRoute = IndexRouteImport.update({
@@ -23,40 +29,55 @@ const IndexRoute = IndexRouteImport.update({
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
-const ProductsIndexRoute = ProductsIndexRouteImport.update({
+const AuthProductsIndexRoute = AuthProductsIndexRouteImport.update({
   id: "/products/",
   path: "/products/",
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthRoute,
+} as any);
+const AuthAdminIndexRoute = AuthAdminIndexRouteImport.update({
+  id: "/admin/",
+  path: "/admin/",
+  getParentRoute: () => AuthRoute,
 } as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/login": typeof LoginRoute;
-  "/products/": typeof ProductsIndexRoute;
+  "/admin/": typeof AuthAdminIndexRoute;
+  "/products/": typeof AuthProductsIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/login": typeof LoginRoute;
-  "/products": typeof ProductsIndexRoute;
+  "/admin": typeof AuthAdminIndexRoute;
+  "/products": typeof AuthProductsIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
+  "/_auth": typeof AuthRouteWithChildren;
   "/login": typeof LoginRoute;
-  "/products/": typeof ProductsIndexRoute;
+  "/_auth/admin/": typeof AuthAdminIndexRoute;
+  "/_auth/products/": typeof AuthProductsIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/login" | "/products/";
+  fullPaths: "/" | "/login" | "/admin/" | "/products/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/login" | "/products";
-  id: "__root__" | "/" | "/login" | "/products/";
+  to: "/" | "/login" | "/admin" | "/products";
+  id:
+    | "__root__"
+    | "/"
+    | "/_auth"
+    | "/login"
+    | "/_auth/admin/"
+    | "/_auth/products/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  AuthRoute: typeof AuthRouteWithChildren;
   LoginRoute: typeof LoginRoute;
-  ProductsIndexRoute: typeof ProductsIndexRoute;
 }
 
 declare module "@tanstack/react-router" {
@@ -68,6 +89,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof LoginRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/_auth": {
+      id: "/_auth";
+      path: "";
+      fullPath: "/";
+      preLoaderRoute: typeof AuthRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/": {
       id: "/";
       path: "/";
@@ -75,20 +103,39 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
-    "/products/": {
-      id: "/products/";
+    "/_auth/products/": {
+      id: "/_auth/products/";
       path: "/products";
       fullPath: "/products/";
-      preLoaderRoute: typeof ProductsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
+      preLoaderRoute: typeof AuthProductsIndexRouteImport;
+      parentRoute: typeof AuthRoute;
+    };
+    "/_auth/admin/": {
+      id: "/_auth/admin/";
+      path: "/admin";
+      fullPath: "/admin/";
+      preLoaderRoute: typeof AuthAdminIndexRouteImport;
+      parentRoute: typeof AuthRoute;
     };
   }
 }
 
+interface AuthRouteChildren {
+  AuthAdminIndexRoute: typeof AuthAdminIndexRoute;
+  AuthProductsIndexRoute: typeof AuthProductsIndexRoute;
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthAdminIndexRoute: AuthAdminIndexRoute,
+  AuthProductsIndexRoute: AuthProductsIndexRoute,
+};
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren);
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
-  ProductsIndexRoute: ProductsIndexRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
