@@ -1,0 +1,30 @@
+name: ESLint and Prettier frontend checks
+
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.java"
+      - "backend/**/*"
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  linter-formatter-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ESLint and Prettier frontend checks
+        working-directory: ./frontend
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: |
+          npm ci
+          npm run lint
+          npm run check
