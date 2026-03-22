@@ -1,0 +1,29 @@
+name: ESLint and Prettier checks
+
+on:
+  push:
+    paths: &lint_format_paths
+      - "frontend/**/*"
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+    paths: *lint_format_paths
+  workflow_dispatch:
+
+jobs:
+  linter-formatter-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run ESLint and Prettier frontend checks
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: |
+          cd frontend
+          npm ci
+          npm run lint
+          npm run check
