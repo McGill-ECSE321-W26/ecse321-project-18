@@ -1,4 +1,25 @@
 services:
+  site:
+    build: ./frontend
+    network_mode: "host"
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /frontend
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./frontend/package.json
+    depends_on:
+      - server
+
+  server:
+    build: ./backend
+    network_mode: "host"
+    depends_on:
+      - db
+
   db:
     image: postgres:18.2-alpine
     container_name: fashionstore_db
