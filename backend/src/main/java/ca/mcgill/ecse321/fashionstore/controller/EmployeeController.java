@@ -5,11 +5,13 @@ import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.service.EmployeeService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for Employee REST API endpoints. */
+@CrossOrigin
 @RestController
 @SuppressFBWarnings("SPRING_ENDPOINT")
 public class EmployeeController {

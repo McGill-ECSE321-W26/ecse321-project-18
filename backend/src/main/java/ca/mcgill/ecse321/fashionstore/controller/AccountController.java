@@ -7,12 +7,14 @@ import ca.mcgill.ecse321.fashionstore.service.AccountService;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for Account REST API endpoints */
+@CrossOrigin
 @RestController
 @SuppressFBWarnings("SPRING_ENDPOINT")
 public class AccountController {

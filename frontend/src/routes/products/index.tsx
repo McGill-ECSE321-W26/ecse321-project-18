@@ -11,7 +11,7 @@ import { getRequest } from "#/utils/httpClient";
 
 const queryClient = new QueryClient();
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/products/")({
   head: () => ({
     meta: [
       {
