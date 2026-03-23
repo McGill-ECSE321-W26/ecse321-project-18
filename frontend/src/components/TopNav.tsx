@@ -2,7 +2,12 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@heroui/react";
 
-export default function TopNav() {
+type TopNavProps = {
+  isLoggedIn: boolean;
+  logout?: () => void;
+};
+
+export default function TopNav({ isLoggedIn, logout }: TopNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -62,8 +67,19 @@ export default function TopNav() {
           </li>
         </ul>
         <div className="hidden items-center gap-4 md:flex">
-          <Link to="/login">Login</Link>
-          <Button>Sign Up</Button>
+          {isLoggedIn ? (
+            <>
+              <Link to="/account">My Account</Link>
+              <Button onClick={logout}>Log out</Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/register">
+                <Button>Sign Up</Button>
+              </Link>
+            </>
+          )}
         </div>
       </header>
       {isMenuOpen && (
@@ -85,10 +101,23 @@ export default function TopNav() {
               </Link>
             </li>
             <li className="mt-4 flex flex-col gap-2 border-t border-separator pt-4">
-              <Link to="/login" className="block py-2">
-                Login
-              </Link>
-              <Button className="w-full">Sign Up</Button>
+              {isLoggedIn ? (
+                <>
+                  <Link to="/account">My Account</Link>
+                  <Button className="w-full" onClick={logout}>
+                    Log out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="block py-2">
+                    Login
+                  </Link>
+                  <Link to="/register" className="w-full">
+                    <Button className="w-full">Sign Up</Button>
+                  </Link>
+                </>
+              )}
             </li>
           </ul>
         </div>

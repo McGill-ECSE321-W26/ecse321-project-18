@@ -7,7 +7,6 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import type { AuthContext } from "#/auth";
-import TopNav from "#/components/TopNav";
 import Footer from "#/components/Footer";
 
 import "../styles.css";
@@ -36,10 +35,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
     <>
       <HeadContent />
 
-      <TopNav />
-      <main className="px-4 pb-8 pt-14">
-        <Outlet />
-      </main>
+      <Outlet />
       <Footer />
 
       <TanStackDevtools

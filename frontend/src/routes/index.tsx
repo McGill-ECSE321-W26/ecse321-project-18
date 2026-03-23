@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useAuth } from "#/auth";
+import TopNav from "#/components/TopNav";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -12,9 +14,14 @@ export const Route = createFileRoute("/")({
 });
 
 function App() {
+  const auth = useAuth();
+
   return (
     <>
-      <h1>Fashion store</h1>
+      <TopNav isLoggedIn={auth.isAuthenticated} />
+      <main className="px-4 pb-8 pt-14">
+        <h1>Fashion store</h1>
+      </main>
     </>
   );
 }
