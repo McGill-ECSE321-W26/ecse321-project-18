@@ -1,19 +1,25 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import {
+  Outlet,
+  createFileRoute,
+  redirect,
+  useRouter,
+} from "@tanstack/react-router";
 import { useAuth } from "#/auth";
 import TopNav from "#/components/TopNav";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      {
-        title: "Home | Fashion Store",
-      },
-    ],
-  }),
-  component: () => <App />,
+export const Route = createFileRoute("/_auth")({
+  // redirect user to login if no one is logged in
+  beforeLoad: ({ context }) => {
+    if (!context.auth.isAuthenticated) {
+      throw redirect({
+        to: "/login",
+      });
+    }
+  },
+  component: AuthLayout,
 });
 
-function App() {
+function AuthLayout() {
   const router = useRouter();
   const navigate = Route.useNavigate();
   const auth = useAuth();
@@ -30,7 +36,7 @@ function App() {
     <>
       <TopNav account={auth.user?.accountType} logout={handleLogout} />
       <main className="px-4 pb-8 pt-14">
-        <h1>Fashion store</h1>
+        <Outlet />
       </main>
     </>
   );

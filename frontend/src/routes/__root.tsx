@@ -1,17 +1,43 @@
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Outlet,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 
+import type { AuthContext } from "#/auth";
+import Footer from "#/components/Footer";
+
 import "../styles.css";
 
-export const Route = createRootRoute({
-  component: RootComponent,
-});
+interface FashionStoreContext {
+  auth: AuthContext;
+}
 
-function RootComponent() {
-  return (
+export const Route = createRootRouteWithContext<FashionStoreContext>()({
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "Fashion store application",
+      },
+      { title: "Fashion Store" },
+    ],
+    links: [
+      {
+        rel: "icon",
+        href: "/favicon.ico",
+      },
+    ],
+  }),
+  component: () => (
     <>
+      <HeadContent />
+
       <Outlet />
+      <Footer />
+
       <TanStackDevtools
         config={{
           position: "bottom-right",
@@ -24,5 +50,5 @@ function RootComponent() {
         ]}
       />
     </>
-  );
-}
+  ),
+});
