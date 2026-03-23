@@ -29,6 +29,7 @@ public class AccountController {
      * @author Aurore Zhang (ororio0)
      */
     @Autowired
+    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
@@ -89,8 +90,7 @@ public class AccountController {
      */
     @DeleteMapping("/fashionstore/account/{accountId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAccount(
-            @PathVariable int accountId) {
+    public void deleteAccount(@PathVariable int accountId) {
         accountService.deleteAccount(accountId);
     }
 }

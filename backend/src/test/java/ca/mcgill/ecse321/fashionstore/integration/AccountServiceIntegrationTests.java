@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import ca.mcgill.ecse321.fashionstore.controller.AccountController;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -15,8 +14,11 @@ import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,10 +26,10 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 /** Account Service class integration tests. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
 class AccountServiceIntegrationTests {
-    @Autowired private AccountController accountController;
     @Autowired private RestTestClient client;
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private OwnerRepository ownerRepository;
@@ -41,6 +43,7 @@ class AccountServiceIntegrationTests {
     private static final String accountLoginUri = "/fashionstore/account/login";
     private static final String accountCreateEmployeeUri = "/fashionstore/account/employee";
     private static final String accountCreateCustomerUri = "/fashionstore/account/customer";
+    private static final String errorLoc = "$.errors";
 
     // Error messages
     private static final String responseNullError = "Response body is null";
@@ -88,6 +91,7 @@ class AccountServiceIntegrationTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Order(0)
     void accountOwnerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
@@ -117,6 +121,7 @@ class AccountServiceIntegrationTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Order(0)
     void accountEmployeeLogin() {
         // Arrange
         AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "employee123");
@@ -146,6 +151,7 @@ class AccountServiceIntegrationTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Order(0)
     void accountCustomerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "customer123");
@@ -175,6 +181,7 @@ class AccountServiceIntegrationTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Order(0)
     void failAccountOwnerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto =
@@ -203,6 +210,7 @@ class AccountServiceIntegrationTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Order(0)
     void failAccountCustomerLogin() {
         // Arrange
         AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "customer124");
@@ -230,6 +238,7 @@ class AccountServiceIntegrationTests {
      * @author Qiuyu Huang (redacted24)
      */
     @Test
+    @Order(0)
     void failAccountEmployeeLogin() {
         // Arrange
         AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "employee1234");
@@ -257,6 +266,7 @@ class AccountServiceIntegrationTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
+    @Order(1)
     void createEmployeeAccount() {
         AccountRequestDto accountRequestDto = new AccountRequestDto(NEW_EMPLOYEE_EMAIL, "worker01");
         AccountResponseDto response =
@@ -285,6 +295,7 @@ class AccountServiceIntegrationTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
+    @Order(2)
     void failCreateEmployeeAccountDuplicateEmail() {
         // Arrange
         AccountRequestDto accountRequestDto = new AccountRequestDto(EMPLOYEE_EMAIL, "worker01");
@@ -316,6 +327,7 @@ class AccountServiceIntegrationTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
+    @Order(1)
     void createCustomerAccount() {
         AccountRequestDto accountRequestDto = new AccountRequestDto(NEW_CUSTOMER_EMAIL, "client01");
         AccountResponseDto response =
@@ -344,6 +356,7 @@ class AccountServiceIntegrationTests {
      * @author Aurore Zhang (ororio0)
      */
     @Test
+    @Order(2)
     void failCreateCustomerAccountDuplicateEmail() {
         // Arrange
         AccountRequestDto accountRequestDto = new AccountRequestDto(CUSTOMER_EMAIL, "client01");
@@ -367,5 +380,60 @@ class AccountServiceIntegrationTests {
         assertNull(
                 response.accountType(),
                 "Duplicate customer account creation should have null account type.");
+    }
+
+    /**
+     * Integration test to delete an owner (expected to fail).
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(3)
+    void failDeleteOwnerAccount() {
+        // Act
+        client.delete()
+                .uri("/fashionstore/account/{accountId}", owner.getId())
+                .exchange()
+                .expectStatus()
+                .isBadRequest()
+                .expectBody()
+                .jsonPath(errorLoc)
+                .isEqualTo("Cannot delete owner account.");
+    }
+
+    /**
+     * Integration test to delete a customer.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(3)
+    void deleteCustomerAccount() {
+        // Act
+        client.delete()
+                .uri("/fashionstore/account/{accountId}", customer.getId())
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody()
+                .isEmpty();
+    }
+
+    /**
+     * Integration test to delete an employee.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(3)
+    void deleteEmployeeAccount() {
+        // Act
+        client.delete()
+                .uri("/fashionstore/account/{accountId}", employee.getId())
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody()
+                .isEmpty();
     }
 }
