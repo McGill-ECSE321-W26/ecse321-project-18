@@ -17,6 +17,8 @@ services:
   server:
     build: ./backend
     network_mode: "host"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - db
 

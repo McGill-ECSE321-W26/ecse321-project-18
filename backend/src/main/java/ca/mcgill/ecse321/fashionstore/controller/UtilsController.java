@@ -36,18 +36,7 @@ public class UtilsController {
      *
      * @author Cyrus Fung
      */
-    @PostMapping("/fashionstore/admin/rand")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createRandomData() {
-        utilsService.generateRandomData();
-    }
-
-    /**
-     * Create entries in database.
-     *
-     * @author Cyrus Fung
-     */
-    @PostMapping("/fashionstore/admin")
+    @PostMapping("/fashionstore/dev/test")
     @ResponseStatus(HttpStatus.CREATED)
     public void createData() {
         utilsService.generateData();
@@ -58,7 +47,7 @@ public class UtilsController {
      *
      * @author Cyrus Fung
      */
-    @DeleteMapping("/fashionstore/admin")
+    @DeleteMapping("/fashionstore/dev/test")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteData() {
         utilsService.deleteAllData();
