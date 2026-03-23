@@ -8,9 +8,5 @@ export async function getRequest(uri: string) {
 }
 
 export async function postRequest(uri: string, requestBody: RequestObject) {
-  return axios
-    .post(BACKEND_URL + uri, {
-      data: JSON.stringify(requestBody),
-    })
-    .then(({ data }) => data);
+  return axios.post(BACKEND_URL + uri, requestBody).then(({ data }) => data);
 }

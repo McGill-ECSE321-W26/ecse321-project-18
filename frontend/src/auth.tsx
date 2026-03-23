@@ -25,6 +25,8 @@ function getStoredUser() {
 function setStoredUser(user: AccountResponse | null) {
   if (user) {
     localStorage.setItem(key, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(key);
   }
 }
 

@@ -9,12 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
+import { Route as RegisterRouteImport } from "./routes/register";
 import { Route as LoginRouteImport } from "./routes/login";
 import { Route as AuthRouteImport } from "./routes/_auth";
 import { Route as IndexRouteImport } from "./routes/index";
+import { Route as AuthOrdersRouteImport } from "./routes/_auth/orders";
+import { Route as AuthAccountRouteImport } from "./routes/_auth/account";
+import { Route as AuthEmployeeRouteRouteImport } from "./routes/_auth/employee/route";
+import { Route as AuthCartRouteRouteImport } from "./routes/_auth/cart/route";
+import { Route as AuthAdminRouteRouteImport } from "./routes/_auth/admin/route";
 import { Route as AuthProductsIndexRouteImport } from "./routes/_auth/products/index";
+import { Route as AuthEmployeeIndexRouteImport } from "./routes/_auth/employee/index";
+import { Route as AuthCartIndexRouteImport } from "./routes/_auth/cart/index";
 import { Route as AuthAdminIndexRouteImport } from "./routes/_auth/admin/index";
+import { Route as AuthProductsProductIdRouteImport } from "./routes/_auth/products/$productId";
+import { Route as AuthCartOrderRouteImport } from "./routes/_auth/cart/order";
+import { Route as AuthAdminProductsRouteImport } from "./routes/_auth/admin/products";
+import { Route as AuthAdminOrdersRouteImport } from "./routes/_auth/admin/orders";
+import { Route as AuthAdminAccountsRouteImport } from "./routes/_auth/admin/accounts";
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: "/register",
+  path: "/register",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const LoginRoute = LoginRouteImport.update({
   id: "/login",
   path: "/login",
@@ -29,27 +47,110 @@ const IndexRoute = IndexRouteImport.update({
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
+const AuthOrdersRoute = AuthOrdersRouteImport.update({
+  id: "/orders",
+  path: "/orders",
+  getParentRoute: () => AuthRoute,
+} as any);
+const AuthAccountRoute = AuthAccountRouteImport.update({
+  id: "/account",
+  path: "/account",
+  getParentRoute: () => AuthRoute,
+} as any);
+const AuthEmployeeRouteRoute = AuthEmployeeRouteRouteImport.update({
+  id: "/employee",
+  path: "/employee",
+  getParentRoute: () => AuthRoute,
+} as any);
+const AuthCartRouteRoute = AuthCartRouteRouteImport.update({
+  id: "/cart",
+  path: "/cart",
+  getParentRoute: () => AuthRoute,
+} as any);
+const AuthAdminRouteRoute = AuthAdminRouteRouteImport.update({
+  id: "/admin",
+  path: "/admin",
+  getParentRoute: () => AuthRoute,
+} as any);
 const AuthProductsIndexRoute = AuthProductsIndexRouteImport.update({
   id: "/products/",
   path: "/products/",
   getParentRoute: () => AuthRoute,
 } as any);
+const AuthEmployeeIndexRoute = AuthEmployeeIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => AuthEmployeeRouteRoute,
+} as any);
+const AuthCartIndexRoute = AuthCartIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => AuthCartRouteRoute,
+} as any);
 const AuthAdminIndexRoute = AuthAdminIndexRouteImport.update({
-  id: "/admin/",
-  path: "/admin/",
+  id: "/",
+  path: "/",
+  getParentRoute: () => AuthAdminRouteRoute,
+} as any);
+const AuthProductsProductIdRoute = AuthProductsProductIdRouteImport.update({
+  id: "/products/$productId",
+  path: "/products/$productId",
   getParentRoute: () => AuthRoute,
+} as any);
+const AuthCartOrderRoute = AuthCartOrderRouteImport.update({
+  id: "/order",
+  path: "/order",
+  getParentRoute: () => AuthCartRouteRoute,
+} as any);
+const AuthAdminProductsRoute = AuthAdminProductsRouteImport.update({
+  id: "/products",
+  path: "/products",
+  getParentRoute: () => AuthAdminRouteRoute,
+} as any);
+const AuthAdminOrdersRoute = AuthAdminOrdersRouteImport.update({
+  id: "/orders",
+  path: "/orders",
+  getParentRoute: () => AuthAdminRouteRoute,
+} as any);
+const AuthAdminAccountsRoute = AuthAdminAccountsRouteImport.update({
+  id: "/accounts",
+  path: "/accounts",
+  getParentRoute: () => AuthAdminRouteRoute,
 } as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/login": typeof LoginRoute;
+  "/register": typeof RegisterRoute;
+  "/admin": typeof AuthAdminRouteRouteWithChildren;
+  "/cart": typeof AuthCartRouteRouteWithChildren;
+  "/employee": typeof AuthEmployeeRouteRouteWithChildren;
+  "/account": typeof AuthAccountRoute;
+  "/orders": typeof AuthOrdersRoute;
+  "/admin/accounts": typeof AuthAdminAccountsRoute;
+  "/admin/orders": typeof AuthAdminOrdersRoute;
+  "/admin/products": typeof AuthAdminProductsRoute;
+  "/cart/order": typeof AuthCartOrderRoute;
+  "/products/$productId": typeof AuthProductsProductIdRoute;
   "/admin/": typeof AuthAdminIndexRoute;
+  "/cart/": typeof AuthCartIndexRoute;
+  "/employee/": typeof AuthEmployeeIndexRoute;
   "/products/": typeof AuthProductsIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/login": typeof LoginRoute;
+  "/register": typeof RegisterRoute;
+  "/account": typeof AuthAccountRoute;
+  "/orders": typeof AuthOrdersRoute;
+  "/admin/accounts": typeof AuthAdminAccountsRoute;
+  "/admin/orders": typeof AuthAdminOrdersRoute;
+  "/admin/products": typeof AuthAdminProductsRoute;
+  "/cart/order": typeof AuthCartOrderRoute;
+  "/products/$productId": typeof AuthProductsProductIdRoute;
   "/admin": typeof AuthAdminIndexRoute;
+  "/cart": typeof AuthCartIndexRoute;
+  "/employee": typeof AuthEmployeeIndexRoute;
   "/products": typeof AuthProductsIndexRoute;
 }
 export interface FileRoutesById {
@@ -57,20 +158,77 @@ export interface FileRoutesById {
   "/": typeof IndexRoute;
   "/_auth": typeof AuthRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/register": typeof RegisterRoute;
+  "/_auth/admin": typeof AuthAdminRouteRouteWithChildren;
+  "/_auth/cart": typeof AuthCartRouteRouteWithChildren;
+  "/_auth/employee": typeof AuthEmployeeRouteRouteWithChildren;
+  "/_auth/account": typeof AuthAccountRoute;
+  "/_auth/orders": typeof AuthOrdersRoute;
+  "/_auth/admin/accounts": typeof AuthAdminAccountsRoute;
+  "/_auth/admin/orders": typeof AuthAdminOrdersRoute;
+  "/_auth/admin/products": typeof AuthAdminProductsRoute;
+  "/_auth/cart/order": typeof AuthCartOrderRoute;
+  "/_auth/products/$productId": typeof AuthProductsProductIdRoute;
   "/_auth/admin/": typeof AuthAdminIndexRoute;
+  "/_auth/cart/": typeof AuthCartIndexRoute;
+  "/_auth/employee/": typeof AuthEmployeeIndexRoute;
   "/_auth/products/": typeof AuthProductsIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/login" | "/admin/" | "/products/";
+  fullPaths:
+    | "/"
+    | "/login"
+    | "/register"
+    | "/admin"
+    | "/cart"
+    | "/employee"
+    | "/account"
+    | "/orders"
+    | "/admin/accounts"
+    | "/admin/orders"
+    | "/admin/products"
+    | "/cart/order"
+    | "/products/$productId"
+    | "/admin/"
+    | "/cart/"
+    | "/employee/"
+    | "/products/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/login" | "/admin" | "/products";
+  to:
+    | "/"
+    | "/login"
+    | "/register"
+    | "/account"
+    | "/orders"
+    | "/admin/accounts"
+    | "/admin/orders"
+    | "/admin/products"
+    | "/cart/order"
+    | "/products/$productId"
+    | "/admin"
+    | "/cart"
+    | "/employee"
+    | "/products";
   id:
     | "__root__"
     | "/"
     | "/_auth"
     | "/login"
+    | "/register"
+    | "/_auth/admin"
+    | "/_auth/cart"
+    | "/_auth/employee"
+    | "/_auth/account"
+    | "/_auth/orders"
+    | "/_auth/admin/accounts"
+    | "/_auth/admin/orders"
+    | "/_auth/admin/products"
+    | "/_auth/cart/order"
+    | "/_auth/products/$productId"
     | "/_auth/admin/"
+    | "/_auth/cart/"
+    | "/_auth/employee/"
     | "/_auth/products/";
   fileRoutesById: FileRoutesById;
 }
@@ -78,10 +236,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   AuthRoute: typeof AuthRouteWithChildren;
   LoginRoute: typeof LoginRoute;
+  RegisterRoute: typeof RegisterRoute;
 }
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
+    "/register": {
+      id: "/register";
+      path: "/register";
+      fullPath: "/register";
+      preLoaderRoute: typeof RegisterRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/login": {
       id: "/login";
       path: "/login";
@@ -103,6 +269,41 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/_auth/orders": {
+      id: "/_auth/orders";
+      path: "/orders";
+      fullPath: "/orders";
+      preLoaderRoute: typeof AuthOrdersRouteImport;
+      parentRoute: typeof AuthRoute;
+    };
+    "/_auth/account": {
+      id: "/_auth/account";
+      path: "/account";
+      fullPath: "/account";
+      preLoaderRoute: typeof AuthAccountRouteImport;
+      parentRoute: typeof AuthRoute;
+    };
+    "/_auth/employee": {
+      id: "/_auth/employee";
+      path: "/employee";
+      fullPath: "/employee";
+      preLoaderRoute: typeof AuthEmployeeRouteRouteImport;
+      parentRoute: typeof AuthRoute;
+    };
+    "/_auth/cart": {
+      id: "/_auth/cart";
+      path: "/cart";
+      fullPath: "/cart";
+      preLoaderRoute: typeof AuthCartRouteRouteImport;
+      parentRoute: typeof AuthRoute;
+    };
+    "/_auth/admin": {
+      id: "/_auth/admin";
+      path: "/admin";
+      fullPath: "/admin";
+      preLoaderRoute: typeof AuthAdminRouteRouteImport;
+      parentRoute: typeof AuthRoute;
+    };
     "/_auth/products/": {
       id: "/_auth/products/";
       path: "/products";
@@ -110,23 +311,125 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AuthProductsIndexRouteImport;
       parentRoute: typeof AuthRoute;
     };
+    "/_auth/employee/": {
+      id: "/_auth/employee/";
+      path: "/";
+      fullPath: "/employee/";
+      preLoaderRoute: typeof AuthEmployeeIndexRouteImport;
+      parentRoute: typeof AuthEmployeeRouteRoute;
+    };
+    "/_auth/cart/": {
+      id: "/_auth/cart/";
+      path: "/";
+      fullPath: "/cart/";
+      preLoaderRoute: typeof AuthCartIndexRouteImport;
+      parentRoute: typeof AuthCartRouteRoute;
+    };
     "/_auth/admin/": {
       id: "/_auth/admin/";
-      path: "/admin";
+      path: "/";
       fullPath: "/admin/";
       preLoaderRoute: typeof AuthAdminIndexRouteImport;
+      parentRoute: typeof AuthAdminRouteRoute;
+    };
+    "/_auth/products/$productId": {
+      id: "/_auth/products/$productId";
+      path: "/products/$productId";
+      fullPath: "/products/$productId";
+      preLoaderRoute: typeof AuthProductsProductIdRouteImport;
       parentRoute: typeof AuthRoute;
+    };
+    "/_auth/cart/order": {
+      id: "/_auth/cart/order";
+      path: "/order";
+      fullPath: "/cart/order";
+      preLoaderRoute: typeof AuthCartOrderRouteImport;
+      parentRoute: typeof AuthCartRouteRoute;
+    };
+    "/_auth/admin/products": {
+      id: "/_auth/admin/products";
+      path: "/products";
+      fullPath: "/admin/products";
+      preLoaderRoute: typeof AuthAdminProductsRouteImport;
+      parentRoute: typeof AuthAdminRouteRoute;
+    };
+    "/_auth/admin/orders": {
+      id: "/_auth/admin/orders";
+      path: "/orders";
+      fullPath: "/admin/orders";
+      preLoaderRoute: typeof AuthAdminOrdersRouteImport;
+      parentRoute: typeof AuthAdminRouteRoute;
+    };
+    "/_auth/admin/accounts": {
+      id: "/_auth/admin/accounts";
+      path: "/accounts";
+      fullPath: "/admin/accounts";
+      preLoaderRoute: typeof AuthAdminAccountsRouteImport;
+      parentRoute: typeof AuthAdminRouteRoute;
     };
   }
 }
 
-interface AuthRouteChildren {
+interface AuthAdminRouteRouteChildren {
+  AuthAdminAccountsRoute: typeof AuthAdminAccountsRoute;
+  AuthAdminOrdersRoute: typeof AuthAdminOrdersRoute;
+  AuthAdminProductsRoute: typeof AuthAdminProductsRoute;
   AuthAdminIndexRoute: typeof AuthAdminIndexRoute;
+}
+
+const AuthAdminRouteRouteChildren: AuthAdminRouteRouteChildren = {
+  AuthAdminAccountsRoute: AuthAdminAccountsRoute,
+  AuthAdminOrdersRoute: AuthAdminOrdersRoute,
+  AuthAdminProductsRoute: AuthAdminProductsRoute,
+  AuthAdminIndexRoute: AuthAdminIndexRoute,
+};
+
+const AuthAdminRouteRouteWithChildren = AuthAdminRouteRoute._addFileChildren(
+  AuthAdminRouteRouteChildren,
+);
+
+interface AuthCartRouteRouteChildren {
+  AuthCartOrderRoute: typeof AuthCartOrderRoute;
+  AuthCartIndexRoute: typeof AuthCartIndexRoute;
+}
+
+const AuthCartRouteRouteChildren: AuthCartRouteRouteChildren = {
+  AuthCartOrderRoute: AuthCartOrderRoute,
+  AuthCartIndexRoute: AuthCartIndexRoute,
+};
+
+const AuthCartRouteRouteWithChildren = AuthCartRouteRoute._addFileChildren(
+  AuthCartRouteRouteChildren,
+);
+
+interface AuthEmployeeRouteRouteChildren {
+  AuthEmployeeIndexRoute: typeof AuthEmployeeIndexRoute;
+}
+
+const AuthEmployeeRouteRouteChildren: AuthEmployeeRouteRouteChildren = {
+  AuthEmployeeIndexRoute: AuthEmployeeIndexRoute,
+};
+
+const AuthEmployeeRouteRouteWithChildren =
+  AuthEmployeeRouteRoute._addFileChildren(AuthEmployeeRouteRouteChildren);
+
+interface AuthRouteChildren {
+  AuthAdminRouteRoute: typeof AuthAdminRouteRouteWithChildren;
+  AuthCartRouteRoute: typeof AuthCartRouteRouteWithChildren;
+  AuthEmployeeRouteRoute: typeof AuthEmployeeRouteRouteWithChildren;
+  AuthAccountRoute: typeof AuthAccountRoute;
+  AuthOrdersRoute: typeof AuthOrdersRoute;
+  AuthProductsProductIdRoute: typeof AuthProductsProductIdRoute;
   AuthProductsIndexRoute: typeof AuthProductsIndexRoute;
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthAdminIndexRoute: AuthAdminIndexRoute,
+  AuthAdminRouteRoute: AuthAdminRouteRouteWithChildren,
+  AuthCartRouteRoute: AuthCartRouteRouteWithChildren,
+  AuthEmployeeRouteRoute: AuthEmployeeRouteRouteWithChildren,
+  AuthAccountRoute: AuthAccountRoute,
+  AuthOrdersRoute: AuthOrdersRoute,
+  AuthProductsProductIdRoute: AuthProductsProductIdRoute,
   AuthProductsIndexRoute: AuthProductsIndexRoute,
 };
 
@@ -136,6 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -12,5 +12,5 @@ export const Route = createFileRoute("/_auth/admin/")({
 });
 
 function AdminDashboard() {
-  return <p>Dashboard</p>;
+  return <h2 className="text-xl">Dashboard</h2>;
 }
