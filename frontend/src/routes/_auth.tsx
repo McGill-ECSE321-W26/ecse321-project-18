@@ -34,7 +34,7 @@ function AuthLayout() {
 
   return (
     <>
-      <TopNav isLoggedIn={true} logout={handleLogout} />
+      <TopNav account={auth.user?.accountType} logout={handleLogout} />
       <main className="px-4 pb-8 pt-14">
         <Outlet />
       </main>

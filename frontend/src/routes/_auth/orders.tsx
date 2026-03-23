@@ -18,22 +18,22 @@ export const Route = createFileRoute("/_auth/orders")({
   head: () => ({
     meta: [
       {
-        title: "Orders | Fashion STore",
+        title: "Orders | Fashion Store",
       },
     ],
   }),
-  component: () => {
+  component: () => (
     <QueryClientProvider client={queryClient}>
       <Orders />
-    </QueryClientProvider>;
-  },
+    </QueryClientProvider>
+  ),
 });
 
 function Orders() {
   const auth = useAuth();
 
   /* to get account type (slightly different behavior if employee, vs. customer):
-  
+
   auth.user?.accountType
 
   (user should never be null at this point, but you'll likely still be forced to check/be careful)

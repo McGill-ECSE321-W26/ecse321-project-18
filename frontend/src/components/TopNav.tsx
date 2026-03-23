@@ -1,14 +1,51 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@heroui/react";
+import { AccountType } from "#/types/api";
 
 type TopNavProps = {
-  isLoggedIn: boolean;
+  account: AccountType | undefined;
   logout?: () => void;
 };
 
-export default function TopNav({ isLoggedIn, logout }: TopNavProps) {
+type navLink = {
+  name: string;
+  href: string;
+};
+
+const customerLinks: navLink[] = [
+  { name: "Cart", href: "/cart" },
+  { name: "Orders", href: "/orders" },
+];
+
+const employeeLinks: navLink[] = [
+  ...customerLinks,
+  { name: "Manage orders", href: "/employee" },
+];
+
+const managerLinks: navLink[] = [
+  { name: "Dashboard", href: "/admin" },
+  { name: "Orders", href: "/admin/orders" },
+  { name: "Accounts", href: "/admin/accounts" },
+  { name: "Products", href: "/admin/products" },
+];
+
+const getNavLinks = (accountType: AccountType | undefined): navLink[] => {
+  switch (accountType) {
+    case AccountType.Customer:
+      return customerLinks;
+    case AccountType.Employee:
+      return employeeLinks;
+    case AccountType.Owner:
+      return managerLinks;
+    default:
+      return [];
+  }
+};
+
+export default function TopNav({ account, logout }: TopNavProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navLinks = getNavLinks(account);
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
@@ -51,25 +88,22 @@ export default function TopNav({ isLoggedIn, logout }: TopNavProps) {
             </div>
           </Link>
         </div>
-        <ul className="hidden items-center gap-4 md:flex">
-          <li>
-            <Link to="/">Features</Link>
-          </li>
-          <li>
-            <Link
-              to="/"
-              className="font-medium text-accent"
-              aria-current="page"
-            >
-              Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link to="/">Pricing</Link>
-          </li>
-        </ul>
+        {account ? (
+          <>
+            <ul className="hidden items-center gap-4 md:flex">
+              <li>
+                <Link to="/products">Shop</Link>
+              </li>
+              {navLinks.map(({ name, href }) => (
+                <li key={href}>
+                  <Link to={href}>{name}</Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
         <div className="hidden items-center gap-4 md:flex">
-          {isLoggedIn ? (
+          {account ? (
             <>
               <Link to="/account">My Account</Link>
               <Button onClick={logout}>Log out</Button>
@@ -87,23 +121,22 @@ export default function TopNav({ isLoggedIn, logout }: TopNavProps) {
       {isMenuOpen && (
         <div className="border-t border-separator md:hidden">
           <ul className="flex flex-col gap-2 p-4">
-            <li>
-              <Link to="/" className="block py-2">
-                Features
-              </Link>
-            </li>
-            <li>
-              <Link to="/" className="block py-2 font-medium text-accent">
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link to="/" className="block py-2">
-                Pricing
-              </Link>
-            </li>
+            {account ? (
+              <>
+                <li>
+                  <Link to="/products" className="block py-2">
+                    Shop
+                  </Link>
+                </li>
+                {navLinks.map(({ name, href }) => (
+                  <li key={href}>
+                    <Link to={href}>{name}</Link>
+                  </li>
+                ))}
+              </>
+            ) : null}
             <li className="mt-4 flex flex-col gap-2 border-t border-separator pt-4">
-              {isLoggedIn ? (
+              {account ? (
                 <>
                   <Link to="/account">My Account</Link>
                   <Button className="w-full" onClick={logout}>

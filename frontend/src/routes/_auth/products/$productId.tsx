@@ -17,11 +17,11 @@ export const Route = createFileRoute("/_auth/products/$productId")({
       },
     ],
   }),
-  component: () => {
+  component: () => (
     <QueryClientProvider client={queryClient}>
       <Product />
-    </QueryClientProvider>;
-  },
+    </QueryClientProvider>
+  ),
 });
 
 function useClothingProduct(id: number) {

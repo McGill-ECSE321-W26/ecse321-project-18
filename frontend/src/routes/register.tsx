@@ -91,7 +91,7 @@ function Register() {
 
   return (
     <>
-      <TopNav isLoggedIn={false} />
+      <TopNav account={undefined} />
 
       <main className="px-4 pb-8 pt-14">
         <div className="flex justify-center items-center">
