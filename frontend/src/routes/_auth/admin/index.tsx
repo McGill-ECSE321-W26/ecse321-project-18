@@ -1,17 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { AccountType } from "#/types/api";
-import { redirectForAccountType } from "#/utils/authorization";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_auth/admin/")({
-  beforeLoad: ({ context }) => {
-    const userAccountType = context.auth.user?.accountType;
-
-    if (userAccountType !== AccountType.Owner) {
-      throw redirect({
-        to: redirectForAccountType(userAccountType),
-      });
-    }
-  },
   head: () => ({
     meta: [
       {
