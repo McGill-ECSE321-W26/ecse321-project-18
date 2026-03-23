@@ -66,7 +66,7 @@ public class CustomerService {
     }
 
     /**
-     * Service method to update a customer's loyalty points.
+     * Service method to update a customer's information.
      *
      * @param id ID of customer who is being updated.
      * @param customerRequestDto Request DTO for customer.

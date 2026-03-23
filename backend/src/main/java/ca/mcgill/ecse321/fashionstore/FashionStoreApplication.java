@@ -3,7 +3,6 @@ package ca.mcgill.ecse321.fashionstore;
 import ca.mcgill.ecse321.fashionstore.model.Owner;
 import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import java.util.List;
-import java.util.stream.StreamSupport;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,8 +24,7 @@ public class FashionStoreApplication {
     @Bean
     public CommandLineRunner createOwner(OwnerRepository ownerRepository) {
         return args -> {
-            Iterable<Owner> iterable = ownerRepository.findAll();
-            List<Owner> owners = StreamSupport.stream(iterable.spliterator(), false).toList();
+            List<Owner> owners = ownerRepository.findAll();
             if (owners.isEmpty()) {
                 Owner owner = new Owner();
                 owner.setEmail("admin@fashionstore.com");
