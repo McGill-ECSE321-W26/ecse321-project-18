@@ -25,8 +25,7 @@ import org.springframework.validation.annotation.Validated;
 public class AccountService {
     // error messages
     public static final String badPasswordErrorMsg = "Password is incorrect.";
-    public static final String nonexistentEmailErrorMsg =
-            "An account with that email does not exist.";
+    public static final String nonexistentEmailErrorMsg = "An account with that email does not exist.";
 
     private final AccountRepository accountRepository;
     private final OwnerRepository ownerRepository;
@@ -36,8 +35,8 @@ public class AccountService {
     /**
      * AccountService constructor.
      *
-     * @param accountRepository AccountRepository required to access the database.
-     * @param ownerRepository OwnerRepository required to access the database.
+     * @param accountRepository  AccountRepository required to access the database.
+     * @param ownerRepository    OwnerRepository required to access the database.
      * @param customerRepository CustomerRepository required to access the database.
      * @param employeeRepository EmployeeRepository required to access the database.
      * @author Qiuyu Huang (redacted24)
@@ -53,16 +52,20 @@ public class AccountService {
         this.ownerRepository = ownerRepository;
         this.employeeRepository = employeeRepository;
         this.customerRepository = customerRepository;
-    }
+            }
 
     /**
-     * Checks if email exists and the password matches. If both are valid, user is authenticated and
-     * granted access to the system. Otherwise, user is denied access and an error message is shown.
+     * Checks if email exists and the password matches. If both are valid, user is
+     * authenticated and
+     * granted access to the system. Otherwise, user is denied access and an error
+     * message is shown.
      *
      * @param requestDto An AccountRequestDto containing email and password.
-     * @return An Account with the id, email and the account type (employee, customer, owner).
-     * @throws FashionStoreException if an account with the email isn't found, or a password doesn't
-     *     match
+     * @return An Account with the id, email and the account type (employee,
+     *         customer, owner).
+     * @throws FashionStoreException if an account with the email isn't found, or a
+     *                               password doesn't
+     *                               match
      * @author Qiuyu Huang (redacted24)
      */
     public Account accountLoginCheck(@Valid AccountRequestDto requestDto) {
@@ -85,7 +88,7 @@ public class AccountService {
      *
      * @param id The id of the account whose type we are trying to retrieve.
      * @return AccountType (enum), depending on what the type of the account is
-     *     (manager/owner/customer)
+     *         (manager/owner/customer)
      * @author Qiuyu Huang (redacted24)
      */
     public AccountType findAccountType(int id) {
@@ -113,7 +116,7 @@ public class AccountService {
             throw new FashionStoreException(
                     HttpStatus.CONFLICT,
                     String.format(
-                            "An account with email %s already exists.", accountRequestDto.email()));
+                        "An account with email %s already exists.", accountRequestDto.email()));
         }
         Employee employee = new Employee();
         employee.setEmail(accountRequestDto.email());
@@ -134,12 +137,26 @@ public class AccountService {
             throw new FashionStoreException(
                     HttpStatus.CONFLICT,
                     String.format(
-                            "An account with email %s already exists.", accountRequestDto.email()));
+                        "An account with email %s already exists.", accountRequestDto.email()));
         }
         Customer customer = new Customer();
         customer.setEmail(accountRequestDto.email());
         customer.setPassword(accountRequestDto.password());
         customer = customerRepository.save(customer);
         return customer;
+    }
+
+    /**
+     * Service method to delete an account.
+     *
+     * @param id ID of Account to be deleted
+     * @author Cyrus Fung (cfung89)
+     */
+    @Transactional
+    public void deleteAccount(int id) {
+        if (ownerRepository.existsById(id)) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Cannot delete owner account.");
+        }
+        accountRepository.deleteById(id);
     }
 }

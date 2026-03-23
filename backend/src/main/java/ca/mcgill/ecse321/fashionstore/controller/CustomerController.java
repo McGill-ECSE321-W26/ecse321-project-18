@@ -58,7 +58,23 @@ public class CustomerController {
         Customer customer =
                 customerService.updateCustomerLoyaltyPts(customerId, customerRequestDto);
         CustomerResponseDto dto = new CustomerResponseDto(customer);
+        return dto;
+    }
 
+    /**
+     * Updates a customer's information.
+     *
+     * @param customerId Customer ID.
+     * @param customerRequestDto DTO specifying the new number of loyalty points.
+     * @return A DTO representing the customer with updated loyalty points.
+     * @author Cyrus Fung (cfung89)
+     */
+    @PutMapping("/fashionstore/account/customer/{customerId}")
+    public CustomerResponseDto updateCustomer(
+            @PathVariable int customerId, @RequestBody CustomerRequestDto customerRequestDto) {
+        Customer customer =
+                customerService.updateCustomer(customerId, customerRequestDto);
+        CustomerResponseDto dto = new CustomerResponseDto(customer);
         return dto;
     }
 }

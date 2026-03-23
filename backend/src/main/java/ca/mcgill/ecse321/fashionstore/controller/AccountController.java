@@ -8,6 +8,8 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -77,5 +79,18 @@ public class AccountController {
         Account account = accountService.createCustomerAccount(accountRequestDto);
         return new AccountResponseDto(
                 account.getId(), account.getEmail(), AccountResponseDto.AccountType.CUSTOMER);
+    }
+
+    /**
+     * Deletes an account.
+     *
+     * @param accountId ID of Account to be deleted.
+     * @author Cyrus Fung (cfung89)
+     */
+    @DeleteMapping("/fashionstore/account/{accountId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(
+            @PathVariable int accountId) {
+        accountService.deleteAccount(accountId);
     }
 }
