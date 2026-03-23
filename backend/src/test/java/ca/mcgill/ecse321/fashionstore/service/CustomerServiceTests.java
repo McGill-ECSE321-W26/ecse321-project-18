@@ -37,7 +37,9 @@ class CustomerServiceTests {
     private static final int CUSTOMER_ID = 3;
     private static final String CUSTOMER_EMAIL = "customer@example.com";
     private static final String CUSTOMER_PASSWORD = "securelystoredpassword";
+    public static final String CUSTOMER_UPDATED_PASSWORD = "verysecurepassword";
     private static final String CUSTOMER_ADDRESS = "24 Fashion Street";
+    public static final String CUSTOMER_UPDATED_ADDRESS = "123 Turtleneck Avenue";
     private static final int CUSTOMER_LOYALTY_PTS = 26;
     private static final int LOYALTY_PTS_INVALID = -1;
 
@@ -241,6 +243,90 @@ class CustomerServiceTests {
         assertThrows(
                 FashionStoreException.class,
                 () -> customerService.getCustomer(id),
+                "Trying to find non existent customer ID should not find anything.");
+    }
+
+    /**
+     * Helper for service layer test for updating a customer.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    private Customer updateCustomerSetup() {
+        // Arrange
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
+        when(customerRepository.save(any(Customer.class)))
+                .thenAnswer((InvocationOnMock invocation) -> invocation.getArgument(0));
+
+        // Act
+        CustomerRequestDto updatedCustomer =
+                new CustomerRequestDto(
+                        CUSTOMER_EMAIL,
+                        CUSTOMER_UPDATED_PASSWORD,
+                        CUSTOMER_UPDATED_ADDRESS,
+                        CUSTOMER_LOYALTY_PTS);
+        Customer customer = customerService.updateCustomer(CUSTOMER_ID, updatedCustomer);
+
+        return customer;
+    }
+
+    private void verifyUpdateCustomerByValidId() {
+        verify(customerRepository, times(1))
+                .save(
+                        argThat(
+                                (Customer customer) ->
+                                        CUSTOMER_UPDATED_PASSWORD.equals(customer.getPassword())
+                                                && CUSTOMER_UPDATED_ADDRESS.equals(
+                                                        customer.getAddress())));
+    }
+
+    /**
+     * Service layer test for updating a customer by a valid ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void updateCustomerByValidIdSuccess() {
+        // Arrange and act
+        Customer customer = updateCustomerSetup();
+
+        // Assert
+        assertNotNull(customer, "Customer is null.");
+        assertEquals(
+                CUSTOMER_EMAIL, customer.getEmail(), "Customer does not contain correct email.");
+        assertEquals(
+                CUSTOMER_UPDATED_PASSWORD,
+                customer.getPassword(),
+                "Customer does not contain correct password.");
+        assertEquals(
+                CUSTOMER_UPDATED_ADDRESS,
+                customer.getAddress(),
+                "Customer does not contain correct address.");
+        assertEquals(
+                0,
+                customer.getNumLoyaltyPoints(),
+                "Customer does not contain correct number of loyalty points.");
+        verifyUpdateCustomerByValidId();
+    }
+
+    /**
+     * Service layer test for updating a shopping cart items with invalid ID.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void updateCustomerByInvalidIdFail() {
+        int id = customer.getId() + 28;
+        when(customerRepository.findById(id)).thenReturn(Optional.empty());
+        CustomerRequestDto updatedCustomer =
+                new CustomerRequestDto(
+                        CUSTOMER_EMAIL,
+                        CUSTOMER_UPDATED_PASSWORD,
+                        CUSTOMER_UPDATED_ADDRESS,
+                        CUSTOMER_LOYALTY_PTS);
+
+        assertThrows(
+                FashionStoreException.class,
+                () -> customerService.updateCustomer(id, updatedCustomer),
                 "Trying to find non existent customer ID should not find anything.");
     }
 }

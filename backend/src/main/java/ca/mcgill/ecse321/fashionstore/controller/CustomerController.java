@@ -72,8 +72,7 @@ public class CustomerController {
     @PutMapping("/fashionstore/account/customer/{customerId}")
     public CustomerResponseDto updateCustomer(
             @PathVariable int customerId, @RequestBody CustomerRequestDto customerRequestDto) {
-        Customer customer =
-                customerService.updateCustomer(customerId, customerRequestDto);
+        Customer customer = customerService.updateCustomer(customerId, customerRequestDto);
         CustomerResponseDto dto = new CustomerResponseDto(customer);
         return dto;
     }

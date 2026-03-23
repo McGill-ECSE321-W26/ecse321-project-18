@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -333,6 +334,7 @@ class ShoppingCartItemServiceTests {
      */
     @Test
     void deleteShoppingCartItemSuccess() {
+        doNothing().when(shoppingCartItemRepository).deleteById(SHOPPING_CART_ITEM_ID_1);
         shoppingCartItemService.deleteShoppingCartItem(SHOPPING_CART_ITEM_ID_1);
         verify(shoppingCartItemRepository, times(1)).deleteById(SHOPPING_CART_ITEM_ID_1);
     }

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,12 +55,6 @@ class AccountServiceTests {
     private static final String badEmail = "employe@fashionstore.com";
 
     // Error messages
-    private static final String badEmailError =
-            """
-            Response wrong email.%n\
-            Expected: %s%n\
-            Actual: %s%n\
-            """;
     private static final String wrongLoginFailureErrorMsg =
             """
             Login failure error message is wrong.%n\
@@ -471,6 +466,40 @@ class AccountServiceTests {
                 String.format("An account with email %s already exists.", request.email()),
                 e.getMessage(),
                 "Exception message should indicate duplicate email.");
+    }
+
+    /**
+     * Service layer test for deleting an account.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void deleteAccountSuccess() {
+        int id = 1;
+        doNothing().when(accountRepository).deleteById(id);
+        when(ownerRepository.existsById(id)).thenReturn(false);
+        accountService.deleteAccount(id);
+        verify(accountRepository, times(1)).deleteById(id);
+    }
+
+    /**
+     * Service layer test for deleting an account (failure).
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void deleteAccountFail() {
+        int id = 1;
+        when(ownerRepository.existsById(id)).thenReturn(true);
+        FashionStoreException e =
+                assertThrows(
+                        FashionStoreException.class,
+                        () -> accountService.deleteAccount(id),
+                        "Exception for delete account (account is owner).");
+        assertEquals(
+                "Cannot delete owner account.",
+                e.getMessage(),
+                "Exception message should indicate owner account.");
     }
 
     /**
