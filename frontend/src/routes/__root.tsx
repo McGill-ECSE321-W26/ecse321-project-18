@@ -37,7 +37,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
       <HeadContent />
 
       <TopNav />
-      <main className="page-wrap px-4 pb-8 pt-14">
+      <main className="px-4 pb-8 pt-14">
         <Outlet />
       </main>
       <Footer />

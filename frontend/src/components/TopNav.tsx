@@ -40,7 +40,7 @@ export default function TopNav() {
             </svg>
           </button>
           <div className="flex items-center gap-3">
-            <img src="/logo192.png" alt="logo" />
+            <img src="/logo192.png" alt="logo" width={50} />
             <p className="font-bold">Fashion Store</p>
           </div>
         </div>
