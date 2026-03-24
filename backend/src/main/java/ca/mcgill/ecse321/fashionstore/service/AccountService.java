@@ -142,4 +142,18 @@ public class AccountService {
         customer = customerRepository.save(customer);
         return customer;
     }
+
+    /**
+     * Service method to delete an account.
+     *
+     * @param id ID of Account to be deleted
+     * @author Cyrus Fung (cfung89)
+     */
+    @Transactional
+    public void deleteAccount(int id) {
+        if (ownerRepository.existsById(id)) {
+            throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Cannot delete owner account.");
+        }
+        accountRepository.deleteById(id);
+    }
 }

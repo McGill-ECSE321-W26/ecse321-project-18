@@ -60,8 +60,24 @@ public class CustomerService {
                     HttpStatus.BAD_REQUEST, "Number of loyalty points must be positive or zero.");
         }
 
-        customer.setNumLoyaltyPoints(customerRequestDto.numOfLoyaltyPoints());
+        customer.setNumLoyaltyPoints(updatedLoyaltyPts);
 
+        return customerRepository.save(customer);
+    }
+
+    /**
+     * Service method to update a customer's information.
+     *
+     * @param id ID of customer who is being updated.
+     * @param customerRequestDto Request DTO for customer.
+     * @return The updated customer.
+     * @author Cyrus Fung (cfung89)
+     */
+    @Transactional
+    public Customer updateCustomer(int id, @Valid CustomerRequestDto customerRequestDto) {
+        Customer customer = Utils.findCustomerById(customerRepository, id);
+        customer.setPassword(customerRequestDto.password());
+        customer.setAddress(customerRequestDto.address());
         return customerRepository.save(customer);
     }
 }
