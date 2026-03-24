@@ -2,5 +2,7 @@ pgdata/
 .idea/
 .venv/
 
+*.jar
+
 # Other
 .tms.toml
