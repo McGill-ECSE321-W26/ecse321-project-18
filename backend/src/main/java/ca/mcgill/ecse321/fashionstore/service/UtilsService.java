@@ -49,6 +49,7 @@ public class UtilsService {
      * @param employeeRepository EmployeeRepository required to access the database.
      * @param orderItemRepository OrderItemRepository required to access the database.
      * @param orderRepository OrderRepository required to access the database.
+     * @param shoppingCartItemRepository ShoppingCartItemRepository required to access the database.
      * @author Cyrus Fung
      */
     @Autowired
