@@ -128,7 +128,9 @@ tasks.jacocoTestReport {
                 "**/repository/**",
                 "**/exception/**",
                 "**/FashionStoreApplication.class",
-                "**/service/Utils.class"
+                "**/service/Utils.class",
+                "**/service/UtilsService.class",
+                "**/controller/UtilsController.class"
             )
         }
     )
@@ -144,7 +146,9 @@ tasks.jacocoTestCoverageVerification {
                 "**/repository/**",
                 "**/exception/**",
                 "**/FashionStoreApplication.class",
-                "**/service/Utils.class"
+                "**/service/Utils.class",
+                "**/service/UtilsService.class",
+                "**/controller/UtilsController.class"
             )
         }
     )
