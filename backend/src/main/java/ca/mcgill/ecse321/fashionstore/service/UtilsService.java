@@ -158,7 +158,7 @@ public class UtilsService {
         shoppingCartItem1.setCustomer(customer1);
 
         ShoppingCartItem shoppingCartItem2 = createShoppingCartItem(6);
-        shoppingCartItem2.setClothingItem(clothingItem1);
+        shoppingCartItem2.setClothingItem(clothingItem2);
         shoppingCartItem2.setCustomer(customer1);
 
         ShoppingCartItem shoppingCartItem3 = createShoppingCartItem(2);

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/_auth/admin")({
   beforeLoad: ({ context }) => {
     const userAccountType = context.auth.user?.accountType;
 
-    if (userAccountType !== AccountType.Owner) {
+    if (userAccountType !== AccountType.OWNER) {
       throw redirect({
         to: redirectForAccountType(userAccountType),
       });
