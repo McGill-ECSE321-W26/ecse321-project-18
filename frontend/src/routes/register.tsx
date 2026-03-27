@@ -12,6 +12,7 @@ import type { AccountRequest, AccountResponse } from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
 import { postRequest } from "#/utils/httpClient";
 import TopNav from "#/components/TopNav";
+import { handleErrors } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
 
@@ -60,11 +61,10 @@ function Register() {
   const [password, setPassword] = useState("");
   const [isEmployee, setIsEmployee] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    setError("");
 
     try {
       const account: AccountRequest = {
@@ -82,8 +82,7 @@ function Register() {
       await navigate({ to: "/login" });
     } catch (err) {
       // TODO: robust error handling
-      setError("uh oh");
-      console.log(err);
+      handleErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }

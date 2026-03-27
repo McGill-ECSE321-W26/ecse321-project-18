@@ -3,8 +3,8 @@ import type { ErrorResponse, RequestObject, ResponseObject } from "#/types/api";
 
 const BACKEND_URL = "http://localhost:8080/fashionstore";
 
-function isErrorResponse(res: ResponseObject): res is ErrorResponse {
-  return true;
+function isErrorResponse(res: any): res is ErrorResponse {
+  return res !== null && typeof res === "object" && "errors" in res;
 }
 
 function checkError(response: ResponseObject) {

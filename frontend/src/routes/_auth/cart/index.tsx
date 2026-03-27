@@ -1,9 +1,8 @@
-import { Button, Card } from "@heroui/react";
+import { Button, Card, Form } from "@heroui/react";
 import {
   QueryClient,
   QueryClientProvider,
   useMutation,
-  useQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -14,7 +13,8 @@ import type {
 } from "#/types/api";
 import { useAuth } from "#/auth";
 import Skeleton from "#/components/Skeleton";
-import { deleteRequest, getRequest, putRequest } from "#/utils/httpClient";
+import { deleteRequest, putRequest } from "#/utils/httpClient";
+import { handleErrors, useCart, useClothingProducts } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
 
@@ -33,27 +33,12 @@ export const Route = createFileRoute("/_auth/cart/")({
   ),
 });
 
-function useCart(customerId: number) {
-  return useQuery({
-    queryKey: ["shoppingCart"],
-    queryFn: (): Promise<ShoppingCartItemResponse[]> =>
-      getRequest(`/account/customer/${customerId}/shoppingcartitem`),
-  });
-}
-
-function useClothingProducts() {
-  return useQuery({
-    queryKey: ["clothingProducts"],
-    queryFn: (): Promise<ClothingProductResponse[]> =>
-      getRequest("/clothingproduct"),
-  });
-}
-
 function Cart() {
   const auth = useAuth();
   const customerId = auth.user?.id;
 
-  const [errors, setErrors] = useState<any[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!customerId) return "An error has occurred: Customer ID not found.";
 
@@ -62,15 +47,12 @@ function Cart() {
     error: cartError,
     data: cartData,
   } = useCart(customerId);
+
   const {
     isLoading: isProductsLoading,
     error: productsError,
     data: productsData,
   } = useClothingProducts();
-
-  if (isCartLoading || isProductsLoading) return <Skeleton />;
-  if (cartError) return "An error has occurred: " + cartError.message;
-  if (productsError) return "An error has occurred: " + productsError.message;
 
   const updateMutation = useMutation({
     mutationFn: async ({
@@ -93,6 +75,7 @@ function Cart() {
       });
     },
   });
+
   const deleteMutation = useMutation({
     mutationFn: async ({ cartItemId }: { cartItemId: number }) =>
       await deleteRequest(
@@ -107,10 +90,20 @@ function Cart() {
       });
     },
   });
+
+  const clearMutation = useMutation({
+    mutationFn: async () =>
+      await deleteRequest(`/account/customer/${customerId}/shoppingcartitem`),
+    onSuccess: () => {
+      queryClient.setQueryData(["shoppingCart"], () => []);
+    },
+  });
+
   const handleMutation = (
     cartItem: ShoppingCartItemResponse,
     newQuantity: number,
   ) => {
+    setIsSubmitting(true);
     try {
       if (newQuantity <= 0) {
         deleteMutation.mutateAsync({ cartItemId: cartItem.id });
@@ -124,61 +117,114 @@ function Cart() {
         });
       }
     } catch (err) {
-      if (err instanceof AggregateError) {
-        setErrors([...errors, ...err.errors]);
-      } else {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setErrors([...errors, errorMessage]);
-      }
-      console.log(err);
+      handleErrors(err, errors, setErrors);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // redirect to cart/order page to confirm payment/info
+    } catch (err) {
+      handleErrors(err, errors, setErrors);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleClear = async () => {
+    setIsSubmitting(true);
+    try {
+      // redirect to cart/order page to confirm payment/info
+      await clearMutation.mutateAsync();
+    } catch (err) {
+      handleErrors(err, errors, setErrors);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isCartLoading || isProductsLoading) return <Skeleton />;
+  if (cartError) return "An error has occurred: " + cartError.message;
+  if (productsError) return "An error has occurred: " + productsError.message;
 
   return (
     <>
       <h2>Cart</h2>
-      {cartData ? (
+      {cartData && cartData.length != 0 ? (
         <div>
-          {cartData.map((cartItem: ShoppingCartItemResponse) => {
-            const product = productsData?.find(
-              (p: ClothingProductResponse) =>
-                p.id === cartItem.clothingItem.clothingProductId,
-            );
-            return (
-              <Card key={cartItem.id}>
-                {product && cartItem.quantity != 0 ? (
-                  <div>
-                    <Card.Header>{product.name}</Card.Header>
-                    <Card.Content>
-                      <div>Size: {cartItem.clothingItem.size}</div>
-                      <div>Colour: {cartItem.clothingItem.colour}</div>
+          <Form action={handleSubmit} onReset={handleClear}>
+            {cartData.map((cartItem: ShoppingCartItemResponse) => {
+              const product = productsData?.find(
+                (p: ClothingProductResponse) =>
+                  p.id === cartItem.clothingItem.clothingProductId,
+              );
+              return (
+                <div key={cartItem.id}>
+                  <Card>
+                    {product && cartItem.quantity != 0 ? (
                       <div>
-                        <Button
-                          onPress={() =>
-                            handleMutation(cartItem, cartItem.quantity - 1)
-                          }
-                        >
-                          -
-                        </Button>
-                        <div>{cartItem.quantity}</div>
-                        <Button
-                          onPress={() =>
-                            handleMutation(cartItem, cartItem.quantity + 1)
-                          }
-                        >
-                          +
-                        </Button>
+                        <div>
+                          <img
+                            src={
+                              !product.image
+                                ? product.image
+                                : "" /* TODO add default image? */
+                            }
+                            loading="lazy"
+                          />
+                        </div>
+                        <div>
+                          <Card.Header>{product.name}</Card.Header>
+                          <Card.Content>
+                            <div>Size: {cartItem.clothingItem.size}</div>
+                            <div>Colour: {cartItem.clothingItem.colour}</div>
+                            <div>
+                              <Button
+                                onPress={() =>
+                                  handleMutation(
+                                    cartItem,
+                                    cartItem.quantity - 1,
+                                  )
+                                }
+                                isDisabled={isSubmitting}
+                              >
+                                -
+                              </Button>
+                              <div>{cartItem.quantity}</div>
+                              <Button
+                                onPress={() =>
+                                  handleMutation(
+                                    cartItem,
+                                    cartItem.quantity + 1,
+                                  )
+                                }
+                                isDisabled={isSubmitting}
+                              >
+                                +
+                              </Button>
+                            </div>
+                          </Card.Content>
+                        </div>
                       </div>
-                    </Card.Content>
-                  </div>
-                ) : (
-                  <div>
-                    <Card.Header>{"No product found."}</Card.Header>
-                  </div>
-                )}
-              </Card>
-            );
-          })}
+                    ) : (
+                      <div>
+                        <Card.Header>{"No product found."}</Card.Header>
+                      </div>
+                    )}
+                  </Card>
+                </div>
+              );
+            })}
+            <Button type="reset" isDisabled={isSubmitting}>
+              Clear
+            </Button>
+            <Button type="submit" isDisabled={isSubmitting}>
+              Submit
+            </Button>
+          </Form>
         </div>
       ) : (
         <p>No clothing products match these filters.</p>

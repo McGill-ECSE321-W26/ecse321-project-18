@@ -13,7 +13,7 @@ import type { AccountRequest, AccountResponse } from "#/types/api";
 import { postRequest } from "#/utils/httpClient";
 import { redirectForAccountType } from "#/utils/authorization";
 import { useAuth } from "#/auth";
-import { sleep } from "#/utils/helpers";
+import { handleErrors, sleep } from "#/utils/helpers";
 import TopNav from "#/components/TopNav";
 
 const queryClient = new QueryClient();
@@ -58,9 +58,8 @@ function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    setErrors([]);
 
     try {
       // communicate with backend to login
@@ -76,16 +75,8 @@ function Login() {
       await sleep(50); // wait for auth state to update
 
       await navigate({ to: redirectForAccountType(response.accountType) });
-    } catch (err) {
-      // TODO: robust error handling
-      // currently handling the wrong type
-      if (err instanceof AggregateError) {
-        setErrors([...errors, ...err.errors]);
-      } else {
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        setErrors([...errors, errorMessage]);
-      }
-      console.log(err);
+    } catch (err: any) {
+      handleErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }
