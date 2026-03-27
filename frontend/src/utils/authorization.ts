@@ -9,11 +9,11 @@ export const redirectForAccountType = (
   // if attempting to access a page they do not have permissions for
   if (accountType) {
     if (
-      accountType === AccountType.Customer ||
-      accountType === AccountType.Employee
+      accountType === AccountType.CUSTOMER ||
+      accountType === AccountType.EMPLOYEE
     ) {
       return "/products";
-    } else if (accountType === AccountType.Owner) {
+    } else if (accountType === AccountType.OWNER) {
       return "/admin";
     }
   }

@@ -3,6 +3,7 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,16 +30,27 @@ public class ClothingItem {
     }
 
     public enum Colour {
+        @JsonProperty("Red")
         RED,
+        @JsonProperty("Orange")
         ORANGE,
+        @JsonProperty("Yellow")
         YELLOW,
+        @JsonProperty("Green")
         GREEN,
+        @JsonProperty("Blue")
         BLUE,
+        @JsonProperty("Purple")
         PURPLE,
+        @JsonProperty("Pink")
         PINK,
+        @JsonProperty("Black")
         BLACK,
+        @JsonProperty("Grey")
         GREY,
+        @JsonProperty("White")
         WHITE,
+        @JsonProperty("Brown")
         BROWN
     }
 

@@ -32,11 +32,11 @@ const managerLinks: navLink[] = [
 
 const getNavLinks = (accountType: AccountType | undefined): navLink[] => {
   switch (accountType) {
-    case AccountType.Customer:
+    case AccountType.CUSTOMER:
       return customerLinks;
-    case AccountType.Employee:
+    case AccountType.EMPLOYEE:
       return employeeLinks;
-    case AccountType.Owner:
+    case AccountType.OWNER:
       return managerLinks;
     default:
       return [];

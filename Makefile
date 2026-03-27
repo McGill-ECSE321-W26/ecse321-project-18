@@ -12,7 +12,7 @@ help:
 	@echo -e "\tmake report  - Serve backend reports (test/checkstyle/spotbugs/pmd/jacoco) on localhost:8000."
 
 build: stop
-	docker compose up --build -d
+	docker compose up --build --watch
 
 restart:
 	docker compose restart

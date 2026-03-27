@@ -1,15 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Card } from "@heroui/react";
 
 import type { ClothingProductResponse } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
-import { getRequest } from "#/utils/httpClient";
+import { useClothingProducts } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
 
@@ -27,13 +23,6 @@ export const Route = createFileRoute("/_auth/products/")({
     </QueryClientProvider>
   ),
 });
-
-function useClothingProducts() {
-  return useQuery({
-    queryKey: ["clothingProducts"],
-    queryFn: () => getRequest("/clothingproduct"),
-  });
-}
 
 function Products() {
   const { isLoading, error, data } = useClothingProducts();

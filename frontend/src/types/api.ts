@@ -1,38 +1,38 @@
 export enum AccountType {
-  Owner = "OWNER",
-  Employee = "EMPLOYEE",
-  Customer = "CUSTOMER",
-  Unknown = "UNKNOWN",
+  OWNER = "Owner",
+  EMPLOYEE = "Employee",
+  CUSTOMER = "Customer",
+  UNKNOWN = "Unknown",
 }
 
 export enum ClothingSize {
-  Xsmall = "XS",
-  Small = "S",
-  Medium = "M",
-  Large = "L",
-  Xlarge = "XL",
+  XS = "XS",
+  S = "S",
+  M = "M",
+  L = "L",
+  XL = "XL",
 }
 
 export enum ClothingColour {
-  Red = "RED",
-  Orange = "ORANGE",
-  Yellow = "YELLOW",
-  Green = "GREEN",
-  Blue = "BLUE",
-  Purple = "PURPLE",
-  Pink = "PINK",
-  Black = "BLACK",
-  Grey = "GREY",
-  White = "WHITE",
-  Brown = "BROWN",
+  RED = "Red",
+  ORANGE = "Orange",
+  YELLOW = "Yellow",
+  GREEN = "Green",
+  BLUE = "Blue",
+  PURPLE = "Purple",
+  PINK = "Pink",
+  BLACK = "Black",
+  GREY = "Grey",
+  WHITE = "White",
+  BROWN = "Brown",
 }
 
 export enum OrderState {
-  Purchased = "PURCHASED",
-  Assigned = "ASSIGNED",
-  Prepared = "PREPARED",
-  Delivered = "DELIVERED",
-  Cancelled = "CANCELLED",
+  PURCHASED = "Purchased",
+  ASSIGNED = "Assigned",
+  PREPARED = "Prepared",
+  DELIVERED = "Delivered",
+  CANCELLED = "Cancelled",
 }
 
 /* HTTP request objects */
@@ -100,6 +100,18 @@ export interface ShoppingCartItemRequest {
 }
 
 /* HTTP response objects */
+export type ResponseObject =
+  | AccountResponse
+  | ClothingItemResponse
+  | ClothingProductResponse
+  | CustomerResponse
+  | EmployeeResponse
+  | ErrorResponse
+  | OrderItemResponse
+  | OrderResponse
+  | OwnerResponse
+  | ShoppingCartItemResponse;
+
 export interface AccountResponse {
   id: number;
   email: string;

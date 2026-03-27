@@ -13,7 +13,7 @@ import type { AccountRequest, AccountResponse } from "#/types/api";
 import { postRequest } from "#/utils/httpClient";
 import { redirectForAccountType } from "#/utils/authorization";
 import { useAuth } from "#/auth";
-import { sleep } from "#/utils/helpers";
+import { handleErrors, sleep } from "#/utils/helpers";
 import TopNav from "#/components/TopNav";
 
 const queryClient = new QueryClient();
@@ -56,11 +56,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
-    setError("");
 
     try {
       // communicate with backend to login
@@ -76,10 +75,8 @@ function Login() {
       await sleep(50); // wait for auth state to update
 
       await navigate({ to: redirectForAccountType(response.accountType) });
-    } catch (err) {
-      // TODO: robust error handling
-      setError("uh oh");
-      console.log(err);
+    } catch (err: any) {
+      handleErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }
