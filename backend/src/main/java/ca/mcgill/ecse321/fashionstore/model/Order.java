@@ -3,6 +3,7 @@
 
 package ca.mcgill.ecse321.fashionstore.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,10 +28,15 @@ public class Order {
     // ------------------------
 
     public enum State {
+        @JsonProperty("Purchased")
         PURCHASED,
+        @JsonProperty("Assigned")
         ASSIGNED,
+        @JsonProperty("Prepared")
         PREPARED,
+        @JsonProperty("Delivered")
         DELIVERED,
+        @JsonProperty("Cancelled")
         CANCELLED
     }
 

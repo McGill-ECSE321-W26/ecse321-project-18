@@ -56,11 +56,11 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
-    setError("");
+    setErrors([]);
 
     try {
       // communicate with backend to login
@@ -78,7 +78,13 @@ function Login() {
       await navigate({ to: redirectForAccountType(response.accountType) });
     } catch (err) {
       // TODO: robust error handling
-      setError("uh oh");
+      // currently handling the wrong type
+      if (err instanceof AggregateError) {
+        setErrors([...errors, ...err.errors]);
+      } else {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        setErrors([...errors, errorMessage]);
+      }
       console.log(err);
     } finally {
       setIsSubmitting(false);

@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.dto;
 
 import ca.mcgill.ecse321.fashionstore.model.Account;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,10 +21,12 @@ public record AccountResponseDto(
 
     /** Enum for account type */
     public enum AccountType {
+        @JsonProperty("Owner")
         OWNER,
+        @JsonProperty("Employee")
         EMPLOYEE,
+        @JsonProperty("Customer")
         CUSTOMER,
-        UNKNOWN
     }
 
     /**
