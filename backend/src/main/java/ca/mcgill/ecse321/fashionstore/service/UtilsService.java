@@ -110,7 +110,7 @@ public class UtilsService {
         Order order3 =
                 createOrder(State.PURCHASED, 100f, ORDER_DATE, DELIVERY_DATE, "3 Language Avenue");
         Order order4 =
-                createOrder(State.PURCHASED, 120f, ORDER_DATE, ORDER_DATE, "4 Language Avenue");
+                createOrder(State.PURCHASED, 120f, ORDER_DATE, DELIVERY_DATE, "4 Language Avenue");
 
         OrderItem orderItem0 = createOrderItem(1, 20f); // order0
         OrderItem orderItem1 = createOrderItem(2, 20f); // order1
