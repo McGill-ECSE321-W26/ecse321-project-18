@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getRequest } from "./httpClient";
+import { getRequest, putRequest } from "./httpClient";
 import type {
+  ClothingColour,
   ClothingProductResponse,
+  ClothingSize,
   ShoppingCartItemResponse,
 } from "#/types/api";
 
@@ -35,5 +37,23 @@ export function useClothingProducts() {
     queryKey: ["clothingProducts"],
     queryFn: (): Promise<ClothingProductResponse[]> =>
       getRequest("/clothingproduct"),
+  });
+}
+
+export function updateItemStock(
+  productId: number,
+  item: {
+    id: number;
+    size: ClothingSize;
+    colour: ClothingColour;
+    numInStock: number;
+  },
+  newStock: number,
+) {
+  return putRequest(`/clothingproduct/${productId}/clothingitem/${item.id}`, {
+    size: item.size,
+    colour: item.colour,
+    clothingProductId: productId,
+    numInStock: newStock,
   });
 }
