@@ -1,10 +1,9 @@
 package ca.mcgill.ecse321.fashionstore.controller;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
-import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
-import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartListResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartResponseDto;
 import ca.mcgill.ecse321.fashionstore.service.ShoppingCartItemService;
-import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,10 +45,8 @@ public class ShoppingCartItemController {
      */
     @GetMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShoppingCartItemResponseDto> getShoppingCartItems(@PathVariable int customerId) {
-        List<ShoppingCartItem> shoppingCartItems =
-                shoppingCartItemService.getShoppingCartItems(customerId);
-        return ShoppingCartItemResponseDto.shoppingCartItemResponseDtos(shoppingCartItems);
+    public ShoppingCartListResponseDto getShoppingCartItems(@PathVariable int customerId) {
+        return shoppingCartItemService.getShoppingCartItems(customerId);
     }
 
     /**
@@ -62,12 +59,10 @@ public class ShoppingCartItemController {
      */
     @PostMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingCartItemResponseDto addShoppingCartItem(
+    public ShoppingCartResponseDto addShoppingCartItem(
             @PathVariable int customerId,
             @RequestBody ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
-        ShoppingCartItem shoppingCartItem =
-                shoppingCartItemService.addShoppingCartItem(customerId, shoppingCartItemRequestDto);
-        return new ShoppingCartItemResponseDto(shoppingCartItem);
+        return shoppingCartItemService.addShoppingCartItem(customerId, shoppingCartItemRequestDto);
     }
 
     /**
@@ -79,13 +74,11 @@ public class ShoppingCartItemController {
      * @author Cyrus Fung
      */
     @PutMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}")
-    public ShoppingCartItemResponseDto updateShoppingCartItem(
+    public ShoppingCartResponseDto updateShoppingCartItem(
             @PathVariable int customerId,
             @PathVariable int id,
             @RequestBody ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
-        ShoppingCartItem shoppingCartItem =
-                shoppingCartItemService.updateShoppingCartItem(id, shoppingCartItemRequestDto);
-        return new ShoppingCartItemResponseDto(shoppingCartItem);
+        return shoppingCartItemService.updateShoppingCartItem(id, shoppingCartItemRequestDto);
     }
 
     /**
@@ -96,9 +89,10 @@ public class ShoppingCartItemController {
      * @author Cyrus Fung
      */
     @DeleteMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteShoppingCartItem(@PathVariable int customerId, @PathVariable int id) {
-        shoppingCartItemService.deleteShoppingCartItem(id);
+    @ResponseStatus(HttpStatus.OK)
+    public ShoppingCartResponseDto deleteShoppingCartItem(
+            @PathVariable int customerId, @PathVariable int id) {
+        return shoppingCartItemService.deleteShoppingCartItem(id, customerId);
     }
 
     /**
@@ -108,8 +102,8 @@ public class ShoppingCartItemController {
      * @author Cyrus Fung
      */
     @DeleteMapping("/fashionstore/account/customer/{customerId}/shoppingcartitem")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteShoppingCartItems(@PathVariable int customerId) {
-        shoppingCartItemService.deleteShoppingCartItems(customerId);
+    @ResponseStatus(HttpStatus.OK)
+    public ShoppingCartResponseDto deleteShoppingCartItems(@PathVariable int customerId) {
+        return shoppingCartItemService.deleteShoppingCartItems(customerId);
     }
 }

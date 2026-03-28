@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartListResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -27,7 +29,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.web.servlet.client.RestTestClient;
 
 /** ShoppingCartItem Service class tests. */
@@ -168,22 +169,23 @@ class ShoppingCartItemIntegrationTests {
                 new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_2);
 
         // Act
-        ShoppingCartItemResponseDto response =
+        ShoppingCartResponseDto response =
                 client.post()
                         .uri(shoppingCartItemUri, customerId)
                         .body(body)
                         .exchange()
                         .expectStatus()
                         .isCreated()
-                        .expectBody(ShoppingCartItemResponseDto.class)
+                        .expectBody(ShoppingCartResponseDto.class)
                         .returnResult()
                         .getResponseBody();
 
         // Assert
         assertNotNull(response, responseNullError);
-        assertTrue(response.id() > 0, "The ID should be a positive int.");
-        this.shoppingCartItemId2 = response.id();
-        assertBodyResponse(body, response);
+        int id = response.shoppingCartItem().id();
+        assertTrue(id > 0, "The ID should be a positive int.");
+        this.shoppingCartItemId2 = id;
+        assertBodyResponse(body, response.shoppingCartItem());
     }
 
     /**
@@ -195,20 +197,18 @@ class ShoppingCartItemIntegrationTests {
     @Order(1)
     void testGetShoppingCartItemsByValidId() {
         // Act
-        List<ShoppingCartItemResponseDto> response =
+        ShoppingCartListResponseDto response =
                 client.get()
                         .uri(shoppingCartItemUri, customerId)
                         .exchange()
                         .expectStatus()
                         .isOk()
-                        .expectBody(
-                                new ParameterizedTypeReference<
-                                        List<ShoppingCartItemResponseDto>>() {})
+                        .expectBody(ShoppingCartListResponseDto.class)
                         .returnResult()
                         .getResponseBody();
 
         // Assert
-        assertGetShoppingCartItemsByValidId(response);
+        assertGetShoppingCartItemsByValidId(response.shoppingCartList());
     }
 
     /**
@@ -224,22 +224,23 @@ class ShoppingCartItemIntegrationTests {
                 new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_1);
 
         // Act
-        ShoppingCartItemResponseDto response =
+        ShoppingCartResponseDto response =
                 client.put()
                         .uri(shoppingCartItemsUri, customerId, shoppingCartItemId2)
                         .body(body)
                         .exchange()
                         .expectStatus()
                         .isOk()
-                        .expectBody(ShoppingCartItemResponseDto.class)
+                        .expectBody(ShoppingCartResponseDto.class)
                         .returnResult()
                         .getResponseBody();
 
         // Assert
         assertNotNull(response, responseNullError);
-        assertTrue(response.id() > 0, "The ID should be a positive int.");
-        assertEquals(response.id(), shoppingCartItemId2, "The ID is not the same.");
-        assertBodyResponse(body, response);
+        ShoppingCartItemResponseDto res = response.shoppingCartItem();
+        assertTrue(res.id() > 0, "The ID should be a positive int.");
+        assertEquals(res.id(), shoppingCartItemId2, "The ID is not the same.");
+        assertBodyResponse(body, res);
     }
 
     /**
@@ -255,22 +256,23 @@ class ShoppingCartItemIntegrationTests {
                 new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_2);
 
         // Act
-        ShoppingCartItemResponseDto response =
+        ShoppingCartResponseDto response =
                 client.post()
                         .uri(shoppingCartItemUri, customerId)
                         .body(body)
                         .exchange()
                         .expectStatus()
                         .isCreated()
-                        .expectBody(ShoppingCartItemResponseDto.class)
+                        .expectBody(ShoppingCartResponseDto.class)
                         .returnResult()
                         .getResponseBody();
 
         // Assert
         assertNotNull(response, responseNullError);
-        assertTrue(response.id() > 0, "The ID should be a positive int.");
-        this.shoppingCartItemId3 = response.id();
-        assertBodyResponse(body, response);
+        int id = response.shoppingCartItem().id();
+        assertTrue(id > 0, "The ID should be a positive int.");
+        this.shoppingCartItemId3 = id;
+        assertBodyResponse(body, response.shoppingCartItem());
     }
 
     /**
@@ -286,9 +288,8 @@ class ShoppingCartItemIntegrationTests {
                 .uri(shoppingCartItemsUri, customerId, shoppingCartItemId3)
                 .exchange()
                 .expectStatus()
-                .isNoContent()
-                .expectBody()
-                .isEmpty();
+                .isOk()
+                .expectBody(ShoppingCartResponseDto.class);
 
         // Assert
         assertFalse(
@@ -305,15 +306,22 @@ class ShoppingCartItemIntegrationTests {
     @Order(5)
     void testDeleteShoppingCartItemsByValidId() {
         // Act
-        client.delete()
-                .uri(shoppingCartItemUri, customerId)
-                .exchange()
-                .expectStatus()
-                .isNoContent()
-                .expectBody()
-                .isEmpty();
+        ShoppingCartResponseDto response =
+                client.delete()
+                        .uri(shoppingCartItemUri, customerId)
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(ShoppingCartResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
 
         // Assert
+        assertValidDelete();
+        assertEquals(response.price(), 0.0f, "Incorrect price.");
+    }
+
+    private void assertValidDelete() {
         assertFalse(
                 shoppingCartItemRepository.existsById(shoppingCartItemId1),
                 "Item 1 was not deleted from the database.");
@@ -335,21 +343,22 @@ class ShoppingCartItemIntegrationTests {
     @Order(6)
     void testGetShoppingCartItemsByValidId2() {
         // Act
-        List<ShoppingCartItemResponseDto> response =
+        ShoppingCartListResponseDto response =
                 client.get()
                         .uri(shoppingCartItemUri, customerId)
                         .exchange()
                         .expectStatus()
                         .isOk()
-                        .expectBody(
-                                new ParameterizedTypeReference<
-                                        List<ShoppingCartItemResponseDto>>() {})
+                        .expectBody(ShoppingCartListResponseDto.class)
                         .returnResult()
                         .getResponseBody();
 
         // Assert
         assertNotNull(response, responseNullError);
-        assertEquals(response.size(), 0, "Response body has incorrect number of DTO objects.");
+        assertEquals(
+                response.shoppingCartList().size(),
+                0,
+                "Response body has incorrect number of DTO objects.");
     }
 
     /**
@@ -451,9 +460,8 @@ class ShoppingCartItemIntegrationTests {
                 .uri(shoppingCartItemsUri, customerId, shoppingCartItemId1)
                 .exchange()
                 .expectStatus()
-                .isNoContent()
-                .expectBody()
-                .isEmpty();
+                .isOk()
+                .expectBody(ShoppingCartListResponseDto.class);
     }
 
     /**
@@ -470,9 +478,8 @@ class ShoppingCartItemIntegrationTests {
                 .uri(shoppingCartItemUri, customerId)
                 .exchange()
                 .expectStatus()
-                .isNoContent()
-                .expectBody()
-                .isEmpty();
+                .isOk()
+                .expectBody(ShoppingCartListResponseDto.class);
     }
 
     /**

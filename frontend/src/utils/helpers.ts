@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRequest } from "./httpClient";
 import type {
   ClothingProductResponse,
-  ShoppingCartItemResponse,
+  ShoppingCartListResponse,
 } from "#/types/api";
 
 export const sleep = async (ms: number) => {
@@ -25,7 +25,7 @@ export const handleErrors = (
 export function useCart(customerId: number) {
   return useQuery({
     queryKey: ["shoppingCart"],
-    queryFn: (): Promise<ShoppingCartItemResponse[]> =>
+    queryFn: (): Promise<ShoppingCartListResponse> =>
       getRequest(`/account/customer/${customerId}/shoppingcartitem`),
   });
 }
