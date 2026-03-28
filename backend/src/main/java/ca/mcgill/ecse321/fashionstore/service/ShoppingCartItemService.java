@@ -117,8 +117,14 @@ public class ShoppingCartItemService {
      */
     @Transactional
     public ShoppingCartResponseDto deleteShoppingCartItem(int id, int customerId) {
-        shoppingCartItemRepository.deleteById(id);
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
+        for (ShoppingCartItem item : customer.getShoppingCartItems()) {
+            if (item.getId() == id) {
+                customer.removeShoppingCartItem(item);
+                break;
+            }
+        }
+        shoppingCartItemRepository.deleteById(id);
         return new ShoppingCartResponseDto(null, calculateCartPrice(customer));
     }
 
