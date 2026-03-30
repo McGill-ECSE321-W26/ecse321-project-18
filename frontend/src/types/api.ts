@@ -166,3 +166,10 @@ export interface ShoppingCartItemResponse {
   clothingItem: ClothingItemResponse;
   quantity: number;
 }
+
+/* miscellaneous */
+export interface ClothingProductRequestParams {
+  name?: string;
+  sizes?: ClothingSize[];
+  colours?: ClothingColour[];
+}

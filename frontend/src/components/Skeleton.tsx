@@ -1,3 +1,9 @@
+import { Spinner } from "@heroui/react";
+
 export default function Skeleton() {
-  return <h3 className="text-lg">Loading...</h3>;
+  return (
+    <div className="w-full h-full flex items-center justify-center">
+      <Spinner />
+    </div>
+  );
 }

@@ -18,13 +18,32 @@ export async function getRequest<T>(uri: string): Promise<T> {
   return axios.get(BACKEND_URL + uri).then(({ data }) => checkError(data)) as T;
 }
 
+export async function getRequestWithParams<T>(
+  uri: string,
+  params: object,
+): Promise<T> {
+  return axios
+    .get(BACKEND_URL + uri, {
+      params: params,
+    })
+    .then(({ data }) => checkError(data)) as T;
+}
+
 export async function postRequest<T>(
   uri: string,
   requestBody: RequestObject,
 ): Promise<T> {
   return axios
     .post(BACKEND_URL + uri, requestBody)
-    .then(({ data }) => checkError(data)) as T;
+    .then(({ data }) => data)
+    .catch(function (error) {
+      throw new AggregateError(
+        error?.response.data.errors ||
+          error?.request ||
+          error.message ||
+          "Something went wrong!",
+      );
+    }) as T;
 }
 
 export async function putRequest<T>(

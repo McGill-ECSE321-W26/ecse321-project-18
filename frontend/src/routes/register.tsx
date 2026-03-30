@@ -5,14 +5,23 @@ import {
   useMutation,
 } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
-import { Button, Checkbox, Form, Input, Label, TextField } from "@heroui/react";
-import { Check } from "lucide-react";
+import {
+  Button,
+  Checkbox,
+  ErrorMessage,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  TextField,
+} from "@heroui/react";
 
+import { IoMdCheckmark } from "react-icons/io";
 import type { AccountRequest, AccountResponse } from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
 import { postRequest } from "#/utils/httpClient";
 import TopNav from "#/components/TopNav";
-import { handleErrors } from "#/utils/helpers";
+import { SubmitButton } from "#/components/SubmitButton";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +67,7 @@ function Register() {
   const mutationEmployee = useMutation({ mutationFn: requestRegisterEmployee });
 
   const [email, setEmail] = useState("");
+  const [confirmedEmail, setConfirmedEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isEmployee, setIsEmployee] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,8 +91,15 @@ function Register() {
 
       await navigate({ to: "/login" });
     } catch (err) {
-      // TODO: robust error handling
-      handleErrors(err, errors, setErrors);
+      // display errors and clear some input fields
+      if (err instanceof AggregateError) {
+        setErrors([...err.errors]);
+      } else {
+        setErrors([String(err)]);
+      }
+
+      setConfirmedEmail("");
+      setPassword("");
     } finally {
       setIsSubmitting(false);
     }
@@ -93,25 +110,53 @@ function Register() {
       <TopNav account={undefined} />
 
       <main className="px-4 pb-8 pt-14">
+        <h1 className="text-center text-2xl font-bold">Register</h1>
+        <br />
         <div className="flex justify-center items-center">
-          <Form action={handleSubmit} className="flex w-96 flex-col gap-4">
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+            className="flex w-96 flex-col gap-4"
+          >
             <TextField
               isRequired
               name="email"
               type="email"
+              value={email}
               onChange={(value) => setEmail(value)}
             >
               <Label>Email</Label>
               <Input placeholder="hi@example.com" />
+              <FieldError />
+            </TextField>
+            <TextField
+              isRequired
+              name="confirmEmail"
+              type="email"
+              value={confirmedEmail}
+              onChange={(value) => setConfirmedEmail(value)}
+              validate={(value) =>
+                value === email ? null : "Email addresses do not match."
+              }
+            >
+              <Label>Confirm email</Label>
+              <Input placeholder="Re-enter your email" />
+              <FieldError />
             </TextField>
             <TextField
               isRequired
               name="password"
               type="password"
+              minLength={8}
+              maxLength={32}
+              value={password}
               onChange={(value) => setPassword(value)}
             >
               <Label>Password</Label>
               <Input placeholder="Enter your password" />
+              <FieldError />
             </TextField>
 
             <Checkbox
@@ -128,19 +173,14 @@ function Register() {
               </Checkbox.Content>
             </Checkbox>
 
-            <div className="flex gap-2">
-              <Button type="submit" isDisabled={isSubmitting}>
-                <Check />
-                Register
-              </Button>
-              <Button
-                type="reset"
-                variant="secondary"
-                isDisabled={isSubmitting}
-              >
-                Reset
-              </Button>
-            </div>
+            <ErrorMessage className="text-sm">{errors}</ErrorMessage>
+
+            <SubmitButton
+              text="Register"
+              isSubmitting={isSubmitting}
+              isFullWidth={true}
+              handleClick={() => setErrors([])}
+            />
           </Form>
         </div>
       </main>
