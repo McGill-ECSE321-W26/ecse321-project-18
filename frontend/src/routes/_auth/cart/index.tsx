@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { FaRegTrashAlt } from "react-icons/fa";
 import type {
   ClothingProductResponse,
   ShoppingCartItemRequest,
@@ -71,11 +72,13 @@ function Cart() {
         updateItem,
       ),
     onSuccess: (newItem: ShoppingCartResponse) => {
+      // save updated item into cache
       queryClient.setQueryData(
         ["shoppingCart"],
         (oldData: ShoppingCartListResponse) => {
           const newList = oldData.shoppingCartList.map(
             (item: ShoppingCartItemResponse) =>
+              // only update the updated shopping cart item in cache
               item.id === newItem.shoppingCartItem.id
                 ? newItem.shoppingCartItem
                 : item,
@@ -99,6 +102,7 @@ function Cart() {
       response: ShoppingCartResponse,
       variables: { cartItemId: number },
     ) => {
+      // filter out the deleted shopping cart item from cache
       queryClient.setQueryData(
         ["shoppingCart"],
         (oldData: ShoppingCartListResponse) => {
@@ -122,7 +126,9 @@ function Cart() {
     },
   });
 
-  const handleMutation = async (
+  // handleUpdate handles the user input of increasing or decreasing the quantity of a specific item
+  // it updates/deletes accordingly, depending on the
+  const handleUpdate = async (
     cartItem: ShoppingCartItemResponse,
     newQuantity: number,
   ) => {
@@ -145,10 +151,15 @@ function Cart() {
     }
   };
 
-  const handleSubmit = async () => {
+  // handleDelete handles the user input of deleting a specific item
+  const handleDelete = async (cartItem: ShoppingCartItemResponse) => {
     setIsSubmitting(true);
-    await navigate({ to: "/cart/order" });
-    setIsSubmitting(false);
+    try {
+      await deleteMutation.mutateAsync({ cartItemId: cartItem.id });
+    } catch (err) {
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClear = async () => {
@@ -159,6 +170,12 @@ function Cart() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    await navigate({ to: "/cart/order" });
+    setIsSubmitting(false);
   };
 
   if (isCartLoading || isProductsLoading) return <Skeleton />;
@@ -179,10 +196,13 @@ function Cart() {
             <div className="grid grid-cols-1 gap-4 overflow-y-auto">
               {cartData.shoppingCartList.map(
                 (cartItem: ShoppingCartItemResponse) => {
+                  // find the corresponding clothing product for each shopping cart item
+                  // required to retrieve certain information (price, image, etc.)
                   const product = productsData?.find(
                     (p: ClothingProductResponse) =>
                       p.id === cartItem.clothingItem.clothingProductId,
                   );
+
                   return (
                     <Card
                       key={cartItem.id}
@@ -210,31 +230,47 @@ function Cart() {
                             <div>
                               <p>Size: {cartItem.clothingItem.size}</p>
                               <p>Colour: {cartItem.clothingItem.colour}</p>
+                              <p>Unit Price: {product.price}$</p>
                             </div>
                           </div>
 
-                          {/* Quantity/buttons */}
-                          <div className="grid grid-cols-[32px_1fr_32px] items-center bg-default-100 text-center overflow-hidden border border-black rounded-full">
+                          {/* Right side of Card */}
+                          <div className="flex flex-col items-center gap-2">
+                            {/* Quantity buttons */}
+                            <div className="grid grid-cols-[32px_40px_32px] items-center bg-default-100 border border-black rounded-full overflow-hidden text-center">
+                              <Button
+                                onPress={() =>
+                                  handleUpdate(cartItem, cartItem.quantity - 1)
+                                }
+                                isDisabled={
+                                  isSubmitting || cartItem.quantity <= 1
+                                }
+                                size="sm"
+                                className="rounded-l-full border-r"
+                              >
+                                -
+                              </Button>
+                              <div>{cartItem.quantity}</div>
+                              <Button
+                                onPress={() =>
+                                  handleUpdate(cartItem, cartItem.quantity + 1)
+                                }
+                                isDisabled={isSubmitting}
+                                size="sm"
+                                className="rounded-r-full border-l"
+                              >
+                                +
+                              </Button>
+                            </div>
+
+                            {/* Delete button */}
                             <Button
-                              onPress={() =>
-                                handleMutation(cartItem, cartItem.quantity - 1)
-                              }
+                              onPress={() => handleDelete(cartItem)}
                               isDisabled={isSubmitting}
                               size="sm"
-                              className="rounded-l-full border-r"
+                              className="rounded-full border-l bg-red-500"
                             >
-                              -
-                            </Button>
-                            <div>{cartItem.quantity}</div>
-                            <Button
-                              onPress={() =>
-                                handleMutation(cartItem, cartItem.quantity + 1)
-                              }
-                              isDisabled={isSubmitting}
-                              size="sm"
-                              className="rounded-r-full border-l"
-                            >
-                              +
+                              <FaRegTrashAlt />
                             </Button>
                           </div>
                         </div>

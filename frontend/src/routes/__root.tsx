@@ -5,12 +5,12 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { Toast } from "@heroui/react";
 
 import type { AuthContext } from "#/auth";
 import Footer from "#/components/Footer";
 
 import "../styles.css";
-import { Toast } from "@heroui/react";
 
 interface FashionStoreContext {
   auth: AuthContext;
@@ -35,7 +35,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
   component: () => (
     <>
       <HeadContent />
-      <Toast.Provider className="whitespace-pre-wrap"/>
+      <Toast.Provider className="whitespace-pre-wrap" />
       <Outlet />
       <Footer />
 
