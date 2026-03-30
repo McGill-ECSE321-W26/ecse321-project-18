@@ -135,9 +135,9 @@ function Cart() {
     setIsSubmitting(true);
     try {
       if (newQuantity <= 0) {
-        await deleteMutation.mutateAsync({ cartItemId: cartItem.id });
+        deleteMutation.mutateAsync({ cartItemId: cartItem.id });
       } else {
-        await updateMutation.mutateAsync({
+        updateMutation.mutateAsync({
           cartItemId: cartItem.id,
           updateItem: {
             quantity: newQuantity,
@@ -155,7 +155,7 @@ function Cart() {
   const handleDelete = async (cartItem: ShoppingCartItemResponse) => {
     setIsSubmitting(true);
     try {
-      await deleteMutation.mutateAsync({ cartItemId: cartItem.id });
+      deleteMutation.mutateAsync({ cartItemId: cartItem.id });
     } catch (err) {
     } finally {
       setIsSubmitting(false);
@@ -165,7 +165,7 @@ function Cart() {
   const handleClear = async () => {
     setIsSubmitting(true);
     try {
-      await clearMutation.mutateAsync();
+      clearMutation.mutateAsync();
     } catch (err) {
     } finally {
       setIsSubmitting(false);
@@ -174,8 +174,7 @@ function Cart() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    await navigate({ to: "/cart/order" });
-    setIsSubmitting(false);
+    navigate({ to: "/cart/order" });
   };
 
   if (isCartLoading || isProductsLoading) return <Skeleton />;
@@ -276,7 +275,7 @@ function Cart() {
                         </div>
                       ) : (
                         <div>
-                          <Card.Header>{"No product found."}</Card.Header>
+                          <Card.Header>No product found.</Card.Header>
                         </div>
                       )}
                     </Card>
