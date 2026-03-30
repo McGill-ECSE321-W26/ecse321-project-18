@@ -7,16 +7,13 @@ import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 
 import {
-  Button,
   ErrorMessage,
   FieldError,
   Form,
   Input,
   Label,
-  Spinner,
   TextField,
 } from "@heroui/react";
-import { IoMdCheckmark } from "react-icons/io";
 
 import type { AccountRequest, AccountResponse } from "#/types/api";
 import { postRequest } from "#/utils/httpClient";
@@ -63,9 +60,9 @@ function Login() {
   const navigate = Route.useNavigate();
   const mutation = useMutation({ mutationFn: requestLogin });
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = async () => {

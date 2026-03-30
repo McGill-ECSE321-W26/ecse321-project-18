@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import {
-  Button,
   Checkbox,
   ErrorMessage,
   FieldError,
@@ -16,7 +15,6 @@ import {
   TextField,
 } from "@heroui/react";
 
-import { IoMdCheckmark } from "react-icons/io";
 import type { AccountRequest, AccountResponse } from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
 import { postRequest } from "#/utils/httpClient";
@@ -66,11 +64,11 @@ function Register() {
   const mutationCustomer = useMutation({ mutationFn: requestRegisterCustomer });
   const mutationEmployee = useMutation({ mutationFn: requestRegisterEmployee });
 
-  const [email, setEmail] = useState("");
-  const [confirmedEmail, setConfirmedEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isEmployee, setIsEmployee] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [confirmedEmail, setConfirmedEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isEmployee, setIsEmployee] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = async () => {
