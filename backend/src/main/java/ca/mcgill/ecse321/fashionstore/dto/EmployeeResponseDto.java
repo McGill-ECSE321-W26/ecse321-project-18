@@ -58,6 +58,15 @@ public record EmployeeResponseDto(
                 employee.getAssignedOrders().stream().map(OrderResponseDto::new).toList());
     }
 
+    /**
+     * Constructor to map Employees to a list of EmployeeResponseDtos.
+     *
+     * @param shoppingCartItems List of ShoppingCartItem instances.
+     */
+    public static List<EmployeeResponseDto> employeeResponseDtos(List<Employee> employees) {
+        return employees.stream().map(EmployeeResponseDto::new).toList();
+    }
+
     @Override
     public List<ShoppingCartItemResponseDto> shoppingCartItems() {
         return (shoppingCartItems == null) ? null : List.copyOf(this.shoppingCartItems);

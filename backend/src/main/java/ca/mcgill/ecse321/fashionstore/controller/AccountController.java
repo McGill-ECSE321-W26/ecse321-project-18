@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.controller;
 
+import ca.mcgill.ecse321.fashionstore.dto.AccountListResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.Account;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -92,5 +94,16 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(@PathVariable int accountId) {
         accountService.deleteAccount(accountId);
+    }
+
+    /**
+     * Retrieves all accounts.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @GetMapping("/fashionstore/account")
+    @ResponseStatus(HttpStatus.OK)
+    public AccountListResponseDto getAccounts() {
+        return accountService.getAccounts();
     }
 }

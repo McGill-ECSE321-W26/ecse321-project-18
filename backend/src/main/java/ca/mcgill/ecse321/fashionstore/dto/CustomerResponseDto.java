@@ -53,6 +53,15 @@ public record CustomerResponseDto(
                 customer.getPurchasedOrders().stream().map(OrderResponseDto::new).toList());
     }
 
+    /**
+     * Constructor to map Customers to a list of CustomerResponseDtos.
+     *
+     * @param shoppingCartItems List of ShoppingCartItem instances.
+     */
+    public static List<CustomerResponseDto> customerResponseDtos(List<Customer> customers) {
+        return customers.stream().map(CustomerResponseDto::new).toList();
+    }
+
     @Override
     public List<ShoppingCartItemResponseDto> shoppingCartItems() {
         return (shoppingCartItems == null) ? null : List.copyOf(this.shoppingCartItems);

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getRequest } from "./httpClient";
 import type {
+  AccountListResponse,
   ClothingProductResponse,
   ShoppingCartListResponse,
 } from "#/types/api";
@@ -22,5 +23,12 @@ export function useClothingProducts() {
     queryKey: ["clothingProducts"],
     queryFn: (): Promise<ClothingProductResponse[]> =>
       getRequest("/clothingproduct"),
+  });
+}
+
+export function useAccounts() {
+  return useQuery({
+    queryKey: ["accounts"],
+    queryFn: (): Promise<AccountListResponse> => getRequest("/account"),
   });
 }

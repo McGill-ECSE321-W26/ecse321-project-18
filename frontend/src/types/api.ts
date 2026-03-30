@@ -185,3 +185,9 @@ export interface ClothingProductRequestParams {
   sizes?: ClothingSize[];
   colours?: ClothingColour[];
 }
+
+export interface AccountListResponse {
+  owners: OwnerResponse[];
+  customers: CustomerResponse[];
+  employees: EmployeeResponse[];
+}

@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 
 /**
- * DTO for ShoppingCartItem responses.
+ * DTO for List of ShoppingCartItem responses.
  *
  * @param shoppingCartList List of ShoppingCartItemResponseDto objects in shopping cart.
  * @param price Total price of shopping cart.
