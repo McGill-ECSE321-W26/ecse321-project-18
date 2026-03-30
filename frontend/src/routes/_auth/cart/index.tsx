@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_auth/cart/")({
   head: () => ({
     meta: [
       {
-        title: "Cart | Fashion Store",
+        title: "Cart | Stilton's Store",
       },
     ],
   }),

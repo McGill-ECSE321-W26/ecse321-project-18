@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_auth/products/$productId")({
   head: () => ({
     meta: [
       {
-        title: "<Product> | Fashion Store",
+        title: "<Product> | Stilton's Store",
       },
     ],
   }),

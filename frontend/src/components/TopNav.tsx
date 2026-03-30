@@ -84,7 +84,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
           <Link to="/">
             <div className="flex items-center gap-3">
               <img src="/logo192.png" alt="logo" width={50} />
-              <p className="font-bold">Fashion Store</p>
+              <p className="font-bold">Stilton's Store</p>
             </div>
           </Link>
         </div>
