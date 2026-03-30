@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartListResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
@@ -116,15 +118,17 @@ class ShoppingCartItemServiceTests {
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
 
         // Act
-        List<ShoppingCartItem> result = shoppingCartItemService.getShoppingCartItems(CUSTOMER_ID);
+        ShoppingCartListResponseDto result =
+                shoppingCartItemService.getShoppingCartItems(CUSTOMER_ID);
 
         // Assert
         assertNotNull(result, "List of shopping cart items is null.");
-        assertEquals(2, result.size(), "List of shopping cart items does not have length 2.");
+        List<ShoppingCartItemResponseDto> ls = result.shoppingCartList();
+        assertEquals(2, ls.size(), "List of shopping cart items does not have length 2.");
         assertGetShoppingCartItems(
-                result.get(0), SHOPPING_CART_ITEM_ID_1, QUANTITY_1, CLOTHING_ITEM_ID_1);
+                ls.get(0), SHOPPING_CART_ITEM_ID_1, QUANTITY_1, CLOTHING_ITEM_ID_1);
         assertGetShoppingCartItems(
-                result.get(1), SHOPPING_CART_ITEM_ID_2, QUANTITY_2, CLOTHING_ITEM_ID_2);
+                ls.get(1), SHOPPING_CART_ITEM_ID_2, QUANTITY_2, CLOTHING_ITEM_ID_2);
         verify(customerRepository, times(1)).findById(CUSTOMER_ID);
     }
 
@@ -134,20 +138,23 @@ class ShoppingCartItemServiceTests {
      * @author Cyrus Fung (cfung89)
      */
     private void assertGetShoppingCartItems(
-            ShoppingCartItem item, int expectedId, int expectedQuantity, int expectedClothingId) {
+            ShoppingCartItemResponseDto item,
+            int expectedId,
+            int expectedQuantity,
+            int expectedClothingId) {
         // Assert
-        assertEquals(expectedId, item.getId(), "Shopping cart item does not have correct ID.");
+        assertEquals(expectedId, item.id(), "Shopping cart item does not have correct ID.");
         assertEquals(
                 expectedQuantity,
-                item.getQuantity(),
+                item.quantity(),
                 "Shopping cart item does not have correct quantity.");
         assertEquals(
                 expectedClothingId,
-                item.getClothingItem().getId(),
+                item.clothingItem().id(),
                 "Shopping cart item does not have correct clothing item ID.");
         assertEquals(
                 CUSTOMER_ID,
-                item.getCustomer().getId(),
+                item.customerId(),
                 "Shopping cart item does not have correct customer ID.");
     }
 
@@ -181,7 +188,7 @@ class ShoppingCartItemServiceTests {
      *
      * @author Cyrus Fung (cfung89)
      */
-    private ShoppingCartItemResponseDto addShoppingCartItemSetup() {
+    private ShoppingCartResponseDto addShoppingCartItemSetup() {
         // Arrange
         when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
         when(clothingItemRepository.findById(CLOTHING_ITEM_ID_2))
@@ -192,10 +199,7 @@ class ShoppingCartItemServiceTests {
         // Act
         ShoppingCartItemRequestDto createdShoppingCartItem =
                 new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_2, QUANTITY_2);
-        ShoppingCartItem shoppingCartItem =
-                shoppingCartItemService.addShoppingCartItem(CUSTOMER_ID, createdShoppingCartItem);
-
-        return new ShoppingCartItemResponseDto(shoppingCartItem);
+        return shoppingCartItemService.addShoppingCartItem(CUSTOMER_ID, createdShoppingCartItem);
     }
 
     /**
@@ -206,7 +210,9 @@ class ShoppingCartItemServiceTests {
     @Test
     void addShoppingCartItemSuccess() {
         // Arrange and act
-        ShoppingCartItemResponseDto shoppingCartItemResponseDto = addShoppingCartItemSetup();
+        ShoppingCartResponseDto shoppingCartResponseDto = addShoppingCartItemSetup();
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
+                shoppingCartResponseDto.shoppingCartItem();
 
         // Assert
         assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
@@ -241,7 +247,7 @@ class ShoppingCartItemServiceTests {
      *
      * @author Cyrus Fung (cfung89)
      */
-    private ShoppingCartItemResponseDto updateShoppingCartItemSetup() {
+    private ShoppingCartResponseDto updateShoppingCartItemSetup() {
         // Arrange
         when(shoppingCartItemRepository.findById(SHOPPING_CART_ITEM_ID_1))
                 .thenReturn(Optional.of(shoppingCartItem1));
@@ -251,11 +257,10 @@ class ShoppingCartItemServiceTests {
         // Act
         ShoppingCartItemRequestDto updatedShoppingCartItem =
                 new ShoppingCartItemRequestDto(CLOTHING_ITEM_ID_1, QUANTITY_2);
-        ShoppingCartItem shoppingCartItem =
+        ShoppingCartResponseDto shoppingCartItem =
                 shoppingCartItemService.updateShoppingCartItem(
                         SHOPPING_CART_ITEM_ID_1, updatedShoppingCartItem);
-
-        return new ShoppingCartItemResponseDto(shoppingCartItem);
+        return shoppingCartItem;
     }
 
     /**
@@ -266,7 +271,9 @@ class ShoppingCartItemServiceTests {
     @Test
     void updateShoppingCartItemByValidIdSuccess() {
         // Arrange and act
-        ShoppingCartItemResponseDto shoppingCartItemResponseDto = updateShoppingCartItemSetup();
+        ShoppingCartResponseDto shoppingCartResponseDto = updateShoppingCartItemSetup();
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
+                shoppingCartResponseDto.shoppingCartItem();
 
         // Assert
         assertNotNull(shoppingCartItemResponseDto, "ShoppingCartItemResponseDto is null.");
@@ -335,7 +342,8 @@ class ShoppingCartItemServiceTests {
     @Test
     void deleteShoppingCartItemSuccess() {
         doNothing().when(shoppingCartItemRepository).deleteById(SHOPPING_CART_ITEM_ID_1);
-        shoppingCartItemService.deleteShoppingCartItem(SHOPPING_CART_ITEM_ID_1);
+        when(customerRepository.findById(CUSTOMER_ID)).thenReturn(Optional.of(customer));
+        shoppingCartItemService.deleteShoppingCartItem(SHOPPING_CART_ITEM_ID_1, CUSTOMER_ID);
         verify(shoppingCartItemRepository, times(1)).deleteById(SHOPPING_CART_ITEM_ID_1);
     }
 
