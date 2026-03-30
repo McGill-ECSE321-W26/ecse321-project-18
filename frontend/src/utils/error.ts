@@ -15,13 +15,13 @@ export const displayErrors = (errors: string[]) => {
   });
 };
 
-export const handleErrors = (error: any, display: boolean) => {
+export const handleErrors = (error: any, isDisplayed: boolean) => {
   if (error.response) {
-    const errors = error.response.data.errors;
+    const errors = error.response?.data?.errors;
     if (!errors) {
       throw new Error(error.message);
     }
-    if (display) {
+    if (isDisplayed) {
       displayErrors(errors);
     }
     throw new AggregateError(errors);
