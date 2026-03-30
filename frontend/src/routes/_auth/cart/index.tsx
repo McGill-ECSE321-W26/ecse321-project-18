@@ -17,7 +17,6 @@ import { useAuth } from "#/auth";
 import Skeleton from "#/components/Skeleton";
 import { deleteRequest, putRequest } from "#/utils/httpClient";
 import { useCart, useClothingProducts } from "#/utils/helpers";
-import { updateErrors } from "#/utils/error";
 
 const defaultImg = "/logo512.png";
 
@@ -43,7 +42,6 @@ function Cart() {
   const customerId = auth.user?.id;
   const navigate = Route.useNavigate();
 
-  const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!customerId) return "An error has occurred: Customer ID not found.";
@@ -97,7 +95,10 @@ function Cart() {
       await deleteRequest(
         `/account/customer/${customerId}/shoppingcartitem/${cartItemId}`,
       ),
-    onSuccess: (data: ShoppingCartResponse, variables) => {
+    onSuccess: (
+      response: ShoppingCartResponse,
+      variables: { cartItemId: number },
+    ) => {
       queryClient.setQueryData(
         ["shoppingCart"],
         (oldData: ShoppingCartListResponse) => {
@@ -105,18 +106,18 @@ function Cart() {
             (item: ShoppingCartItemResponse) =>
               item.id !== variables.cartItemId,
           );
-          return { shoppingCartList: newList, price: data.price };
+          return { shoppingCartList: newList, price: response.price };
         },
       );
     },
   });
 
   const clearMutation = useMutation({
-    mutationFn: async () =>
+    mutationFn: async (): Promise<ShoppingCartResponse> =>
       await deleteRequest(`/account/customer/${customerId}/shoppingcartitem`),
-    onSuccess: () => {
+    onSuccess: (response: ShoppingCartResponse) => {
       queryClient.setQueryData(["shoppingCart"], () => {
-        return { shoppingCartList: [], price: 0 };
+        return { shoppingCartList: [], price: response.price };
       });
     },
   });
@@ -139,7 +140,6 @@ function Cart() {
         });
       }
     } catch (err) {
-      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }
@@ -147,14 +147,8 @@ function Cart() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    try {
-      // redirect to cart/order page to confirm payment/info
-      navigate({ to: "/cart/order" });
-    } catch (err) {
-      updateErrors(err, errors, setErrors);
-    } finally {
-      setIsSubmitting(false);
-    }
+    await navigate({ to: "/cart/order" });
+    setIsSubmitting(false);
   };
 
   const handleClear = async () => {
@@ -162,7 +156,6 @@ function Cart() {
     try {
       await clearMutation.mutateAsync();
     } catch (err) {
-      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }

@@ -1,13 +1,17 @@
 import axios from "axios";
+import { handleErrors } from "./error";
 import type { RequestObject } from "#/types/api";
-import { handleErrors, displayErrors } from "./error";
 
 const BACKEND_URL = "http://localhost:8080/fashionstore";
 
-export async function getRequest<T>(uri: string): Promise<T> {
+export async function getRequest<T>(
+  uri: string,
+  display: boolean = true,
+): Promise<T> {
   return axios
     .get(BACKEND_URL + uri)
-    .then(({ data }) => handleErrors(data)) as T;
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, display)) as T;
 }
 
 export async function postRequest<T>(
@@ -18,16 +22,7 @@ export async function postRequest<T>(
   return axios
     .post(BACKEND_URL + uri, requestBody)
     .then(({ data }) => data)
-    .catch(function (error) {
-      const errors = error.response?.data.errors;
-      if (errors) {
-        if (!display) {
-          throw new AggregateError(errors);
-        }
-        displayErrors(errors);
-      }
-      throw new Error(error.message);
-    }) as T;
+    .catch((error) => handleErrors(error, display)) as T;
 }
 
 export async function putRequest<T>(
@@ -35,16 +30,18 @@ export async function putRequest<T>(
   requestBody: RequestObject,
   display: boolean = true,
 ): Promise<T> {
-  return axios.put(BACKEND_URL + uri, requestBody).then(({ data }) => {
-    if (display) {
-      displayErrors(data);
-    }
-    return handleErrors(data, display);
-  }) as T;
+  return axios
+    .put(BACKEND_URL + uri, requestBody)
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, display)) as T;
 }
 
-export async function deleteRequest<T>(uri: string): Promise<T> {
+export async function deleteRequest<T>(
+  uri: string,
+  display: boolean = true,
+): Promise<T> {
   return axios
     .delete(BACKEND_URL + uri)
-    .then(({ data }) => handleErrors(data)) as T;
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, display)) as T;
 }
