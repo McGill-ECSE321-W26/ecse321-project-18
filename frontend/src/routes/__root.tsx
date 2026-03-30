@@ -28,7 +28,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
     links: [
       {
         rel: "icon",
-        href: "/favicon.ico",
+        href: "/stiltonslogo.png",
       },
     ],
   }),

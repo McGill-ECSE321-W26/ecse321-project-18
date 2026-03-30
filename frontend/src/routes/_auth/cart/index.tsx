@@ -19,7 +19,7 @@ import Skeleton from "#/components/Skeleton";
 import { deleteRequest, putRequest } from "#/utils/httpClient";
 import { useCart, useClothingProducts } from "#/utils/helpers";
 
-const defaultImg = "/logo512.png";
+const defaultImg = "/stiltonslogo.png";
 
 const queryClient = new QueryClient();
 
