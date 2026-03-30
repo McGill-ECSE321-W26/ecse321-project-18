@@ -135,9 +135,9 @@ function Cart() {
     setIsSubmitting(true);
     try {
       if (newQuantity <= 0) {
-        deleteMutation.mutateAsync({ cartItemId: cartItem.id });
+        await deleteMutation.mutateAsync({ cartItemId: cartItem.id });
       } else {
-        updateMutation.mutateAsync({
+        await updateMutation.mutateAsync({
           cartItemId: cartItem.id,
           updateItem: {
             quantity: newQuantity,
@@ -155,7 +155,7 @@ function Cart() {
   const handleDelete = async (cartItem: ShoppingCartItemResponse) => {
     setIsSubmitting(true);
     try {
-      deleteMutation.mutateAsync({ cartItemId: cartItem.id });
+      await deleteMutation.mutateAsync({ cartItemId: cartItem.id });
     } catch (err) {
     } finally {
       setIsSubmitting(false);
@@ -165,7 +165,7 @@ function Cart() {
   const handleClear = async () => {
     setIsSubmitting(true);
     try {
-      clearMutation.mutateAsync();
+      await clearMutation.mutateAsync();
     } catch (err) {
     } finally {
       setIsSubmitting(false);
