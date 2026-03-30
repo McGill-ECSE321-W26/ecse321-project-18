@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type {
@@ -40,122 +40,150 @@ function Accounts() {
 
   return (
     <>
-      <h2 className="text-xl">Accounts</h2>
-      <div>
-        <div>
-          <h2>
-            <a href="#owners">Owners</a>
-          </h2>
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Owner table">
-                <Table.Header>
-                  <Table.Column>ID</Table.Column>
-                  <Table.Column>Email</Table.Column>
-                  <Table.Column>Button</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {data.owners.map((owner: OwnerResponse) => {
-                    return (
-                      <Table.Row key={owner.id}>
-                        <Table.Cell>{owner.id}</Table.Cell>
-                        <Table.Cell>{owner.email}</Table.Cell>
-                        <Table.Cell>
-                          <Button onPress={() => handlePress(owner.id)}>
-                            View profile
-                          </Button>
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  })}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        </div>
+      <div className="-mt-12">
+        <h2 className="flex text-2xl font-bold items-center justify-center pt-4">
+          Stilton's Store's Accounts
+        </h2>
+        <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+          <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+            <ul className="hidden items-center gap-4 md:flex">
+              <li>
+                <Link to="." href="/admin/accounts">
+                  Accounts
+                </Link>
+              </li>
+              <li>
+                <Link to="." href="/admin/accounts#owners">
+                  Owners
+                </Link>
+              </li>
+              <li>
+                <Link to="." href="/admin/accounts#customers">
+                  Customers
+                </Link>
+              </li>
+              <li>
+                <Link to="." href="/admin/accounts#employees">
+                  Employees
+                </Link>
+              </li>
+            </ul>
+          </header>
+        </nav>
+        <div className="flex flex-col gap-12 py-8">
+          <section id="owners">
+            <h2 className="text-2xl font-bold mb-4">Owners</h2>
+            <Table>
+              <Table.ScrollContainer>
+                <Table.Content aria-label="Owner table">
+                  <Table.Header>
+                    <Table.Column isRowHeader>ID</Table.Column>
+                    <Table.Column>Email</Table.Column>
+                    <Table.Column>Button</Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {data.owners.map((owner: OwnerResponse) => {
+                      return (
+                        <Table.Row key={owner.id}>
+                          <Table.Cell>{owner.id}</Table.Cell>
+                          <Table.Cell>{owner.email}</Table.Cell>
+                          <Table.Cell>
+                            <Button onPress={() => handlePress(owner.id)}>
+                              View profile
+                            </Button>
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
+          </section>
 
-        <div>
-          <h2>
-            <a href="#customers">Customers</a>
-          </h2>
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Customer table">
-                <Table.Header>
-                  <Table.Column>ID</Table.Column>
-                  <Table.Column>Email</Table.Column>
-                  <Table.Column>Address</Table.Column>
-                  <Table.Column>Number of Purchased Orders</Table.Column>
-                  <Table.Column>Loyalty Points</Table.Column>
-                  <Table.Column>Button</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {data.customers.map((customer: CustomerResponse) => {
-                    return (
-                      <Table.Row key={customer.id}>
-                        <Table.Cell>{customer.id}</Table.Cell>
-                        <Table.Cell>{customer.email}</Table.Cell>
-                        <Table.Cell>{customer.address}</Table.Cell>
-                        <Table.Cell>
-                          {customer.purchasedOrders.length}
-                        </Table.Cell>
-                        <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
-                        <Table.Cell>
-                          <Button onPress={() => handlePress(customer.id)}>
-                            View profile
-                          </Button>
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  })}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
-        </div>
+          <section id="customers">
+            <h2 className="text-2xl font-bold mb-4">
+              <a href="#customers">Customers</a>
+            </h2>
+            <Table>
+              <Table.ScrollContainer>
+                <Table.Content aria-label="Customer table">
+                  <Table.Header>
+                    <Table.Column isRowHeader>ID</Table.Column>
+                    <Table.Column>Email</Table.Column>
+                    <Table.Column>Address</Table.Column>
+                    <Table.Column>Number of Purchased Orders</Table.Column>
+                    <Table.Column>Loyalty Points</Table.Column>
+                    <Table.Column>Button</Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {data.customers.map((customer: CustomerResponse) => {
+                      return (
+                        <Table.Row key={customer.id}>
+                          <Table.Cell>{customer.id}</Table.Cell>
+                          <Table.Cell>{customer.email}</Table.Cell>
+                          <Table.Cell>{customer.address}</Table.Cell>
+                          <Table.Cell>
+                            {customer.purchasedOrders.length}
+                          </Table.Cell>
+                          <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
+                          <Table.Cell>
+                            <Button onPress={() => handlePress(customer.id)}>
+                              View profile
+                            </Button>
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
+          </section>
 
-        <div>
-          <h2>
-            <a href="#employees">Employees</a>
-          </h2>
-          <Table>
-            <Table.ScrollContainer>
-              <Table.Content aria-label="Employee table">
-                <Table.Header>
-                  <Table.Column>ID</Table.Column>
-                  <Table.Column>Email</Table.Column>
-                  <Table.Column>Address</Table.Column>
-                  <Table.Column>Loyalty Points</Table.Column>
-                  <Table.Column>Number of Purchased Orders</Table.Column>
-                  <Table.Column>Number of Assigned Orders</Table.Column>
-                  <Table.Column>Button</Table.Column>
-                </Table.Header>
-                <Table.Body>
-                  {data.employees.map((employee: EmployeeResponse) => {
-                    return (
-                      <Table.Row key={employee.id}>
-                        <Table.Cell>{employee.id}</Table.Cell>
-                        <Table.Cell>{employee.email}</Table.Cell>
-                        <Table.Cell>{employee.address}</Table.Cell>
-                        <Table.Cell>
-                          {employee.purchasedOrders.length}
-                        </Table.Cell>
-                        <Table.Cell>
-                          {employee.assignedOrders.length}
-                        </Table.Cell>
-                        <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
-                        <Table.Cell>
-                          <Button onPress={() => handlePress(employee.id)}>
-                            View profile
-                          </Button>
-                        </Table.Cell>
-                      </Table.Row>
-                    );
-                  })}
-                </Table.Body>
-              </Table.Content>
-            </Table.ScrollContainer>
-          </Table>
+          <section id="employees">
+            <h2 className="text-2xl font-bold mb-4">
+              <a href="#employees">Employees</a>
+            </h2>
+            <Table>
+              <Table.ScrollContainer>
+                <Table.Content aria-label="Employee table">
+                  <Table.Header>
+                    <Table.Column isRowHeader>ID</Table.Column>
+                    <Table.Column>Email</Table.Column>
+                    <Table.Column>Address</Table.Column>
+                    <Table.Column>Loyalty Points</Table.Column>
+                    <Table.Column>Number of Purchased Orders</Table.Column>
+                    <Table.Column>Number of Assigned Orders</Table.Column>
+                    <Table.Column>Button</Table.Column>
+                  </Table.Header>
+                  <Table.Body>
+                    {data.employees.map((employee: EmployeeResponse) => {
+                      return (
+                        <Table.Row key={employee.id}>
+                          <Table.Cell>{employee.id}</Table.Cell>
+                          <Table.Cell>{employee.email}</Table.Cell>
+                          <Table.Cell>{employee.address}</Table.Cell>
+                          <Table.Cell>
+                            {employee.purchasedOrders.length}
+                          </Table.Cell>
+                          <Table.Cell>
+                            {employee.assignedOrders.length}
+                          </Table.Cell>
+                          <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
+                          <Table.Cell>
+                            <Button onPress={() => handlePress(employee.id)}>
+                              View profile
+                            </Button>
+                          </Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                  </Table.Body>
+                </Table.Content>
+              </Table.ScrollContainer>
+            </Table>
+          </section>
         </div>
       </div>
     </>
