@@ -120,6 +120,12 @@ export interface AccountResponse {
   accountType: AccountType;
 }
 
+export interface AccountListResponse {
+  owners: OwnerResponse[];
+  customers: CustomerResponse[];
+  employees: EmployeeResponse[];
+}
+
 export interface ClothingItemResponse extends ClothingItemRequest {
   id: number;
 }
@@ -184,10 +190,4 @@ export interface ClothingProductRequestParams {
   name?: string;
   sizes?: ClothingSize[];
   colours?: ClothingColour[];
-}
-
-export interface AccountListResponse {
-  owners: OwnerResponse[];
-  customers: CustomerResponse[];
-  employees: EmployeeResponse[];
 }
