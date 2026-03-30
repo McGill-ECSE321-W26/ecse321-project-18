@@ -234,9 +234,9 @@ function Cart() {
                           </div>
 
                           {/* Right side of Card */}
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center justify-between h-full">
                             {/* Quantity buttons */}
-                            <div className="grid grid-cols-[32px_40px_32px] items-center bg-default-100 border border-black rounded-full overflow-hidden text-center">
+                            <div className="w-full justify-between grid grid-cols-[32px_40px_32px] items-center bg-default-100 border border-black rounded-full overflow-hidden text-center">
                               <Button
                                 onPress={() =>
                                   handleUpdate(cartItem, cartItem.quantity - 1)
@@ -245,7 +245,7 @@ function Cart() {
                                   isSubmitting || cartItem.quantity <= 1
                                 }
                                 size="sm"
-                                className="rounded-l-full border-r"
+                                className="rounded-l-full border-r w-full"
                               >
                                 -
                               </Button>
@@ -256,7 +256,7 @@ function Cart() {
                                 }
                                 isDisabled={isSubmitting}
                                 size="sm"
-                                className="rounded-r-full border-l"
+                                className="rounded-r-full border-l w-full"
                               >
                                 +
                               </Button>
@@ -266,8 +266,8 @@ function Cart() {
                             <Button
                               onPress={() => handleDelete(cartItem)}
                               isDisabled={isSubmitting}
-                              size="sm"
-                              className="rounded-full border-l bg-red-500"
+                              size="md"
+                              className="rounded-full border-l bg-red-500 w-full"
                             >
                               <FaRegTrashAlt />
                             </Button>
