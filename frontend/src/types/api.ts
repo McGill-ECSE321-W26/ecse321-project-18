@@ -178,3 +178,10 @@ export interface ShoppingCartListResponse {
   shoppingCartList: ShoppingCartItemResponse[];
   price: number;
 }
+
+/* miscellaneous */
+export interface ClothingProductRequestParams {
+  name?: string;
+  sizes?: ClothingSize[];
+  colours?: ClothingColour[];
+}

@@ -14,6 +14,19 @@ export async function getRequest<T>(
     .catch((error) => handleErrors(error, display)) as T;
 }
 
+export async function getRequestWithParams<T>(
+  uri: string,
+  params: object,
+  display: boolean = true,
+): Promise<T> {
+  return axios
+    .post(BACKEND_URL + uri, {
+      params: params,
+    })
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, display)) as T;
+}
+
 export async function postRequest<T>(
   uri: string,
   requestBody: RequestObject,
