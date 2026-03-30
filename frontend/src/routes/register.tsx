@@ -12,7 +12,7 @@ import type { AccountRequest, AccountResponse } from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
 import { postRequest } from "#/utils/httpClient";
 import TopNav from "#/components/TopNav";
-import { handleErrors } from "#/utils/helpers";
+import { updateErrors } from "#/utils/error";
 
 const queryClient = new QueryClient();
 
@@ -82,7 +82,7 @@ function Register() {
       await navigate({ to: "/login" });
     } catch (err) {
       // TODO: robust error handling
-      handleErrors(err, errors, setErrors);
+      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }

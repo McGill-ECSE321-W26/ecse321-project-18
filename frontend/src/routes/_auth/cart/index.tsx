@@ -16,7 +16,8 @@ import type {
 import { useAuth } from "#/auth";
 import Skeleton from "#/components/Skeleton";
 import { deleteRequest, putRequest } from "#/utils/httpClient";
-import { handleErrors, useCart, useClothingProducts } from "#/utils/helpers";
+import { useCart, useClothingProducts } from "#/utils/helpers";
+import { updateErrors } from "#/utils/error";
 
 const defaultImg = "/logo512.png";
 
@@ -138,7 +139,7 @@ function Cart() {
         });
       }
     } catch (err) {
-      handleErrors(err, errors, setErrors);
+      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }
@@ -150,7 +151,7 @@ function Cart() {
       // redirect to cart/order page to confirm payment/info
       navigate({ to: "/cart/order" });
     } catch (err) {
-      handleErrors(err, errors, setErrors);
+      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }
@@ -161,7 +162,7 @@ function Cart() {
     try {
       await clearMutation.mutateAsync();
     } catch (err) {
-      handleErrors(err, errors, setErrors);
+      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }

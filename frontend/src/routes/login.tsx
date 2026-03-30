@@ -13,8 +13,9 @@ import type { AccountRequest, AccountResponse } from "#/types/api";
 import { postRequest } from "#/utils/httpClient";
 import { redirectForAccountType } from "#/utils/authorization";
 import { useAuth } from "#/auth";
-import { handleErrors, sleep } from "#/utils/helpers";
+import { sleep } from "#/utils/helpers";
 import TopNav from "#/components/TopNav";
+import { updateErrors } from "#/utils/error";
 
 const queryClient = new QueryClient();
 
@@ -76,7 +77,7 @@ function Login() {
 
       await navigate({ to: redirectForAccountType(response.accountType) });
     } catch (err: any) {
-      handleErrors(err, errors, setErrors);
+      updateErrors(err, errors, setErrors);
     } finally {
       setIsSubmitting(false);
     }
