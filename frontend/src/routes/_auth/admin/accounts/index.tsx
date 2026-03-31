@@ -11,7 +11,7 @@ import { useAccounts } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
 
-export const Route = createFileRoute("/_auth/admin/accounts")({
+export const Route = createFileRoute("/_auth/admin/accounts/")({
   head: () => ({
     meta: [
       {
