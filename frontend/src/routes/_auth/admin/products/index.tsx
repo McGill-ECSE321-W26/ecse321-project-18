@@ -6,7 +6,7 @@ import Skeleton from "#/components/Skeleton";
 
 const queryClient = new QueryClient();
 
-export const Route = createFileRoute("/_auth/admin/products")({
+export const Route = createFileRoute("/_auth/admin/products/")({
   head: () => ({
     meta: [
       {
@@ -30,15 +30,20 @@ function AdminProducts() {
 
   return (
     <div className="grid gap-4">
-      {data.map((product) => (
-        <Card key={product.id}>
+      {data.map(({ id, name }) => (
+        <Card key={id}>
           <Card.Header className="flex justify-between">
-            <span>{product.name}</span>
+            <span>{name}</span>
             <div className="flex gap-2">
-              <Link to={`/products/${product.id}`}>Edit</Link>
+              <Link
+                to="/admin/products/$productId"
+                params={{ productId: `${id}` }}
+              >
+                Edit
+              </Link>
 
               <button
-                onClick={() => deleteMutation.mutate(product.id)}
+                onClick={() => deleteMutation.mutate(id)}
                 disabled={deleteMutation.isPending}
               >
                 {deleteMutation.isPending ? "Deleting..." : "Delete"}
