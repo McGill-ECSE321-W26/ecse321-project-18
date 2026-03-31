@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteRequest, getRequest, putRequest } from "./httpClient";
 import type {
+  AccountListResponse,
   ClothingColour,
   ClothingProductResponse,
   ClothingSize,
   ShoppingCartItemResponse,
-  AccountListResponse,
   ShoppingCartListResponse,
 } from "#/types/api";
 
@@ -76,6 +76,9 @@ export function updateItemStock(
     colour: item.colour,
     clothingProductId: productId,
     numInStock: newStock,
+  });
+}
+
 export function useAccounts() {
   return useQuery({
     queryKey: ["accounts"],
