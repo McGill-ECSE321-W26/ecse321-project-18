@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "@heroui/react";
-import { getRequest } from "./httpClient";
+import { getRequest, getRequestWithParams } from "./httpClient";
 import type {
   AccountListResponse,
   ClothingProductResponse,
@@ -24,6 +24,26 @@ export function useClothingProducts() {
     queryKey: ["clothingProducts"],
     queryFn: (): Promise<ClothingProductResponse[]> =>
       getRequest("/clothingproduct"),
+  });
+}
+
+/* sizes and colours should really be ClothingSize[] and ClothingColour[], respectively.
+  UI components may not be able to enforce this stricter typing due to
+    the UI library expecting looser types, so be careful!
+*/
+export function useMatchingClothingProducts(
+  name: string,
+  sizes: string[],
+  colours: string[],
+) {
+  return useQuery({
+    queryKey: ["matchingClothingProducts"],
+    queryFn: (): Promise<ClothingProductResponse[]> =>
+      getRequestWithParams("/clothingproduct", {
+        name: name,
+        sizes: sizes,
+        colours: colours,
+      }),
   });
 }
 
