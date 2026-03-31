@@ -13,6 +13,7 @@ import jakarta.validation.constraints.PositiveOrZero;
  * @param colour ClothingItem colour.
  * @param numInStock Number of items in stock of the ClothingItem.
  * @param clothingProductId ID of the ClothingProduct.
+ * @author Cyrus Fung (cfung89)
  */
 public record ClothingItemRequestDto(
         @NotNull(message = "Size must not be null.") Size size,

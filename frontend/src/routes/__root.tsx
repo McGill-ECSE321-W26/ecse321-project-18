@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { Toast } from "@heroui/react";
 
 import type { AuthContext } from "#/auth";
 import Footer from "#/components/Footer";
@@ -22,19 +23,19 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
         name: "description",
         content: "Fashion store application",
       },
-      { title: "Fashion Store" },
+      { title: "Stilton's Store" },
     ],
     links: [
       {
         rel: "icon",
-        href: "/favicon.ico",
+        href: "/stiltonslogo.png",
       },
     ],
   }),
   component: () => (
     <>
       <HeadContent />
-
+      <Toast.Provider className="whitespace-pre-wrap" />
       <Outlet />
       <Footer />
 

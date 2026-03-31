@@ -8,7 +8,11 @@ const queryClient = new QueryClient();
 
 export const Route = createFileRoute("/_auth/admin/products")({
   head: () => ({
-    meta: [{ title: "Products | Fashion Store" }],
+    meta: [
+      {
+        title: "Products | Stilton's Store",
+      },
+    ],
   }),
   component: () => (
     <QueryClientProvider client={queryClient}>

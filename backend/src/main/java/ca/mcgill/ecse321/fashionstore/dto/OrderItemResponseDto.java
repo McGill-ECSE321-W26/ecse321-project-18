@@ -15,6 +15,7 @@ import java.util.List;
  * @param quantity Quantity of ClothingItem added to shopping cart.
  * @param purchasePrice Price of one ClothingItem.
  * @param orderId OrderItem order ID. Can be null.
+ * @author Cyrus Fung (cfung89)
  */
 public record OrderItemResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -27,6 +28,7 @@ public record OrderItemResponseDto(
      * Constructor to map OrderItem to OrderItemResponseDto.
      *
      * @param orderItem OrderItem instance.
+     * @author Cyrus Fung (cfung89)
      */
     public OrderItemResponseDto(OrderItem orderItem) {
         this(
@@ -41,6 +43,7 @@ public record OrderItemResponseDto(
      * Constructor to map OrderItems to OrderItemResponseDtos.
      *
      * @param orderItems List of OrderItem instances.
+     * @author Cyrus Fung (cfung89)
      */
     public static List<OrderItemResponseDto> orderItemResponseDtos(List<OrderItem> orderItems) {
         return orderItems.stream().map(OrderItemResponseDto::new).toList();

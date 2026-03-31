@@ -1,43 +1,60 @@
 import axios from "axios";
-import type { ErrorResponse, RequestObject, ResponseObject } from "#/types/api";
+import { handleErrors } from "./error";
+import type { RequestObject } from "#/types/api";
 
 const BACKEND_URL = "http://localhost:8080/fashionstore";
 
-function isErrorResponse(res: any): res is ErrorResponse {
-  return res !== null && typeof res === "object" && "errors" in res;
+export async function getRequest<T>(
+  uri: string,
+  isDisplayed: boolean = true,
+): Promise<T> {
+  return axios
+    .get(BACKEND_URL + uri)
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, isDisplayed)) as T;
 }
 
-function checkError(response: ResponseObject) {
-  if (isErrorResponse(response)) {
-    throw new AggregateError(response.errors);
-  }
-  return response;
-}
-
-export async function getRequest<T>(uri: string): Promise<T> {
-  return axios.get(BACKEND_URL + uri).then(({ data }) => checkError(data)) as T;
+export async function getRequestWithParams<T>(
+  uri: string,
+  params: object,
+  isDisplayed: boolean = true,
+): Promise<T> {
+  return axios
+    .post(BACKEND_URL + uri, {
+      params: params,
+    })
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, isDisplayed)) as T;
 }
 
 export async function postRequest<T>(
   uri: string,
   requestBody: RequestObject,
+  isDisplayed: boolean = true,
 ): Promise<T> {
   return axios
     .post(BACKEND_URL + uri, requestBody)
-    .then(({ data }) => checkError(data)) as T;
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, isDisplayed)) as T;
 }
 
 export async function putRequest<T>(
   uri: string,
   requestBody: RequestObject,
+  isDisplayed: boolean = true,
 ): Promise<T> {
   return axios
     .put(BACKEND_URL + uri, requestBody)
-    .then(({ data }) => checkError(data)) as T;
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, isDisplayed)) as T;
 }
 
-export async function deleteRequest<T>(uri: string): Promise<T> {
+export async function deleteRequest<T>(
+  uri: string,
+  isDisplayed: boolean = true,
+): Promise<T> {
   return axios
     .delete(BACKEND_URL + uri)
-    .then(({ data }) => checkError(data)) as T;
+    .then(({ data }) => data)
+    .catch((error) => handleErrors(error, isDisplayed)) as T;
 }

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_auth/cart/order")({
   head: () => ({
     meta: [
       {
-        title: "Order | Fashion Store",
+        title: "Order | Stilton's Store",
       },
     ],
   }),

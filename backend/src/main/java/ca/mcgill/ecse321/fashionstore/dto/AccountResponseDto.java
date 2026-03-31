@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Positive;
  * @param id Account ID.
  * @param email Account email address.
  * @param accountType Account type.
+ * @author Cyrus Fung (cfung89)
  */
 public record AccountResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -33,6 +34,8 @@ public record AccountResponseDto(
      * Constructor to map Account to AccountResponseDto.
      *
      * @param account Account instance.
+     * @author Qiuyu Huang (redacted24)
+     * @author Aurore Zhang (ororio0)
      */
     public AccountResponseDto(Account account) {
         this(account.getId(), account.getEmail(), null);

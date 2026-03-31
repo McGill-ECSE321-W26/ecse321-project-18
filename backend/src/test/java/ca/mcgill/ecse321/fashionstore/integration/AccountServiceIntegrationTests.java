@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import ca.mcgill.ecse321.fashionstore.dto.AccountListResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
@@ -383,12 +384,38 @@ class AccountServiceIntegrationTests {
     }
 
     /**
-     * Integration test to delete an owner (expected to fail).
+     * Integration test to get all accounts
      *
      * @author Cyrus Fung (cfung89)
      */
     @Test
     @Order(3)
+    void getAllAccounts() {
+        // Act
+        AccountListResponseDto response =
+                client.get()
+                        .uri("/fashionstore/account")
+                        .exchange()
+                        .expectStatus()
+                        .isOk()
+                        .expectBody(AccountListResponseDto.class)
+                        .returnResult()
+                        .getResponseBody();
+
+        // Assert
+        assertNotNull(response, responseNullError);
+        assertEquals(2, response.owners().size(), "Invalid number of owners.");
+        assertEquals(2, response.customers().size(), "Invalid number of customers.");
+        assertEquals(2, response.employees().size(), "Invalid number of employees.");
+    }
+
+    /**
+     * Integration test to delete an owner (expected to fail).
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    @Order(4)
     void failDeleteOwnerAccount() {
         // Act
         client.delete()
@@ -407,7 +434,7 @@ class AccountServiceIntegrationTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    @Order(3)
+    @Order(4)
     void deleteCustomerAccount() {
         // Act
         client.delete()
@@ -425,7 +452,7 @@ class AccountServiceIntegrationTests {
      * @author Cyrus Fung (cfung89)
      */
     @Test
-    @Order(3)
+    @Order(4)
     void deleteEmployeeAccount() {
         // Act
         client.delete()

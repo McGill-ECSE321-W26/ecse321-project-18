@@ -110,12 +110,20 @@ export type ResponseObject =
   | OrderItemResponse
   | OrderResponse
   | OwnerResponse
-  | ShoppingCartItemResponse;
+  | ShoppingCartItemResponse
+  | ShoppingCartResponse
+  | ShoppingCartListResponse;
 
 export interface AccountResponse {
   id: number;
   email: string;
   accountType: AccountType;
+}
+
+export interface AccountListResponse {
+  owners: OwnerResponse[];
+  customers: CustomerResponse[];
+  employees: EmployeeResponse[];
 }
 
 export interface ClothingItemResponse extends ClothingItemRequest {
@@ -165,4 +173,21 @@ export interface ShoppingCartItemResponse {
   id: number;
   clothingItem: ClothingItemResponse;
   quantity: number;
+}
+
+export interface ShoppingCartResponse {
+  shoppingCartItem: ShoppingCartItemResponse;
+  price: number;
+}
+
+export interface ShoppingCartListResponse {
+  shoppingCartList: ShoppingCartItemResponse[];
+  price: number;
+}
+
+/* miscellaneous */
+export interface ClothingProductRequestParams {
+  name?: string;
+  sizes?: ClothingSize[];
+  colours?: ClothingColour[];
 }

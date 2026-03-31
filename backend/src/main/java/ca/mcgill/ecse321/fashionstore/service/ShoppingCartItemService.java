@@ -1,6 +1,9 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
 import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemRequestDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartItemResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartListResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.ShoppingCartResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
@@ -9,6 +12,8 @@ import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +53,13 @@ public class ShoppingCartItemService {
      * @param customerId Customer ID.
      * @author Cyrus Fung
      */
-    public List<ShoppingCartItem> getShoppingCartItems(int customerId) {
+    public ShoppingCartListResponseDto getShoppingCartItems(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
-        return customer.getShoppingCartItems();
+        List<ShoppingCartItem> items = customer.getShoppingCartItems();
+        List<ShoppingCartItemResponseDto> shoppingCartItemResponseDtos =
+                ShoppingCartItemResponseDto.shoppingCartItemResponseDtos(items);
+        float newPrice = calculateCartPrice(customer);
+        return new ShoppingCartListResponseDto(shoppingCartItemResponseDtos, newPrice);
     }
 
     /**
@@ -61,17 +70,21 @@ public class ShoppingCartItemService {
      * @author Cyrus Fung
      */
     @Transactional
-    public ShoppingCartItem addShoppingCartItem(
+    public ShoppingCartResponseDto addShoppingCartItem(
             int customerId, @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
         ShoppingCartItem newShoppingCartItem = new ShoppingCartItem();
         int clothingItemId = shoppingCartItemRequestDto.clothingItemId();
         ClothingItem clothingItem =
                 Utils.findClothingItemById(clothingItemRepository, clothingItemId);
+        Customer customer = Utils.findCustomerById(customerRepository, customerId);
         newShoppingCartItem.setClothingItem(clothingItem);
         newShoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
-        Customer customer = Utils.findCustomerById(customerRepository, customerId);
         newShoppingCartItem.setCustomer(customer);
-        return shoppingCartItemRepository.save(newShoppingCartItem);
+        newShoppingCartItem = shoppingCartItemRepository.save(newShoppingCartItem);
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
+                new ShoppingCartItemResponseDto(newShoppingCartItem);
+        float newPrice = calculateCartPrice(customer);
+        return new ShoppingCartResponseDto(shoppingCartItemResponseDto, newPrice);
     }
 
     /**
@@ -82,23 +95,37 @@ public class ShoppingCartItemService {
      * @author Cyrus Fung
      */
     @Transactional
-    public ShoppingCartItem updateShoppingCartItem(
+    public ShoppingCartResponseDto updateShoppingCartItem(
             int id, @Valid ShoppingCartItemRequestDto shoppingCartItemRequestDto) {
         ShoppingCartItem shoppingCartItem =
                 Utils.findShoppingCartItemById(shoppingCartItemRepository, id);
         shoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
-        return shoppingCartItemRepository.save(shoppingCartItem);
+        shoppingCartItem = shoppingCartItemRepository.save(shoppingCartItem);
+        ShoppingCartItemResponseDto shoppingCartItemResponseDto =
+                new ShoppingCartItemResponseDto(shoppingCartItem);
+        Customer customer = shoppingCartItem.getCustomer();
+        float newPrice = calculateCartPrice(customer);
+        return new ShoppingCartResponseDto(shoppingCartItemResponseDto, newPrice);
     }
 
     /**
      * Service method to delete a new shopping cart item to a customer.
      *
      * @param id ShoppingCartItem ID to be deleted.
+     * @param customerId Customer ID.
      * @author Cyrus Fung
      */
     @Transactional
-    public void deleteShoppingCartItem(int id) {
+    public ShoppingCartResponseDto deleteShoppingCartItem(int id, int customerId) {
+        Customer customer = Utils.findCustomerById(customerRepository, customerId);
+        for (ShoppingCartItem item : customer.getShoppingCartItems()) {
+            if (item.getId() == id) {
+                customer.removeShoppingCartItem(item);
+                break;
+            }
+        }
         shoppingCartItemRepository.deleteById(id);
+        return new ShoppingCartResponseDto(null, calculateCartPrice(customer));
     }
 
     /**
@@ -108,10 +135,22 @@ public class ShoppingCartItemService {
      * @author Cyrus Fung
      */
     @Transactional
-    public void deleteShoppingCartItems(int customerId) {
+    public ShoppingCartResponseDto deleteShoppingCartItems(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
         for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
             shoppingCartItemRepository.delete(shoppingCartItem);
         }
+        return new ShoppingCartResponseDto(null, 0.0f);
+    }
+
+    private static float calculateCartPrice(Customer customer) {
+        float total = 0.0f;
+        for (ShoppingCartItem shoppingCartItem : customer.getShoppingCartItems()) {
+            total +=
+                    shoppingCartItem.getClothingItem().getClothingProduct().getPrice()
+                            * shoppingCartItem.getQuantity();
+        }
+        BigDecimal bd = new BigDecimal(Float.toString(total)).setScale(2, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 }

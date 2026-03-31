@@ -18,7 +18,7 @@ public class EmployeeService {
      * EmployeeService constructor.
      *
      * @param employeeRepository EmployeeRepository required to access the database.
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
@@ -31,7 +31,7 @@ public class EmployeeService {
      *
      * @param id ID of employee
      * @return Employee instance
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Transactional
     public Employee getEmployee(int id) {

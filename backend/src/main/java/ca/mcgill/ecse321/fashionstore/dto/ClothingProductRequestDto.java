@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
  * @param name ClothingProduct name.
  * @param price ClothingProduct price.
  * @param image ClothingProduct image.
+ * @author Cyrus Fung (cfung89)
  */
 public record ClothingProductRequestDto(
         @NotBlank(message = "Name must not be blank.") String name,

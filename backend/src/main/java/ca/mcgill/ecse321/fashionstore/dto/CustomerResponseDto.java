@@ -18,6 +18,7 @@ import java.util.List;
  * @param numOfLoyaltyPoints Customer number of loyalty points.
  * @param shoppingCartItems Customer list of shopping cart items.
  * @param purchasedOrders Customer list of purchased orders.
+ * @author Cyrus Fung (cfung89)
  */
 public record CustomerResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -29,6 +30,8 @@ public record CustomerResponseDto(
 
     /**
      * Constructor override for shoppingCartItems and purchasedOrders as they are mutable reference.
+     *
+     * @author Cyrus Fung (cfung89)
      */
     public CustomerResponseDto {
         shoppingCartItems =
@@ -40,6 +43,7 @@ public record CustomerResponseDto(
      * Constructor to map Customer to CustomerResponseDto.
      *
      * @param customer Customer instance.
+     * @author Cyrus Fung (cfung89)
      */
     public CustomerResponseDto(Customer customer) {
         this(
@@ -53,11 +57,31 @@ public record CustomerResponseDto(
                 customer.getPurchasedOrders().stream().map(OrderResponseDto::new).toList());
     }
 
+    /**
+     * Constructor to map Customers to a list of CustomerResponseDtos.
+     *
+     * @param shoppingCartItems List of ShoppingCartItem instances.
+     * @author Cyrus Fung (cfung89)
+     */
+    public static List<CustomerResponseDto> customerResponseDtos(List<Customer> customers) {
+        return customers.stream().map(CustomerResponseDto::new).toList();
+    }
+
+    /**
+     * Override to return immutable copy of the ShoppingCartItemResponseDto List.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     @Override
     public List<ShoppingCartItemResponseDto> shoppingCartItems() {
         return (shoppingCartItems == null) ? null : List.copyOf(this.shoppingCartItems);
     }
 
+    /**
+     * Override to return immutable copy of the OrderResponseDto List.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     @Override
     public List<OrderResponseDto> purchasedOrders() {
         return (purchasedOrders == null) ? null : List.copyOf(this.purchasedOrders);

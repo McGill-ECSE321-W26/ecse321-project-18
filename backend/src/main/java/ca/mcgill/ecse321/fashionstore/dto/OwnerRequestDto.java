@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
  *
  * @param email Owner email address.
  * @param password Owner password.
+ * @author Cyrus Fung (cfung89)
  */
 public record OwnerRequestDto(
         @NotBlank(message = "Email is required.") @Email(message = "Email must be a valid email address.") String email,

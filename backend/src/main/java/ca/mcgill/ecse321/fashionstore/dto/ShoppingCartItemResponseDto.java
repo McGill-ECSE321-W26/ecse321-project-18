@@ -13,6 +13,7 @@ import java.util.List;
  * @param clothingItem ClothingItemResponseDto object in shopping cart.
  * @param quantity Quantity of ClothingItem added to shopping cart.
  * @param customerId ShoppingCartItem customer ID. Can be null.
+ * @author Cyrus Fung (cfung89)
  */
 public record ShoppingCartItemResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,

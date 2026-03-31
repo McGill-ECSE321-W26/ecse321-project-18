@@ -3,7 +3,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { Card } from "@heroui/react";
 
-import type { ClothingProductResponse } from "#/types/api";
+import { useState } from "react";
+import type {
+  ClothingColour,
+  ClothingProductResponse,
+  ClothingSize,
+} from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { useClothingProducts } from "#/utils/helpers";
 
@@ -13,7 +18,7 @@ export const Route = createFileRoute("/_auth/products/")({
   head: () => ({
     meta: [
       {
-        title: "Products | Fashion Store",
+        title: "Products | Stilton's Store",
       },
     ],
   }),
@@ -25,6 +30,12 @@ export const Route = createFileRoute("/_auth/products/")({
 });
 
 function Products() {
+  const [searchName, useSearchName] = useState<string>("");
+  const [sizeFilters, useSizeFilters] = useState<ClothingSize[] | null>(null);
+  const [colourFilters, useColourFilters] = useState<ClothingColour[] | null>(
+    null,
+  );
+
   const { isLoading, error, data } = useClothingProducts();
 
   if (isLoading) return <Skeleton />;

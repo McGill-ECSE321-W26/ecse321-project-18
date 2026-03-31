@@ -26,7 +26,8 @@ import { Route as AuthProductsProductIdRouteImport } from "./routes/_auth/produc
 import { Route as AuthCartOrderRouteImport } from "./routes/_auth/cart/order";
 import { Route as AuthAdminProductsRouteImport } from "./routes/_auth/admin/products";
 import { Route as AuthAdminOrdersRouteImport } from "./routes/_auth/admin/orders";
-import { Route as AuthAdminAccountsRouteImport } from "./routes/_auth/admin/accounts";
+import { Route as AuthAdminAccountsIndexRouteImport } from "./routes/_auth/admin/accounts/index";
+import { Route as AuthAdminAccountsAccountIdRouteImport } from "./routes/_auth/admin/accounts/$accountId";
 
 const RegisterRoute = RegisterRouteImport.update({
   id: "/register",
@@ -112,11 +113,17 @@ const AuthAdminOrdersRoute = AuthAdminOrdersRouteImport.update({
   path: "/orders",
   getParentRoute: () => AuthAdminRouteRoute,
 } as any);
-const AuthAdminAccountsRoute = AuthAdminAccountsRouteImport.update({
-  id: "/accounts",
-  path: "/accounts",
+const AuthAdminAccountsIndexRoute = AuthAdminAccountsIndexRouteImport.update({
+  id: "/accounts/",
+  path: "/accounts/",
   getParentRoute: () => AuthAdminRouteRoute,
 } as any);
+const AuthAdminAccountsAccountIdRoute =
+  AuthAdminAccountsAccountIdRouteImport.update({
+    id: "/accounts/$accountId",
+    path: "/accounts/$accountId",
+    getParentRoute: () => AuthAdminRouteRoute,
+  } as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
@@ -127,7 +134,6 @@ export interface FileRoutesByFullPath {
   "/employee": typeof AuthEmployeeRouteRouteWithChildren;
   "/account": typeof AuthAccountRoute;
   "/orders": typeof AuthOrdersRoute;
-  "/admin/accounts": typeof AuthAdminAccountsRoute;
   "/admin/orders": typeof AuthAdminOrdersRoute;
   "/admin/products": typeof AuthAdminProductsRoute;
   "/cart/order": typeof AuthCartOrderRoute;
@@ -136,6 +142,8 @@ export interface FileRoutesByFullPath {
   "/cart/": typeof AuthCartIndexRoute;
   "/employee/": typeof AuthEmployeeIndexRoute;
   "/products/": typeof AuthProductsIndexRoute;
+  "/admin/accounts/$accountId": typeof AuthAdminAccountsAccountIdRoute;
+  "/admin/accounts/": typeof AuthAdminAccountsIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
@@ -143,7 +151,6 @@ export interface FileRoutesByTo {
   "/register": typeof RegisterRoute;
   "/account": typeof AuthAccountRoute;
   "/orders": typeof AuthOrdersRoute;
-  "/admin/accounts": typeof AuthAdminAccountsRoute;
   "/admin/orders": typeof AuthAdminOrdersRoute;
   "/admin/products": typeof AuthAdminProductsRoute;
   "/cart/order": typeof AuthCartOrderRoute;
@@ -152,6 +159,8 @@ export interface FileRoutesByTo {
   "/cart": typeof AuthCartIndexRoute;
   "/employee": typeof AuthEmployeeIndexRoute;
   "/products": typeof AuthProductsIndexRoute;
+  "/admin/accounts/$accountId": typeof AuthAdminAccountsAccountIdRoute;
+  "/admin/accounts": typeof AuthAdminAccountsIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
@@ -164,7 +173,6 @@ export interface FileRoutesById {
   "/_auth/employee": typeof AuthEmployeeRouteRouteWithChildren;
   "/_auth/account": typeof AuthAccountRoute;
   "/_auth/orders": typeof AuthOrdersRoute;
-  "/_auth/admin/accounts": typeof AuthAdminAccountsRoute;
   "/_auth/admin/orders": typeof AuthAdminOrdersRoute;
   "/_auth/admin/products": typeof AuthAdminProductsRoute;
   "/_auth/cart/order": typeof AuthCartOrderRoute;
@@ -173,6 +181,8 @@ export interface FileRoutesById {
   "/_auth/cart/": typeof AuthCartIndexRoute;
   "/_auth/employee/": typeof AuthEmployeeIndexRoute;
   "/_auth/products/": typeof AuthProductsIndexRoute;
+  "/_auth/admin/accounts/$accountId": typeof AuthAdminAccountsAccountIdRoute;
+  "/_auth/admin/accounts/": typeof AuthAdminAccountsIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
@@ -185,7 +195,6 @@ export interface FileRouteTypes {
     | "/employee"
     | "/account"
     | "/orders"
-    | "/admin/accounts"
     | "/admin/orders"
     | "/admin/products"
     | "/cart/order"
@@ -193,7 +202,9 @@ export interface FileRouteTypes {
     | "/admin/"
     | "/cart/"
     | "/employee/"
-    | "/products/";
+    | "/products/"
+    | "/admin/accounts/$accountId"
+    | "/admin/accounts/";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
@@ -201,7 +212,6 @@ export interface FileRouteTypes {
     | "/register"
     | "/account"
     | "/orders"
-    | "/admin/accounts"
     | "/admin/orders"
     | "/admin/products"
     | "/cart/order"
@@ -209,7 +219,9 @@ export interface FileRouteTypes {
     | "/admin"
     | "/cart"
     | "/employee"
-    | "/products";
+    | "/products"
+    | "/admin/accounts/$accountId"
+    | "/admin/accounts";
   id:
     | "__root__"
     | "/"
@@ -221,7 +233,6 @@ export interface FileRouteTypes {
     | "/_auth/employee"
     | "/_auth/account"
     | "/_auth/orders"
-    | "/_auth/admin/accounts"
     | "/_auth/admin/orders"
     | "/_auth/admin/products"
     | "/_auth/cart/order"
@@ -229,7 +240,9 @@ export interface FileRouteTypes {
     | "/_auth/admin/"
     | "/_auth/cart/"
     | "/_auth/employee/"
-    | "/_auth/products/";
+    | "/_auth/products/"
+    | "/_auth/admin/accounts/$accountId"
+    | "/_auth/admin/accounts/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -360,28 +373,37 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AuthAdminOrdersRouteImport;
       parentRoute: typeof AuthAdminRouteRoute;
     };
-    "/_auth/admin/accounts": {
-      id: "/_auth/admin/accounts";
+    "/_auth/admin/accounts/": {
+      id: "/_auth/admin/accounts/";
       path: "/accounts";
-      fullPath: "/admin/accounts";
-      preLoaderRoute: typeof AuthAdminAccountsRouteImport;
+      fullPath: "/admin/accounts/";
+      preLoaderRoute: typeof AuthAdminAccountsIndexRouteImport;
+      parentRoute: typeof AuthAdminRouteRoute;
+    };
+    "/_auth/admin/accounts/$accountId": {
+      id: "/_auth/admin/accounts/$accountId";
+      path: "/accounts/$accountId";
+      fullPath: "/admin/accounts/$accountId";
+      preLoaderRoute: typeof AuthAdminAccountsAccountIdRouteImport;
       parentRoute: typeof AuthAdminRouteRoute;
     };
   }
 }
 
 interface AuthAdminRouteRouteChildren {
-  AuthAdminAccountsRoute: typeof AuthAdminAccountsRoute;
   AuthAdminOrdersRoute: typeof AuthAdminOrdersRoute;
   AuthAdminProductsRoute: typeof AuthAdminProductsRoute;
   AuthAdminIndexRoute: typeof AuthAdminIndexRoute;
+  AuthAdminAccountsAccountIdRoute: typeof AuthAdminAccountsAccountIdRoute;
+  AuthAdminAccountsIndexRoute: typeof AuthAdminAccountsIndexRoute;
 }
 
 const AuthAdminRouteRouteChildren: AuthAdminRouteRouteChildren = {
-  AuthAdminAccountsRoute: AuthAdminAccountsRoute,
   AuthAdminOrdersRoute: AuthAdminOrdersRoute,
   AuthAdminProductsRoute: AuthAdminProductsRoute,
   AuthAdminIndexRoute: AuthAdminIndexRoute,
+  AuthAdminAccountsAccountIdRoute: AuthAdminAccountsAccountIdRoute,
+  AuthAdminAccountsIndexRoute: AuthAdminAccountsIndexRoute,
 };
 
 const AuthAdminRouteRouteWithChildren = AuthAdminRouteRoute._addFileChildren(
