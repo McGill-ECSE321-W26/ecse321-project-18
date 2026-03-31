@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "@heroui/react";
 import { getRequest } from "./httpClient";
 import type {
   AccountListResponse,
@@ -32,3 +33,16 @@ export function useAccounts() {
     queryFn: (): Promise<AccountListResponse> => getRequest("/account"),
   });
 }
+
+export const successToast = (message: string, desc?: string) => {
+  toast.success(message, {
+    actionProps: {
+      children: "Dismiss",
+      onPress: () => toast.clear(),
+      variant: "tertiary",
+      className: "",
+    },
+    description: desc,
+    timeout: 10000,
+  });
+};
