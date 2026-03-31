@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Card } from "@heroui/react";
-import { useClothingProducts } from "#/utils/helpers";
+import { useClothingProducts, useDeleteClothingProduct } from "#/utils/helpers";
 import Skeleton from "#/components/Skeleton";
 
 const queryClient = new QueryClient();
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/_auth/admin/products")({
 
 function AdminProducts() {
   const { data, isLoading, error } = useClothingProducts();
+  const deleteMutation = useDeleteClothingProduct();
 
   if (isLoading) return <Skeleton />;
   if (error) return "Error: " + error.message;
@@ -31,7 +32,13 @@ function AdminProducts() {
             <span>{product.name}</span>
             <div className="flex gap-2">
               <Link to={`/products/${product.id}`}>Edit</Link>
-              <button onClick={() => deleteProduct(product.id)}>Delete</button>
+
+              <button
+                onClick={() => deleteMutation.mutate(product.id)}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </Card.Header>
         </Card>

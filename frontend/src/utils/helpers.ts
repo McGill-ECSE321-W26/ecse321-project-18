@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getRequest, putRequest } from "./httpClient";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteRequest, getRequest, putRequest } from "./httpClient";
 import type {
   ClothingColour,
   ClothingProductResponse,
@@ -37,6 +37,38 @@ export function useClothingProducts() {
     queryKey: ["clothingProducts"],
     queryFn: (): Promise<ClothingProductResponse[]> =>
       getRequest("/clothingproduct"),
+  });
+}
+
+export function deleteClothingProduct(productId: number) {
+  return deleteRequest(`/clothingproduct/${productId}`);
+}
+
+export function useDeleteClothingProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteClothingProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["clothingProducts"] });
+    },
+  });
+}
+
+export function deleteClothingItem(productId: number, itemId: number) {
+  return deleteRequest(`/clothingproduct/${productId}/clothingitem/${itemId}`);
+}
+
+export function useDeleteClothingItem(productId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (itemId: number) => deleteClothingItem(productId, itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["clothingProduct", productId],
+      });
+    },
   });
 }
 

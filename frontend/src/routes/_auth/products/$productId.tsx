@@ -6,7 +6,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import Skeleton from "#/components/Skeleton";
 import { getRequest } from "#/utils/httpClient";
-import { updateItemStock } from "#/utils/helpers";
+import { updateItemStock, useDeleteClothingItem } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +37,7 @@ function Product() {
   const id = Number(productId);
 
   const { isLoading, error, data, refetch } = useClothingProduct(id);
+  const deleteItemMutation = useDeleteClothingItem(id);
 
   if (isLoading) return <Skeleton />;
   if (error) return "An error has occurred: " + error.message;
@@ -90,6 +91,14 @@ function Product() {
               }
             >
               Update
+            </button>
+
+            <button
+              className="px-3 py-1 bg-red-600 text-white rounded"
+              disabled={deleteItemMutation.isPending}
+              onClick={() => deleteItemMutation.mutate(item.id)}
+            >
+              {deleteItemMutation.isPending ? "Deleting..." : "Delete"}
             </button>
           </li>
         ))}
