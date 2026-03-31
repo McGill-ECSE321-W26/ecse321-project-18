@@ -23,6 +23,7 @@ import java.util.List;
  * @param orderItems Items in order.
  * @param customerId ID of customer who made the order. Can be null.
  * @param employeeId ID of employee who is assigned to the order. Can be null.
+ * @author Cyrus Fung (cfung89)
  */
 public record OrderResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -35,7 +36,11 @@ public record OrderResponseDto(
         Integer customerId,
         Integer employeeId) {
 
-    /** Constructor override for orderItems and purchasedOrders as it sets a mutable reference. */
+    /**
+     * Constructor override for orderItems and purchasedOrders as it sets a mutable reference.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     public OrderResponseDto {
         orderItems = (orderItems == null) ? List.of() : List.copyOf(orderItems);
     }
@@ -44,6 +49,7 @@ public record OrderResponseDto(
      * Constructor to map Order to OrderResponseDto.
      *
      * @param order Order instance.
+     * @author Cyrus Fung (cfung89)
      */
     public OrderResponseDto(Order order) {
         this(
@@ -58,6 +64,11 @@ public record OrderResponseDto(
                 order.getEmployee() != null ? order.getEmployee().getId() : null);
     }
 
+    /**
+     * Override to return immutable copy of the OrderItemResponseDto List.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     @Override
     public List<OrderItemResponseDto> orderItems() {
         return (orderItems == null) ? null : List.copyOf(this.orderItems);

@@ -17,6 +17,7 @@ import java.util.List;
  * @param price ClothingProduct price.
  * @param image ClothingProduct image.
  * @param clothingItems ClothingItems associated with the ClothingProduct.
+ * @author Cyrus Fung (cfung89)
  */
 public record ClothingProductResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -34,6 +35,7 @@ public record ClothingProductResponseDto(
      * Constructor to map ClothingProduct to ClothingProductResponseDto.
      *
      * @param clothingProduct ClothingProduct instance.
+     * @author Cyrus Fung (cfung89)
      */
     public ClothingProductResponseDto(ClothingProduct clothingProduct) {
         this(

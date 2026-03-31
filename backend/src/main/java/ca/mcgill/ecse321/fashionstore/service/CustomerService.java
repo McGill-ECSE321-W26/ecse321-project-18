@@ -35,7 +35,7 @@ public class CustomerService {
      *
      * @param id ID of customer
      * @return Customer instance
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Transactional
     public Customer getCustomer(int id) {

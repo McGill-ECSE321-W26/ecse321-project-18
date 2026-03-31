@@ -16,6 +16,7 @@ import java.time.LocalDate;
  * @param deliveryDate Order delivery date.
  * @param deliveryAddress Order delivery address.
  * @param price Price of order.
+ * @author Cyrus Fung (cfung89)
  */
 public record OrderRequestDto(
         @NotNull(message = "State must not be null.") State state,

@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
  *
  * @param shoppingCartItem ShoppingCartItemResponseDto object in shopping cart.
  * @param price Total price of shopping cart.
+ * @author Cyrus Fung (cfung89)
  */
 public record ShoppingCartResponseDto(
         @Valid ShoppingCartItemResponseDto shoppingCartItem,

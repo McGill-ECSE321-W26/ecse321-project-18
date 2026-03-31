@@ -166,7 +166,9 @@ public class AccountService {
     }
 
     /**
-     * Service method to get all accounts.
+     * Service method to get all accounts. This method directly returns a DTO, unlike other service
+     * methods, as there is no model class directly associated with this method. Thus, it makes
+     * sense for this service method to retrieve all accounts and directly return the DTO.
      *
      * @author Cyrus Fung (cfung89)
      */

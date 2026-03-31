@@ -19,6 +19,7 @@ import java.util.List;
  * @param shoppingCartItems Employee list of shopping cart items.
  * @param purchasedOrders Employee list of purchased orders.
  * @param assignedOrders Employee list of assigned orders.
+ * @author Cyrus Fung (cfung89)
  */
 public record EmployeeResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -32,6 +33,8 @@ public record EmployeeResponseDto(
     /**
      * Constructor override for shoppingCartItems, purchasedOrders, and assignedOrders as they set
      * mutable references.
+     *
+     * @author Cyrus Fung (cfung89)
      */
     public EmployeeResponseDto {
         shoppingCartItems =
@@ -44,6 +47,7 @@ public record EmployeeResponseDto(
      * Constructor to map Employee to EmployeeResponseDto.
      *
      * @param employee Employee instance.
+     * @author Cyrus Fung (cfung89)
      */
     public EmployeeResponseDto(Employee employee) {
         this(
@@ -62,21 +66,37 @@ public record EmployeeResponseDto(
      * Constructor to map Employees to a list of EmployeeResponseDtos.
      *
      * @param shoppingCartItems List of ShoppingCartItem instances.
+     * @author Cyrus Fung (cfung89)
      */
     public static List<EmployeeResponseDto> employeeResponseDtos(List<Employee> employees) {
         return employees.stream().map(EmployeeResponseDto::new).toList();
     }
 
+    /**
+     * Override to return immutable copy of the OrderResponseDto List.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     @Override
     public List<ShoppingCartItemResponseDto> shoppingCartItems() {
         return (shoppingCartItems == null) ? null : List.copyOf(this.shoppingCartItems);
     }
 
+    /**
+     * Override to return immutable copy of the OrderResponseDto List.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     @Override
     public List<OrderResponseDto> purchasedOrders() {
         return (purchasedOrders == null) ? null : List.copyOf(this.purchasedOrders);
     }
 
+    /**
+     * Override to return immutable copy of the OrderResponseDto List.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
     @Override
     public List<OrderResponseDto> assignedOrders() {
         return (assignedOrders == null) ? null : List.copyOf(this.assignedOrders);

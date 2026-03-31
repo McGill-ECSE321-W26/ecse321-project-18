@@ -12,6 +12,7 @@ import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
  *
  * @param shoppingCartList List of ShoppingCartItemResponseDto objects in shopping cart.
  * @param price Total price of shopping cart.
+ * @author Cyrus Fung (cfung89)
  */
 @SuppressWarnings("checkstyle:LineLength")
 @SuppressFBWarnings("EI_EXPOSE_REP")

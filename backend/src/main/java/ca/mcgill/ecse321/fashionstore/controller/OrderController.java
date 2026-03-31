@@ -32,7 +32,7 @@ public class OrderController {
      * Constructor for OrderController
      *
      * @param orderService order service class
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
@@ -48,7 +48,7 @@ public class OrderController {
      * @param orderRequestDto the details of the new order to create
      * @param id customer id of the customer that is placing the order
      * @return a OrderResponseDto
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @PostMapping("/fashionstore/account/customer/{id}/order")
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,7 +63,7 @@ public class OrderController {
      * Retrieves a list of all orders placed in the system
      *
      * @return a list of OrderResponseDto
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @GetMapping("/fashionstore/order")
     public List<OrderResponseDto> getAllOrders() {
@@ -81,7 +81,7 @@ public class OrderController {
      *
      * @param id customer id of the customer
      * @return a list of OrderResponseDto
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @GetMapping("/fashionstore/account/customer/{id}/order")
     public List<OrderResponseDto> getAllOrdersByCustomer(@PathVariable int id) {

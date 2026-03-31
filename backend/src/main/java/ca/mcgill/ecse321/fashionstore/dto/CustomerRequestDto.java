@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
  * @param password Customer password.
  * @param address Customer address.
  * @param numOfLoyaltyPoints Customer number of loyalty points.
+ * @author Cyrus Fung (cfung89)
  */
 public record CustomerRequestDto(
         @NotBlank(message = "Email is required.") @Email(message = "Email must be a valid email address.") String email,
