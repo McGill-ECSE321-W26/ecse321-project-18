@@ -9,32 +9,33 @@ import { getRequest } from "#/utils/httpClient";
 
 const queryClient = new QueryClient();
 
-export const Route = createFileRoute("/_auth/products/$productId")({
-  head: () => ({
+export const Route = createFileRoute("/_auth/admin/accounts/$accountId")({
+  loader: ({ params }) => params.accountId,
+  head: ({ loaderData }) => ({
     meta: [
       {
-        title: "<Product> | Stilton's Store",
+        title: `Manage account ${loaderData} | Stilton's Store`,
       },
     ],
   }),
   component: () => (
     <QueryClientProvider client={queryClient}>
-      <Product />
+      <ManageAccount />
     </QueryClientProvider>
   ),
 });
 
-function useClothingProduct(id: number) {
+function useAccount(id: number) {
   return useQuery({
-    queryKey: ["clothingProduct"],
-    queryFn: () => getRequest(`/clothingproduct/${id}`),
+    queryKey: ["accountAdminView"],
+    queryFn: () => getRequest(`/account/${id}`),
   });
 }
 
-function Product() {
-  const { productId }: { productId: number } = Route.useParams();
+function ManageAccount() {
+  const { accountId }: { accountId: number } = Route.useParams();
 
-  const { isLoading, error, data } = useClothingProduct(productId);
+  const { isLoading, error, data } = useAccount(accountId);
 
   if (isLoading) return <Skeleton />;
 
@@ -42,7 +43,7 @@ function Product() {
 
   return (
     <div>
-      <h2>Product ID: {productId}</h2>
+      <h2>Account ID: {accountId}</h2>
     </div>
   );
 }

@@ -2,16 +2,24 @@ package ca.mcgill.ecse321.fashionstore.service;
 
 import static ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto.AccountType;
 
+import ca.mcgill.ecse321.fashionstore.dto.AccountListResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
+import ca.mcgill.ecse321.fashionstore.dto.CustomerResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.EmployeeResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.OwnerResponseDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.Account;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
+import ca.mcgill.ecse321.fashionstore.model.Owner;
 import ca.mcgill.ecse321.fashionstore.repository.AccountRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -155,5 +163,30 @@ public class AccountService {
             throw new FashionStoreException(HttpStatus.BAD_REQUEST, "Cannot delete owner account.");
         }
         accountRepository.deleteById(id);
+    }
+
+    /**
+     * Service method to get all accounts. This method directly returns a DTO, unlike other service
+     * methods, as there is no model class directly associated with this method. Thus, it makes
+     * sense for this service method to retrieve all accounts and directly return the DTO.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Transactional
+    public AccountListResponseDto getAccounts() {
+        List<Owner> owners = ownerRepository.findAll();
+        List<Employee> employees = employeeRepository.findAll();
+        Set<Integer> employeeIds =
+                employees.stream().map(Employee::getId).collect(Collectors.toSet());
+        List<Customer> customers =
+                customerRepository.findAll().stream()
+                        .filter(customer -> !employeeIds.contains(customer.getId()))
+                        .collect(Collectors.toList());
+        List<OwnerResponseDto> ownersDto = OwnerResponseDto.ownerResponseDtos(owners);
+        List<CustomerResponseDto> customersDto =
+                CustomerResponseDto.customerResponseDtos(customers);
+        List<EmployeeResponseDto> employeesDto =
+                EmployeeResponseDto.employeeResponseDtos(employees);
+        return new AccountListResponseDto(ownersDto, customersDto, employeesDto);
     }
 }

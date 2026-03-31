@@ -19,7 +19,7 @@ import Skeleton from "#/components/Skeleton";
 import { deleteRequest, putRequest } from "#/utils/httpClient";
 import { useCart, useClothingProducts } from "#/utils/helpers";
 
-const defaultImg = "/logo512.png";
+const defaultImg = "/stiltonslogo.png";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_auth/cart/")({
   head: () => ({
     meta: [
       {
-        title: "Cart | Fashion Store",
+        title: "Cart | Stilton's Store",
       },
     ],
   }),

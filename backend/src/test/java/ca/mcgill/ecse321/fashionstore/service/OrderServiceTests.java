@@ -206,7 +206,7 @@ class OrderServiceTests {
     /**
      * Service layer test for getting a list of orders in the system by valid customer id.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void getOrdersByValidIdSuccess() {
@@ -255,7 +255,7 @@ class OrderServiceTests {
     /**
      * Service layer test for getting all of a customer's orders with invalid ID.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void getShoppingCartItemsByInvalidIdFail() {
@@ -280,7 +280,7 @@ class OrderServiceTests {
     /**
      * Service layer test for getting a list of all orders in the system.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void getAllOrdersSuccess() {
@@ -310,7 +310,7 @@ class OrderServiceTests {
      * Service layer test for creating a new order by valid customer ID, valid request and valid
      * shopping cart items.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void createOrderValidCustomerIdSuccess() {
@@ -413,7 +413,7 @@ class OrderServiceTests {
     /**
      * Service layer test for creating a new order by invalid customer ID.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void createOrderByInvalidIdFail() {
@@ -440,7 +440,7 @@ class OrderServiceTests {
     /**
      * Service layer test for creating a new order by valid customer ID but no shopping cart items.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void createOrderByInvalidShoppingCartSuccess() {
@@ -466,7 +466,7 @@ class OrderServiceTests {
     /**
      * Service layer test for creating a new order with invalid delivery date in request.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void createOrderByInvalidDatesFail() {
@@ -491,7 +491,7 @@ class OrderServiceTests {
     /**
      * Service layer test for creating a new order with invalid delivery date in request.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     void createOrderByInvalidQuantityFail() {

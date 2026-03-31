@@ -36,7 +36,7 @@ public class CustomerController {
      *
      * @param customerId Customer ID.
      * @return A DTO representing the customer.
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @GetMapping("/fashionstore/account/customer/{customerId}")
     public CustomerResponseDto getCustomer(@PathVariable int customerId) {

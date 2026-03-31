@@ -1,6 +1,7 @@
 package ca.mcgill.ecse321.fashionstore.repository;
 
 import ca.mcgill.ecse321.fashionstore.model.Customer;
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /** CRUDRepository for Customer with Integer as the ID type. */
@@ -11,4 +12,7 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
 
     /** Delete by ID method for Customer. */
     void deleteCustomerById(int id);
+
+    @Override
+    List<Customer> findAll();
 }

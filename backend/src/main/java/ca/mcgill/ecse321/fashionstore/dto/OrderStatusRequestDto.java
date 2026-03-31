@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Positive;
  *
  * @param state New order state.
  * @param employeeId ID of the employee performing the action.
+ * @author Aurore Zhang (ororio0)
  */
 public record OrderStatusRequestDto(
         @NotNull(message = "State must not be null.") State state,

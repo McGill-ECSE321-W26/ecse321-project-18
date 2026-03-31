@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import ca.mcgill.ecse321.fashionstore.dto.AccountListResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto.AccountType;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
@@ -22,6 +23,7 @@ import ca.mcgill.ecse321.fashionstore.repository.AccountRepository;
 import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -500,6 +502,31 @@ class AccountServiceTests {
                 "Cannot delete owner account.",
                 e.getMessage(),
                 "Exception message should indicate owner account.");
+    }
+
+    /**
+     * Service layer test for getting all accounts.
+     *
+     * @author Cyrus Fung (cfung89)
+     */
+    @Test
+    void getAccountsSuccess() {
+        when(ownerRepository.findAll()).thenReturn(List.of(owner));
+        customer.setId(1);
+        Customer customer2 = createCustomer();
+        customer2.setId(2);
+        employee.setId(3);
+        Employee employee2 = createEmployee();
+        employee2.setId(4);
+        Employee employee3 = createEmployee();
+        employee3.setId(5);
+        when(customerRepository.findAll()).thenReturn(List.of(customer, customer2));
+        when(employeeRepository.findAll()).thenReturn(List.of(employee, employee2, employee3));
+        AccountListResponseDto accounts = accountService.getAccounts();
+        assertNotNull(accounts, "AccountListResponseDto is null.");
+        assertEquals(1, accounts.owners().size(), "Invalid number of owners.");
+        assertEquals(2, accounts.customers().size(), "Invalid number of customers.");
+        assertEquals(3, accounts.employees().size(), "Invalid number of employees.");
     }
 
     /**

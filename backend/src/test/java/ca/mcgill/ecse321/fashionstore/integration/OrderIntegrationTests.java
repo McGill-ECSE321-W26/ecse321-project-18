@@ -174,7 +174,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to get all orders from a valid customer id.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(0)
@@ -251,7 +251,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to get all orders in the system.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(1)
@@ -280,7 +280,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to get all orders from a valid customer id with no orders.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(2)
@@ -304,7 +304,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to get all orders of an invalid customer ID.
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(3)
@@ -333,7 +333,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to create a new, valid order
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @Transactional
@@ -415,7 +415,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to create order with an invalid customer id
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(5)
@@ -437,7 +437,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to create order with an invalid OrderRequestDto
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(6)
@@ -459,7 +459,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to create order with an invalid shopping cart (empty)
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @org.junit.jupiter.api.Order(7)
@@ -482,7 +482,7 @@ class OrderIntegrationTests {
     /**
      * Integration test to create order with an invalid quantity in shopping cart of customer
      *
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Test
     @Transactional

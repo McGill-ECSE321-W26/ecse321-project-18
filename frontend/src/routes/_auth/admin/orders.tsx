@@ -4,7 +4,7 @@ export const Route = createFileRoute("/_auth/admin/orders")({
   head: () => ({
     meta: [
       {
-        title: "Orders | Fashion Store",
+        title: "Orders | Stilton's Store",
       },
     ],
   }),

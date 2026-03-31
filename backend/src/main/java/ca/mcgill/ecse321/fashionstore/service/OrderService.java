@@ -42,7 +42,8 @@ public class OrderService {
      * @param customerRepository customer repository class
      * @param orderRepository order repository class
      * @param employeeRepository employee repository class
-     * @author Flavie Qin, Aurore Zhang
+     * @author Flavie Qin (flavieq88)
+     * @author Aurore Zhang (ororio0)
      */
     @Autowired
     @SuppressFBWarnings("EI_EXPOSE_REP2")
@@ -63,7 +64,7 @@ public class OrderService {
      * @param orderRequestDto Order Request DTO
      * @param customerId Customer ID of customer to associate order with
      * @return new Order instance
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Transactional
     public Order createOrder(@Valid OrderRequestDto orderRequestDto, int customerId) {
@@ -92,7 +93,7 @@ public class OrderService {
      * Validate that the delivery date and order date in the OrderRequestDto instance are valid.
      *
      * @param orderRequestDto OrderRequestDto instance
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     private void validateOrderRequest(OrderRequestDto orderRequestDto) {
         if (orderRequestDto.orderDate().plusDays(1).isAfter(orderRequestDto.deliveryDate())) {
@@ -108,7 +109,7 @@ public class OrderService {
      * @param order Order instance
      * @param customer Customer instance that is placing the order
      * @return List of clothing items with updated num in stock
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     private List<ClothingItem> assignOrderItems(Order order, Customer customer) {
         // throw error if no items in shopping cart
@@ -155,7 +156,7 @@ public class OrderService {
      * Service method to get all orders in the system
      *
      * @return List of Order
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Transactional
     public List<Order> getAllOrders() {
@@ -174,7 +175,7 @@ public class OrderService {
      *
      * @param customerId Customer ID of customer to get orders from
      * @return List of Order
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Transactional
     public List<Order> getAllOrdersByCustomer(int customerId) {

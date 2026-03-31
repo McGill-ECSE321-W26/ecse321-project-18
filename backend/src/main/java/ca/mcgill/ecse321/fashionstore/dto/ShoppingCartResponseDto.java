@@ -5,10 +5,11 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * DTO for ShoppingCartItem responses.
+ * DTO for ShoppingCart responses.
  *
  * @param shoppingCartItem ShoppingCartItemResponseDto object in shopping cart.
  * @param price Total price of shopping cart.
+ * @author Cyrus Fung (cfung89)
  */
 public record ShoppingCartResponseDto(
         @Valid ShoppingCartItemResponseDto shoppingCartItem,

@@ -21,7 +21,7 @@ public class EmployeeController {
      * Constructor for EmployeeController.
      *
      * @param employeeService Employee service class.
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @Autowired
     public EmployeeController(EmployeeService employeeService) {
@@ -33,7 +33,7 @@ public class EmployeeController {
      *
      * @param employeeId Employee ID.
      * @return A DTO representing the employee.
-     * @author Flavie Qin
+     * @author Flavie Qin (flavieq88)
      */
     @GetMapping("/fashionstore/account/employee/{employeeId}")
     public EmployeeResponseDto getEmployee(@PathVariable int employeeId) {

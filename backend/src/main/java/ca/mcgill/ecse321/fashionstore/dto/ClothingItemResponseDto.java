@@ -15,6 +15,7 @@ import jakarta.validation.constraints.PositiveOrZero;
  * @param colour ClothingItem colour.
  * @param numInStock Number of items in stock of the ClothingItem.
  * @param clothingProductId ID of the ClothingProduct.
+ * @author Cyrus Fung (cfung89)
  */
 public record ClothingItemResponseDto(
         @NotNull(message = "ID must not be null.") @Positive(message = "ID must be positive.") Integer id,
@@ -27,6 +28,7 @@ public record ClothingItemResponseDto(
      * Constructor to map ClothingItem to ClothingItemResponseDto.
      *
      * @param clothingItem ClothingItem instance.
+     * @author Cyrus Fung (cfung89)
      */
     public ClothingItemResponseDto(ClothingItem clothingItem) {
         this(

@@ -23,12 +23,12 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
         name: "description",
         content: "Fashion store application",
       },
-      { title: "Fashion Store" },
+      { title: "Stilton's Store" },
     ],
     links: [
       {
         rel: "icon",
-        href: "/favicon.ico",
+        href: "/stiltonslogo.png",
       },
     ],
   }),
