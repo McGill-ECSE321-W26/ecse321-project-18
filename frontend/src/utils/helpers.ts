@@ -3,6 +3,7 @@ import { getRequest } from "./httpClient";
 import type {
   AccountListResponse,
   ClothingProductResponse,
+  OrderResponse,
   ShoppingCartListResponse,
 } from "#/types/api";
 
@@ -30,5 +31,12 @@ export function useAccounts() {
   return useQuery({
     queryKey: ["accounts"],
     queryFn: (): Promise<AccountListResponse> => getRequest("/account"),
+  });
+}
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ["orders"],
+    queryFn: (): Promise<OrderResponse[]> => getRequest("/order"),
   });
 }
