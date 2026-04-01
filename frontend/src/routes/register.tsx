@@ -20,6 +20,8 @@ import { redirectForAccountType } from "#/utils/authorization";
 import { postRequest } from "#/utils/httpClient";
 import TopNav from "#/components/TopNav";
 import { SubmitButton } from "#/components/SubmitButton";
+import { successToast } from "#/utils/helpers";
+import { PasswordToggleInput } from "#/components/PasswordToggleInput";
 
 const queryClient = new QueryClient();
 
@@ -49,20 +51,39 @@ export const Route = createFileRoute("/register")({
 const requestRegisterCustomer = async (
   account: AccountRequest,
 ): Promise<AccountResponse> => {
-  return await postRequest("/account/customer", account);
+  // no error toast on register: display errors at end of form
+  return await postRequest("/account/customer", account, false);
 };
 
 const requestRegisterEmployee = async (
   account: AccountRequest,
 ): Promise<AccountResponse> => {
-  return await postRequest("/account/employee", account);
+  // no error toast on register: display errors at end of form
+  return await postRequest("/account/employee", account, false);
 };
 
 function Register() {
   const router = useRouter();
   const navigate = Route.useNavigate();
-  const mutationCustomer = useMutation({ mutationFn: requestRegisterCustomer });
-  const mutationEmployee = useMutation({ mutationFn: requestRegisterEmployee });
+  const mutationCustomer = useMutation(
+    {
+      mutationFn: requestRegisterCustomer,
+      onSuccess: () =>
+        successToast(
+          "Customer account created successfully",
+          "Welcome to Stilton's Store!",
+        ),
+    },
+    queryClient,
+  );
+  const mutationEmployee = useMutation({
+    mutationFn: requestRegisterEmployee,
+    onSuccess: () =>
+      successToast(
+        "Employee account created successfully",
+        "Welcome to Stilton's Store!",
+      ),
+  });
 
   const [email, setEmail] = useState<string>("");
   const [confirmedEmail, setConfirmedEmail] = useState<string>("");
@@ -143,19 +164,10 @@ function Register() {
               <Input placeholder="Re-enter your email" />
               <FieldError />
             </TextField>
-            <TextField
-              isRequired
-              name="password"
-              type="password"
-              minLength={8}
-              maxLength={32}
-              value={password}
-              onChange={(value) => setPassword(value)}
-            >
-              <Label>Password</Label>
-              <Input placeholder="Enter your password" />
-              <FieldError />
-            </TextField>
+            <PasswordToggleInput
+              password={password}
+              handleChange={(value) => setPassword(value)}
+            />
 
             <Checkbox
               id="is-employee"
