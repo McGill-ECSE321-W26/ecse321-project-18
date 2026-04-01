@@ -65,14 +65,17 @@ const requestRegisterEmployee = async (
 function Register() {
   const router = useRouter();
   const navigate = Route.useNavigate();
-  const mutationCustomer = useMutation({
-    mutationFn: requestRegisterCustomer,
-    onSuccess: () =>
-      successToast(
-        "Customer account created successfully",
-        "Welcome to Stilton's Store!",
-      ),
-  });
+  const mutationCustomer = useMutation(
+    {
+      mutationFn: requestRegisterCustomer,
+      onSuccess: () =>
+        successToast(
+          "Customer account created successfully",
+          "Welcome to Stilton's Store!",
+        ),
+    },
+    queryClient,
+  );
   const mutationEmployee = useMutation({
     mutationFn: requestRegisterEmployee,
     onSuccess: () =>

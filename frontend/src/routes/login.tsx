@@ -60,11 +60,14 @@ function Login() {
   const auth = useAuth();
   const router = useRouter();
   const navigate = Route.useNavigate();
-  const mutation = useMutation({
-    mutationFn: requestLogin,
-    onSuccess: () =>
-      successToast("Successful login", "Welcome back to Stilton's Store!"),
-  });
+  const mutation = useMutation(
+    {
+      mutationFn: requestLogin,
+      onSuccess: () =>
+        successToast("Successful login", "Welcome back to Stilton's Store!"),
+    },
+    queryClient,
+  );
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
