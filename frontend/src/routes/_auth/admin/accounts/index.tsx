@@ -9,6 +9,7 @@ import type {
 import Skeleton from "#/components/Skeleton";
 import { useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
+import Title from "#/components/Title";
 
 const queryClient = new QueryClient();
 
@@ -42,9 +43,7 @@ function Accounts() {
   return (
     <>
       <div className="-mt-12">
-        <h2 className="flex text-2xl font-bold items-center justify-center pt-4">
-          Stilton's Store's Accounts
-        </h2>
+        <Title pagename="Stilton's Store's Accounts" />
         <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
           <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
             <ul className="hidden items-center gap-4 md:flex">
