@@ -62,6 +62,14 @@ export function useOrders() {
   });
 }
 
+export function useCustomerOrders(id: number) {
+  return useQuery({
+    queryKey: ["customerOrders"],
+    queryFn: (): Promise<OrderResponse[]> =>
+      getRequest(`/account/customer/${id}/order`),
+  });
+}
+
 export const successToast = (message: string, desc?: string) => {
   toast.success(message, {
     actionProps: {

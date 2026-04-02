@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Button, EmptyState, Table } from "@heroui/react";
-
 import { Fragment, useState } from "react";
-import type { OrderItemResponse, OrderResponse } from "#/types/api";
+import type { OrderResponse } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { useOrders } from "#/utils/helpers";
+import { OrderItems } from "#/components/OrderItems";
 
 const queryClient = new QueryClient();
 
@@ -24,48 +24,10 @@ export const Route = createFileRoute("/_auth/admin/orders")({
   ),
 });
 
-interface OrderItemsProps {
-  order: OrderResponse;
-}
-
-const OrderItems = ({ order }: OrderItemsProps) => {
-  return (
-    <Table.Row>
-      <Table.Cell colSpan={9}>
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="Orders table">
-              <Table.Header>
-                <Table.Column isRowHeader>Product name</Table.Column>
-                <Table.Column>Size</Table.Column>
-                <Table.Column>Colour</Table.Column>
-                <Table.Column>Quantity</Table.Column>
-                <Table.Column>Price per unit</Table.Column>
-              </Table.Header>
-              <Table.Body>
-                {order.orderItems.map((item: OrderItemResponse) => {
-                  return (
-                    <Table.Row key={item.id}>
-                      <Table.Cell>{item.productName}</Table.Cell>
-                      <Table.Cell>{item.clothingItem.colour}</Table.Cell>
-                      <Table.Cell>{item.clothingItem.size}</Table.Cell>
-                      <Table.Cell>{item.quantity}</Table.Cell>
-                      <Table.Cell>{item.purchasePrice}</Table.Cell>
-                    </Table.Row>
-                  );
-                })}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
-      </Table.Cell>
-    </Table.Row>
-  );
-};
-
 function Orders() {
-  const { isLoading, error, data } = useOrders();
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
+
+  const { isLoading, error, data } = useOrders();
 
   if (isLoading) return <Skeleton />;
   if (error) return "An error has occurred: " + error.message;
@@ -122,7 +84,7 @@ function Orders() {
                         </Button>
                       </Table.Cell>
                     </Table.Row>
-                    {isExpanded && <OrderItems order={order} />}
+                    {isExpanded && <OrderItems order={order} colNum={9} />}
                   </Fragment>
                 );
               })}
