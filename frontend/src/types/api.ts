@@ -161,7 +161,7 @@ export interface OrderItemResponse {
 
 export interface OrderResponse extends OrderRequest {
   id: number;
-  custumerId: number | null; // if customer account deleted
+  customerId: number | null; // if customer account deleted
   employeeId: number | null; // if no employee assigned
   orderItems: OrderItemResponse[];
 }
