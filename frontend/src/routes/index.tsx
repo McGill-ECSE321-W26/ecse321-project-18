@@ -1,4 +1,9 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+
+import { IoIosLeaf } from "react-icons/io";
+import { FaGift, FaHome, FaMoneyBill } from "react-icons/fa";
+import { FaRecycle } from "react-icons/fa6";
+
 import { useAuth } from "#/auth";
 import TopNav from "#/components/TopNav";
 import HomePageCard from "#/components/HomePageCard";
@@ -34,7 +39,7 @@ function App() {
   return (
     <>
       <TopNav account={auth.user?.accountType} logout={handleLogout} />
-      <main className="px-4 pb-8 pt-14">
+      <main className="px-4 pb-8 pt-14 ml-10 mr-10">
         <h1 className="hidden">Stilton's Store</h1>
         <div className="flex justify-center">
           <div>
@@ -72,14 +77,17 @@ function App() {
           <HomePageCard
             title="Green"
             description="We are proud to use recycled ingredients whenever possible."
+            logo={FaRecycle}
           ></HomePageCard>
           <HomePageCard
             title="Local"
             description="As opposed to our competitors, we do not outsource our labour. All employees at Stilton's Store are in country and unionized. This is essential to Stilton's philosophy."
+            logo={FaHome}
           ></HomePageCard>
           <HomePageCard
             title="Low Carbon Equivalent"
             description="The total CO2 equivalent of one of our piece of clothing in its lifecycle is the lowest on the market. We are optimizing energy usage."
+            logo={IoIosLeaf}
           ></HomePageCard>
         </div>
 
@@ -89,10 +97,12 @@ function App() {
           <HomePageCard
             title="Rewards Program"
             description="Our loyalty programs gives discounts to our recurring customers. Loyalty is valued by Stilton, and so should you."
+            logo={FaGift}
           ></HomePageCard>
           <HomePageCard
             title="Money Back Guarantee"
             description="We do not want you pitching money on something that might not fit you or suit your style. Stilton's store offers 67 days money back guarantee, no questions asked, as long as the product returns intact. Use this policy to flex our clothes, if you want."
+            logo={FaMoneyBill}
           ></HomePageCard>
         </div>
       </main>
