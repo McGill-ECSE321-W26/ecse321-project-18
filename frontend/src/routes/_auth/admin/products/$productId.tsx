@@ -3,25 +3,28 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import { Button, Input } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
-import type { ClothingProductResponse } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import { useState } from "react";
+import type {
+  ClothingItemResponse,
+  ClothingProductResponse,
+} from "#/types/api";
 import { getRequest } from "#/utils/httpClient";
 import { updateItemStock, useDeleteClothingItem } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
 
 export const Route = createFileRoute("/_auth/admin/products/$productId")({
-  loader: async ({ params }): Promise<string> => {
-    const product = await getRequest<ClothingProductResponse>(
+  loader: async ({ params }): Promise<ClothingProductResponse> => {
+    return await getRequest<ClothingProductResponse>(
       `/clothingproduct/${params.productId}`,
     );
-    return product.name || "product";
   },
   head: ({ loaderData }) => ({
     meta: [
       {
-        title: `Manage ${loaderData} | Stilton's Store`,
+        title: `Manage ${loaderData?.name ?? "Product"} | Stilton's Store`,
       },
     ],
   }),
@@ -32,35 +35,39 @@ export const Route = createFileRoute("/_auth/admin/products/$productId")({
   ),
 });
 
-function useClothingProduct(id: number) {
+function useClothingProduct(id: number, initialData?: ClothingProductResponse) {
   return useQuery({
     queryKey: ["clothingProduct", id],
-    queryFn: () => getRequest(`/clothingproduct/${id}`),
+    queryFn: (): Promise<ClothingProductResponse> =>
+      getRequest(`/clothingproduct/${id}`),
+    initialData,
   });
 }
 
 function Product() {
   const { productId } = Route.useParams();
   const id = Number(productId);
+  const [editedStock, setEditedStock] = useState<Record<number, number>>({});
 
-  const { isLoading, error, data, refetch } = useClothingProduct(id);
+  const initialData = Route.useLoaderData();
+  const { data } = useClothingProduct(id, initialData);
   const deleteItemMutation = useDeleteClothingItem(id);
 
-  if (isLoading) return <Skeleton />;
-  if (error) return "An error has occurred: " + error.message;
+  if (!data) {
+    return (
+      <div className="text-center text-red-600 font-semibold">
+        Data for product with ID {id} could not be fetched.
+      </div>
+    );
+  }
 
-  const items = (data?.clothingItems ?? []).sort((a, b) => a.id - b.id);
+  const items = data.clothingItems.sort((a, b) => a.id - b.id);
 
-  async function handleUpdateStock(item, newStock) {
-    console.log("Updating stock...", { item, newStock });
-
-    try {
-      await updateItemStock(id, item, newStock);
-      await refetch(); // refresh UI
-      console.log("Stock updated!");
-    } catch (err) {
-      console.error("Failed to update stock", err);
-    }
+  async function handleUpdateStock(
+    item: ClothingItemResponse,
+    newStock: number,
+  ) {
+    await updateItemStock(id, item, newStock);
   }
 
   return (
@@ -68,9 +75,14 @@ function Product() {
       <h2 className="text-2xl font-bold">{data.name}</h2>
 
       <img
-        src={data.image}
+        src={
+          data.image && data.image !== "string" ? data.image : "/IMG_4620.jpg"
+        }
         alt={data.name}
         className="w-48 h-48 object-cover rounded"
+        onError={(e) => {
+          e.currentTarget.src = "/IMG_4620.jpg";
+        }}
       />
 
       <p className="text-lg">Price: ${data.price}</p>
@@ -84,29 +96,37 @@ function Product() {
               Size: {item.size} — Colour: {item.colour}
             </span>
 
-            <input
+            <Input
               type="number"
               defaultValue={item.numInStock}
-              className="border px-2 py-1 w-20"
-              onChange={(e) => (item._newStock = Number(e.target.value))}
+              className="w-24"
+              onChange={(e) =>
+                setEditedStock((prev) => ({
+                  ...prev,
+                  [item.id]: Number(e.target.value),
+                }))
+              }
+              aria-label="Stock quantity"
             />
 
-            <button
-              className="px-3 py-1 bg-blue-600 text-white rounded"
-              onClick={() =>
-                handleUpdateStock(item, item._newStock ?? item.numInStock)
+            <Button
+              size="sm"
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              onPress={() =>
+                handleUpdateStock(item, editedStock[item.id] ?? item.numInStock)
               }
             >
               Update
-            </button>
+            </Button>
 
-            <button
-              className="px-3 py-1 bg-red-600 text-white rounded"
-              disabled={deleteItemMutation.isPending}
-              onClick={() => deleteItemMutation.mutate(item.id)}
+            <Button
+              size="sm"
+              isDisabled={deleteItemMutation.isPending}
+              onPress={() => deleteItemMutation.mutate(item.id)}
+              className="bg-red-600 text-white hover:bg-red-700"
             >
               {deleteItemMutation.isPending ? "Deleting..." : "Delete"}
-            </button>
+            </Button>
           </li>
         ))}
       </ul>
