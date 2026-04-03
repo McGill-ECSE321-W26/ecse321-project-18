@@ -15,11 +15,18 @@ import {
   TextField,
 } from "@heroui/react";
 
-import type { AccountRequest, AccountResponse } from "#/types/api";
+import type {
+  AccountResponse,
+  CustomerRequest,
+  CustomerResponse,
+  EmployeeResponse,
+} from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
-import { postRequest } from "#/utils/httpClient";
+import { postRequest, putRequest } from "#/utils/httpClient";
 import TopNav from "#/components/TopNav";
 import { SubmitButton } from "#/components/SubmitButton";
+import { successToast } from "#/utils/helpers";
+import { PasswordToggleInput } from "#/components/PasswordToggleInput";
 
 const queryClient = new QueryClient();
 
@@ -47,26 +54,83 @@ export const Route = createFileRoute("/register")({
 });
 
 const requestRegisterCustomer = async (
-  account: AccountRequest,
-): Promise<AccountResponse> => {
-  return await postRequest("/account/customer", account);
+  account: CustomerRequest,
+): Promise<CustomerResponse> => {
+  // no error toast on register: display errors at end of form
+  const accountResponse: AccountResponse = await postRequest(
+    "/account/customer",
+    account,
+    false,
+  );
+  const { id } = accountResponse;
+
+  // account created, now save address and keep loyalty points initialized at 0
+  return await putRequest(
+    `/account/customer/${id}`,
+    {
+      email: account.email,
+      password: account.password,
+      address: account.address,
+      numOfLoyaltyPoints: account.numOfLoyaltyPoints,
+    },
+    false,
+  );
 };
 
 const requestRegisterEmployee = async (
-  account: AccountRequest,
-): Promise<AccountResponse> => {
-  return await postRequest("/account/employee", account);
+  account: CustomerRequest, // employees are also customers (but not vice versa)!
+): Promise<EmployeeResponse> => {
+  // no error toast on register: display errors at end of form
+  const accountResponse: AccountResponse = await postRequest(
+    "/account/employee",
+    account,
+    false,
+  );
+  const { id } = accountResponse;
+
+  // account created, now save address and keep loyalty points initialized at 0
+  return await putRequest(
+    `/account/customer/${id}`,
+    {
+      email: account.email,
+      password: account.password,
+      address: account.address,
+      numOfLoyaltyPoints: account.numOfLoyaltyPoints,
+    },
+    false,
+  );
 };
 
 function Register() {
   const router = useRouter();
   const navigate = Route.useNavigate();
-  const mutationCustomer = useMutation({ mutationFn: requestRegisterCustomer });
-  const mutationEmployee = useMutation({ mutationFn: requestRegisterEmployee });
+  const mutationCustomer = useMutation(
+    {
+      mutationFn: requestRegisterCustomer,
+      onSuccess: () =>
+        successToast(
+          "Customer account created successfully",
+          "Welcome to Stilton's Store!",
+        ),
+    },
+    queryClient,
+  );
+  const mutationEmployee = useMutation(
+    {
+      mutationFn: requestRegisterEmployee,
+      onSuccess: () =>
+        successToast(
+          "Employee account created successfully",
+          "Welcome to Stilton's Store!",
+        ),
+    },
+    queryClient,
+  );
 
   const [email, setEmail] = useState<string>("");
   const [confirmedEmail, setConfirmedEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
   const [isEmployee, setIsEmployee] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -75,9 +139,12 @@ function Register() {
     setIsSubmitting(true);
 
     try {
-      const account: AccountRequest = {
+      // employees are also customers (but not vice versa)!
+      const account: CustomerRequest = {
         email: email,
         password: password,
+        address: address,
+        numOfLoyaltyPoints: 0,
       };
 
       // create employee or customer account
@@ -123,7 +190,7 @@ function Register() {
               name="email"
               type="email"
               value={email}
-              onChange={(value) => setEmail(value)}
+              onChange={setEmail}
             >
               <Label>Email</Label>
               <Input placeholder="hi@example.com" />
@@ -134,7 +201,7 @@ function Register() {
               name="confirmEmail"
               type="email"
               value={confirmedEmail}
-              onChange={(value) => setConfirmedEmail(value)}
+              onChange={setConfirmedEmail}
               validate={(value) =>
                 value === email ? null : "Email addresses do not match."
               }
@@ -143,17 +210,21 @@ function Register() {
               <Input placeholder="Re-enter your email" />
               <FieldError />
             </TextField>
+
+            <PasswordToggleInput
+              password={password}
+              handleChange={setPassword}
+            />
+
             <TextField
               isRequired
-              name="password"
-              type="password"
-              minLength={8}
-              maxLength={32}
-              value={password}
-              onChange={(value) => setPassword(value)}
+              name="address"
+              type="text"
+              value={address}
+              onChange={setAddress}
             >
-              <Label>Password</Label>
-              <Input placeholder="Enter your password" />
+              <Label>Address</Label>
+              <Input placeholder="3 Stilton Blvd" />
               <FieldError />
             </TextField>
 

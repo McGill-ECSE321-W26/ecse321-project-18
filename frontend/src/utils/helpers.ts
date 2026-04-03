@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { deleteRequest, getRequest, putRequest } from "./httpClient";
+import { toast } from "@heroui/react";
+import { deleteRequest, getRequest, getRequestWithParams, putRequest } from "./httpClient";
 import type {
   AccountListResponse,
   ClothingColour,
@@ -78,6 +79,25 @@ export function updateItemStock(
     numInStock: newStock,
   });
 }
+/* sizes and colours should really be ClothingSize[] and ClothingColour[], respectively.
+  UI components may not be able to enforce this stricter typing due to
+    the UI library expecting looser types, so be careful!
+*/
+export function useMatchingClothingProducts(
+  name: string,
+  sizes: string[],
+  colours: string[],
+) {
+  return useQuery({
+    queryKey: ["matchingClothingProducts"],
+    queryFn: (): Promise<ClothingProductResponse[]> =>
+      getRequestWithParams("/clothingproduct", {
+        name: name,
+        sizes: sizes,
+        colours: colours,
+      }),
+  });
+}
 
 export function useAccounts() {
   return useQuery({
@@ -85,3 +105,16 @@ export function useAccounts() {
     queryFn: (): Promise<AccountListResponse> => getRequest("/account"),
   });
 }
+
+export const successToast = (message: string, desc?: string) => {
+  toast.success(message, {
+    actionProps: {
+      children: "Dismiss",
+      onPress: () => toast.clear(),
+      variant: "tertiary",
+      className: "",
+    },
+    description: desc,
+    timeout: 10000,
+  });
+};

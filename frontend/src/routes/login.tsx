@@ -19,9 +19,10 @@ import type { AccountRequest, AccountResponse } from "#/types/api";
 import { postRequest } from "#/utils/httpClient";
 import { redirectForAccountType } from "#/utils/authorization";
 import { useAuth } from "#/auth";
-import { sleep } from "#/utils/helpers";
+import { sleep, successToast } from "#/utils/helpers";
 import TopNav from "#/components/TopNav";
 import { SubmitButton } from "#/components/SubmitButton";
+import { PasswordToggleInput } from "#/components/PasswordToggleInput";
 
 const queryClient = new QueryClient();
 
@@ -51,14 +52,22 @@ export const Route = createFileRoute("/login")({
 const requestLogin = async (
   account: AccountRequest,
 ): Promise<AccountResponse> => {
-  return await postRequest("/account/login", account);
+  // no error toast on login: display errors at end of form
+  return await postRequest("/account/login", account, false);
 };
 
 function Login() {
   const auth = useAuth();
   const router = useRouter();
   const navigate = Route.useNavigate();
-  const mutation = useMutation({ mutationFn: requestLogin });
+  const mutation = useMutation(
+    {
+      mutationFn: requestLogin,
+      onSuccess: () =>
+        successToast("Successful login", "Welcome back to Stilton's Store!"),
+    },
+    queryClient,
+  );
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -116,25 +125,16 @@ function Login() {
               name="email"
               type="email"
               value={email}
-              onChange={(value) => setEmail(value)}
+              onChange={setEmail}
             >
               <Label>Email</Label>
               <Input placeholder="hi@example.com" />
               <FieldError />
             </TextField>
-            <TextField
-              isRequired
-              name="password"
-              type="password"
-              minLength={8}
-              maxLength={32}
-              value={password}
-              onChange={(value) => setPassword(value)}
-            >
-              <Label>Password</Label>
-              <Input placeholder="Enter your password" />
-              <FieldError />
-            </TextField>
+            <PasswordToggleInput
+              password={password}
+              handleChange={setPassword}
+            />
 
             {errors.map((error, index) => (
               <ErrorMessage key={index} className="text-sm">

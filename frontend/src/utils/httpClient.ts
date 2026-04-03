@@ -20,7 +20,7 @@ export async function getRequestWithParams<T>(
   isDisplayed: boolean = true,
 ): Promise<T> {
   return axios
-    .post(BACKEND_URL + uri, {
+    .get(BACKEND_URL + uri, {
       params: params,
     })
     .then(({ data }) => data)
