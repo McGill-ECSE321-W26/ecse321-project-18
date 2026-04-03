@@ -28,3 +28,10 @@ body {
 a:focus {
   outline: thin dotted;
 }
+
+/* some useful defaults */
+@layer base {
+  h2 {
+    @apply pt-30 pb-30 text-5xl font-bold flex justify-center;
+  }
+}
