@@ -68,7 +68,7 @@ export interface ClothingProductRequest {
 
 export interface CustomerRequest extends AccountRequest {
   address: string;
-  numOfLoyaltyPts: number;
+  numOfLoyaltyPoints: number;
 }
 
 export interface EmployeeRequest extends CustomerRequest {}
