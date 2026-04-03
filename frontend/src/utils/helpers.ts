@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@heroui/react";
-import { deleteRequest, getRequest, getRequestWithParams, putRequest } from "./httpClient";
+import {
+  deleteRequest,
+  getRequest,
+  getRequestWithParams,
+  putRequest,
+} from "./httpClient";
 import type {
   AccountListResponse,
   ClothingColour,
