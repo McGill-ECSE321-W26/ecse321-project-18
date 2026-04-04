@@ -1,16 +1,9 @@
-import {
-  HeadContent,
-  Outlet,
-  createRootRouteWithContext,
-} from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { Toast } from "@heroui/react";
-
+import { createRootRouteWithContext } from "@tanstack/react-router";
 import type { AuthContext } from "#/auth";
-import Footer from "#/components/Footer";
 
 import "../styles.css";
+import NotFoundPage from "#/components/NotFoundPage";
+import RootRoute from "#/components/RootRoute";
 
 interface FashionStoreContext {
   auth: AuthContext;
@@ -23,7 +16,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
         name: "description",
         content: "Fashion store application",
       },
-      { title: "Stilton's Store" },
+      { title: "Home | Stilton's Store" },
     ],
     links: [
       {
@@ -32,24 +25,6 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
       },
     ],
   }),
-  component: () => (
-    <>
-      <HeadContent />
-      <Toast.Provider className="whitespace-pre-wrap" />
-      <Outlet />
-      <Footer />
-
-      <TanStackDevtools
-        config={{
-          position: "bottom-right",
-        }}
-        plugins={[
-          {
-            name: "TanStack Router",
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-        ]}
-      />
-    </>
-  ),
+  component: RootRoute,
+  notFoundComponent: NotFoundPage,
 });

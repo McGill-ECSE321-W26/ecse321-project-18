@@ -125,7 +125,7 @@ function Login() {
               name="email"
               type="email"
               value={email}
-              onChange={(value) => setEmail(value)}
+              onChange={setEmail}
             >
               <Label>Email</Label>
               <Input placeholder="hi@example.com" />
@@ -133,7 +133,7 @@ function Login() {
             </TextField>
             <PasswordToggleInput
               password={password}
-              handleChange={(value) => setPassword(value)}
+              handleChange={setPassword}
             />
 
             {errors.map((error, index) => (
