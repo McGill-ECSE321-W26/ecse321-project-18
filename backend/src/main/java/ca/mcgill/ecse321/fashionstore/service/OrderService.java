@@ -154,7 +154,8 @@ public class OrderService {
     }
 
     /**
-     * Service method to get all orders in the system
+     * Service method to get all orders in the system. Also updates order status automatically if
+     * needed.
      *
      * @return List of Order
      * @author Flavie Qin (flavieq88)
@@ -167,12 +168,7 @@ public class OrderService {
         // get all orders from database and save in list
         for (Order order : orderRepository.findAll()) {
             // check if need to modify automatically order status
-            if (order.getState() == State.PREPARED && order.getDeliveryDate().after(today)) {
-                order.setState(State.DELIVERED);
-            } else if ((order.getState() == State.PURCHASED || order.getState() == State.ASSIGNED)
-                    && order.getDeliveryDate().after(today)) {
-                order.setState(State.CANCELLED);
-            }
+            modifyStatusOrder(order, today);
             list.add(order);
         }
 
@@ -180,7 +176,8 @@ public class OrderService {
     }
 
     /**
-     * Service method to get all orders placed by a certain customer
+     * Service method to get all orders placed by a certain customer. Also updates order status
+     * automatically if needed.
      *
      * @param customerId Customer ID of customer to get orders from
      * @return List of Order
@@ -190,8 +187,34 @@ public class OrderService {
     public List<Order> getAllOrdersByCustomer(int customerId) {
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
 
-        // get all orders associated with a certain customer and return in list
-        return customer.getPurchasedOrders();
+        // get all orders associated with a certain customer
+        List<Order> list = new ArrayList<>();
+        Date today = Date.valueOf(LocalDate.now());
+
+        // get all orders from database and save in list
+        for (Order order : customer.getPurchasedOrders()) {
+            // check if need to modify automatically order status
+            modifyStatusOrder(order, today);
+            list.add(order);
+        }
+        return list;
+    }
+
+    /**
+     * Helper method to update order status if needed.
+     *
+     * @param order Order instance
+     * @param today Date of today
+     * @author Flavie Qin
+     */
+    private void modifyStatusOrder(Order order, Date today) {
+        if (order.getState() == State.PREPARED && order.getDeliveryDate().after(today)) {
+            order.setState(State.DELIVERED);
+        } else if ((order.getState() == State.PURCHASED || order.getState() == State.ASSIGNED)
+                && order.getDeliveryDate().after(today)) {
+            order.setState(State.CANCELLED);
+        }
+        orderRepository.save(order);
     }
 
     /**
