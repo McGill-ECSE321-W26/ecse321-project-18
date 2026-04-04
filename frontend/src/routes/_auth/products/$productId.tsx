@@ -5,8 +5,10 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Button } from "@heroui/react";
+import { Button, Checkbox, Form, Label, NumberField } from "@heroui/react";
+import { useState } from "react";
 import type {
+  ClothingItemResponse,
   ClothingProductResponse,
   ShoppingCartItemRequest,
   ShoppingCartResponse,
@@ -45,10 +47,11 @@ function Product() {
   // Some inits
   const { productId }: { productId: number } = Route.useParams();
 
-  // Navigation and user tools
+  // Navigation and user tools/hooks
   const auth = useAuth();
   const customerId = auth.user?.id;
   const navigate = useNavigate();
+  const [value, setValue] = useState(0);
 
   // POST to add cart endpoint
   const addMutation = useMutation({
@@ -83,16 +86,7 @@ function Product() {
   const product = data as ClothingProductResponse;
 
   if (isLoading) return <Skeleton />;
-
   if (error) return "An error has occurred: " + error.message;
-
-  // find product image. if not fall back to default image
-  // TODO: will need to relocate this after merging to main. -Qiuyu
-  let imageLink = "/stiltonslogo.png";
-
-  if (product.image) {
-    imageLink = product.image;
-  }
 
   // Handle adding to cart
   const handleAddtoCart = async (cartItem: ShoppingCartItemRequest) => {
@@ -101,12 +95,24 @@ function Product() {
     } catch (err) {}
   };
 
-  // dummy shopping cart item
+  // create ShoppingCartItemRequest from ClothingItemResponse
+  const createShoppingCartItemRequest = (
+    clothingItemResponse: ClothingItemResponse,
+    qty: number,
+  ) => {
+    const sc: ShoppingCartItemRequest = {
+      clothingItemId: clothingItemResponse.id,
+      quantity: qty,
+    };
+    return sc;
+  };
+
+  // dummy shopping cart item for testing
   const dummy: ShoppingCartItemRequest = { clothingItemId: 1, quantity: 2 };
 
   return (
-    <div className="pl-20">
-      <div>
+    <div className="pl-10">
+      <div className="mb-10">
         <ProductItemComponent
           id={product.id}
           name={product.name}
@@ -114,11 +120,49 @@ function Product() {
           image={product.image}
         />
       </div>
-      {!isManager && (
-        <>
-          <Button onPress={() => handleAddtoCart(dummy)}>Add to cart</Button>
-        </>
-      )}
+      <div>
+        {product.clothingItems.map((item) => (
+          <>
+            {item.numInStock > 0 && (
+              <div className="p-5 mb-3 border-2">
+                <p className="font-bold">ITEM</p>
+                <div>Item Size: {item.size}</div>
+                <div>Item Colour: {item.colour}</div>
+                <div>Item Stock: {item.numInStock}</div>
+
+                {!isManager && item.numInStock > 0 && (
+                  <div className="pt-3">
+                    <NumberField
+                      className="w-full max-w-64"
+                      defaultValue={1024}
+                      minValue={0}
+                      name="width"
+                      value={value}
+                      onChange={setValue}
+                    >
+                      <Label>Width</Label>
+                      <NumberField.Group>
+                        <NumberField.DecrementButton />
+                        <NumberField.Input className="w-[120px]" />
+                        <NumberField.IncrementButton />
+                      </NumberField.Group>
+                    </NumberField>
+                    <Button
+                      onPress={() =>
+                        handleAddtoCart(
+                          createShoppingCartItemRequest(item, value),
+                        )
+                      }
+                    >
+                      Add to cart
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        ))}
+      </div>
     </div>
   );
 }
