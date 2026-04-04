@@ -5,7 +5,7 @@ import { AccountType } from "#/types/api";
 
 type TopNavProps = {
   account: AccountType | undefined;
-  logout?: () => void;
+  logout: () => void;
 };
 
 type navLink = {
