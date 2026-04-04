@@ -11,7 +11,6 @@ import type {
   ClothingColour,
   ClothingProductResponse,
   ClothingSize,
-  ShoppingCartItemResponse,
   ShoppingCartListResponse,
 } from "#/types/api";
 

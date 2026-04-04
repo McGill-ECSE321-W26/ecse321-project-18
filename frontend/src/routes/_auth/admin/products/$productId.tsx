@@ -14,6 +14,7 @@ import { getRequest } from "#/utils/httpClient";
 import { updateItemStock, useDeleteClothingItem } from "#/utils/helpers";
 
 const queryClient = new QueryClient();
+const defaultImg = "/stiltonslogo.png";
 
 export const Route = createFileRoute("/_auth/admin/products/$productId")({
   loader: async ({ params }): Promise<ClothingProductResponse> => {
@@ -75,13 +76,11 @@ function Product() {
       <h2 className="text-2xl font-bold">{data.name}</h2>
 
       <img
-        src={
-          data.image && data.image !== "string" ? data.image : "/IMG_4620.jpg"
-        }
+        src={data.image && data.image !== "string" ? data.image : defaultImg}
         alt={data.name}
         className="w-48 h-48 object-cover rounded"
         onError={(e) => {
-          e.currentTarget.src = "/IMG_4620.jpg";
+          e.currentTarget.src = defaultImg;
         }}
       />
 
