@@ -20,7 +20,6 @@ import { postRequest } from "#/utils/httpClient";
 import { redirectForAccountType } from "#/utils/authorization";
 import { useAuth } from "#/auth";
 import { sleep, successToast } from "#/utils/helpers";
-import TopNav from "#/components/TopNav";
 import { SubmitButton } from "#/components/SubmitButton";
 import { PasswordToggleInput } from "#/components/PasswordToggleInput";
 
@@ -107,50 +106,43 @@ function Login() {
 
   return (
     <>
-      <TopNav account={undefined} />
-
-      <main className="px-4 pb-8 pt-14">
-        <h1 className="text-2xl font-bold text-center">Login</h1>
-        <br />
-        <div className="flex justify-center items-center">
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-            className="flex w-96 flex-col gap-4"
+      <h1 className="text-2xl font-bold text-center">Login</h1>
+      <br />
+      <div className="flex justify-center items-center">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="flex w-96 flex-col gap-4"
+        >
+          <TextField
+            isRequired
+            name="email"
+            type="email"
+            value={email}
+            onChange={setEmail}
           >
-            <TextField
-              isRequired
-              name="email"
-              type="email"
-              value={email}
-              onChange={setEmail}
-            >
-              <Label>Email</Label>
-              <Input placeholder="hi@example.com" />
-              <FieldError />
-            </TextField>
-            <PasswordToggleInput
-              password={password}
-              handleChange={setPassword}
-            />
+            <Label>Email</Label>
+            <Input placeholder="hi@example.com" />
+            <FieldError />
+          </TextField>
+          <PasswordToggleInput password={password} handleChange={setPassword} />
 
-            {errors.map((error, index) => (
-              <ErrorMessage key={index} className="text-sm">
-                {error}
-              </ErrorMessage>
-            ))}
+          {errors.map((error, index) => (
+            <ErrorMessage key={index} className="text-sm">
+              {error}
+            </ErrorMessage>
+          ))}
 
-            <SubmitButton
-              text="Login"
-              isSubmitting={isSubmitting}
-              isFullWidth={true}
-              handleClick={() => setErrors([])}
-            />
-          </Form>
-        </div>
-      </main>
+          <SubmitButton
+            text="Login"
+            isSubmitting={isSubmitting}
+            isFullWidth={true}
+            handleClick={() => setErrors([])}
+          />
+        </Form>
+      </div>
     </>
   );
 }

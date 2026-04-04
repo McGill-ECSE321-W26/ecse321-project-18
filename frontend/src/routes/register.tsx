@@ -23,7 +23,6 @@ import type {
 } from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
 import { postRequest, putRequest } from "#/utils/httpClient";
-import TopNav from "#/components/TopNav";
 import { SubmitButton } from "#/components/SubmitButton";
 import { successToast } from "#/utils/helpers";
 import { PasswordToggleInput } from "#/components/PasswordToggleInput";
@@ -172,87 +171,80 @@ function Register() {
 
   return (
     <>
-      <TopNav account={undefined} />
-
-      <main className="px-4 pb-8 pt-14">
-        <h1 className="text-center text-2xl font-bold">Register</h1>
-        <br />
-        <div className="flex justify-center items-center">
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSubmit();
-            }}
-            className="flex w-96 flex-col gap-4"
+      <h1 className="text-center text-2xl font-bold">Register</h1>
+      <br />
+      <div className="flex justify-center items-center">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="flex w-96 flex-col gap-4"
+        >
+          <TextField
+            isRequired
+            name="email"
+            type="email"
+            value={email}
+            onChange={setEmail}
           >
-            <TextField
-              isRequired
-              name="email"
-              type="email"
-              value={email}
-              onChange={setEmail}
-            >
-              <Label>Email</Label>
-              <Input placeholder="hi@example.com" />
-              <FieldError />
-            </TextField>
-            <TextField
-              isRequired
-              name="confirmEmail"
-              type="email"
-              value={confirmedEmail}
-              onChange={setConfirmedEmail}
-              validate={(value) =>
-                value === email ? null : "Email addresses do not match."
-              }
-            >
-              <Label>Confirm email</Label>
-              <Input placeholder="Re-enter your email" />
-              <FieldError />
-            </TextField>
+            <Label>Email</Label>
+            <Input placeholder="hi@example.com" />
+            <FieldError />
+          </TextField>
+          <TextField
+            isRequired
+            name="confirmEmail"
+            type="email"
+            value={confirmedEmail}
+            onChange={setConfirmedEmail}
+            validate={(value) =>
+              value === email ? null : "Email addresses do not match."
+            }
+          >
+            <Label>Confirm email</Label>
+            <Input placeholder="Re-enter your email" />
+            <FieldError />
+          </TextField>
 
-            <PasswordToggleInput
-              password={password}
-              handleChange={setPassword}
-            />
+          <PasswordToggleInput password={password} handleChange={setPassword} />
 
-            <TextField
-              isRequired
-              name="address"
-              type="text"
-              value={address}
-              onChange={setAddress}
-            >
-              <Label>Address</Label>
-              <Input placeholder="3 Stilton Blvd" />
-              <FieldError />
-            </TextField>
+          <TextField
+            isRequired
+            name="address"
+            type="text"
+            value={address}
+            onChange={setAddress}
+          >
+            <Label>Address</Label>
+            <Input placeholder="3 Stilton Blvd" />
+            <FieldError />
+          </TextField>
 
-            <Checkbox
-              id="is-employee"
-              name="isEmployee"
-              value="off"
-              onChange={setIsEmployee}
-            >
-              <Checkbox.Control>
-                <Checkbox.Indicator />
-              </Checkbox.Control>
-              <Checkbox.Content>
-                <Label htmlFor="is-employee">Create an employee account</Label>
-              </Checkbox.Content>
-            </Checkbox>
+          <Checkbox
+            id="is-employee"
+            name="isEmployee"
+            value="off"
+            onChange={setIsEmployee}
+          >
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Content>
+              <Label htmlFor="is-employee">Create an employee account</Label>
+            </Checkbox.Content>
+          </Checkbox>
 
-            <ErrorMessage className="text-sm">{errors}</ErrorMessage>
+          <ErrorMessage className="text-sm">{errors}</ErrorMessage>
 
-            <SubmitButton
-              text="Register"
-              isSubmitting={isSubmitting}
-              isFullWidth={true}
-              handleClick={() => setErrors([])}
-            />
-          </Form>
-        </div>
-      </main>
+          <SubmitButton
+            text="Register"
+            isSubmitting={isSubmitting}
+            isFullWidth={true}
+            handleClick={() => setErrors([])}
+          />
+        </Form>
+      </div>
     </>
   );
 }

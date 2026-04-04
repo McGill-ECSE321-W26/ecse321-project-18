@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { AccountType } from "#/types/api";
 
 export const Route = createFileRoute("/_auth/cart")({
@@ -11,5 +11,4 @@ export const Route = createFileRoute("/_auth/cart")({
       });
     }
   },
-  component: () => <Outlet />,
 });
