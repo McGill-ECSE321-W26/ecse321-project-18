@@ -17,6 +17,7 @@ import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,9 +162,17 @@ public class OrderService {
     @Transactional
     public List<Order> getAllOrders() {
         List<Order> list = new ArrayList<>();
+        Date today = Date.valueOf(LocalDate.now());
 
         // get all orders from database and save in list
         for (Order order : orderRepository.findAll()) {
+            // check if need to modify automatically order status
+            if (order.getState() == State.PREPARED && order.getDeliveryDate().after(today)) {
+                order.setState(State.DELIVERED);
+            } else if ((order.getState() == State.PURCHASED || order.getState() == State.ASSIGNED)
+                    && order.getDeliveryDate().after(today)) {
+                order.setState(State.CANCELLED);
+            }
             list.add(order);
         }
 

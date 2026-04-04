@@ -15,10 +15,15 @@ import {
 } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { getLocalTimeZone, today } from "@internationalized/date";
-import type { CustomerResponse, OrderRequest } from "#/types/api";
 
 import type { UseNavigateResult } from "@tanstack/react-router";
 import type { DateValue } from "@internationalized/date";
+import type {
+  CustomerRequest,
+  CustomerResponse,
+  OrderRequest,
+} from "#/types/api";
+import { OrderState } from "#/types/api";
 import { getRequest, postRequest, putRequest } from "#/utils/httpClient";
 
 interface OrderModalProps {
@@ -38,10 +43,13 @@ export const OrderModal = ({
 }: OrderModalProps) => {
   const [isDone, setIsDone] = useState<boolean>(false);
   const [address, setAddress] = useState<string>("");
-  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(0);
+  const [customer, setCustomer] = useState<CustomerResponse | null>(null);
   const [useLoyaltyPoints, setUseLoyaltyPoints] = useState<boolean>(false);
   const [deliveryDate, setDeliveryDate] = useState<DateValue | null>(null);
-  const minDate = today(getLocalTimeZone()).add({ days: 1 }); // minimum day for delivery is tomorrow
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const currentDay = today(getLocalTimeZone());
+  const minDate = currentDay.add({ days: 1 }); // minimum day for delivery is tomorrow
   const isDateInvalid =
     deliveryDate != null && deliveryDate.compare(minDate) < 0;
 
@@ -53,18 +61,69 @@ export const OrderModal = ({
       );
 
       setAddress(res.address);
-      setLoyaltyPoints(res.numOfLoyaltyPoints);
+      setCustomer(res);
     };
 
     fetchCustomer();
   }, [customerId]);
 
+  if (customer == null) {
+    return;
+  }
+
   const handleDone = () => {
-    navigate({ to: "/orders" });
+    // go to orders page to confirm order if there were no issues
+    if (errors.length == 0) navigate({ to: "/orders" });
+    setIsSubmitting(false);
+    setIsDone(false);
+    setErrors([]);
   };
-  const handleConfirm = () => {
-    // trigger new modal
-    setIsDone(true);
+
+  const handleConfirm = async () => {
+    // try to make order request
+    if (isDateInvalid || deliveryDate == null || address.length == 0) {
+      return; // return. these errors should already be displayed by the fields
+    }
+
+    const orderRequest: OrderRequest = {
+      state: OrderState.PURCHASED,
+      orderDate: currentDay.toDate(getLocalTimeZone()),
+      deliveryDate: deliveryDate.toDate(getLocalTimeZone()),
+      deliveryAddress: address,
+      price: finalPrice,
+    };
+
+    const loyaltyRequest: CustomerRequest = {
+      numOfLoyaltyPoints:
+        customer.numOfLoyaltyPoints -
+        (useLoyaltyPoints ? 100 : 0) +
+        newLoyaltyPoints,
+      email: customer.email,
+      password: "dummydummy",
+      address: customer.address,
+    }; // api call we make will only update the number of loyalty points
+
+    // make API call to create order
+    try {
+      await postRequest(
+        `/account/customer/${customerId}/order`,
+        orderRequest,
+        false,
+      );
+
+      await putRequest(
+        `/account/customer/${customerId}/loyalty`,
+        loyaltyRequest,
+        false,
+      );
+    } catch (error) {
+      if (error instanceof AggregateError) {
+        setErrors(error.errors);
+      }
+    } finally {
+      // trigger new modal
+      setIsDone(true);
+    }
   };
 
   // calculate loyalty points and final price
@@ -73,6 +132,9 @@ export const OrderModal = ({
     finalPrice = initialPrice - 10;
   }
   const newLoyaltyPoints = Math.floor(finalPrice); // number of loyalty points earnable in this order
+
+  const isConfirmDisabled =
+    isDateInvalid || deliveryDate == null || address.length == 0;
 
   return (
     <>
@@ -89,19 +151,31 @@ export const OrderModal = ({
             <Modal.Dialog>
               <Modal.Header>
                 <Modal.Heading className="text-xl">
-                  {isDone
-                    ? "Your order has successfully been placed!"
-                    : "Confirm Order"}
+                  {!isDone && "Confirm Order"}
+                  {isDone &&
+                    errors.length == 0 &&
+                    "Your order has successfully been placed!"}
+                  {isDone && errors.length != 0 && "Your order was not placed."}
                 </Modal.Heading>
               </Modal.Header>
               <Modal.Body>
-                {isDone && "Thank you for shopping at Stilton's Store."}
+                {isDone &&
+                  errors.length == 0 &&
+                  "Thank you for shopping at Stilton's Store."}
+                {isDone && errors.length != 0 && (
+                  <>
+                    Unfortunately, there has been an issue:
+                    {errors.map((error) => (
+                      <p key={error}>{error}</p>
+                    ))}
+                  </>
+                )}
                 {!isDone && (
                   <>
                     <p>Your order total is ${initialPrice}.</p>
                     <p>
-                      You currently have {loyaltyPoints} loyalty points in your
-                      account.
+                      You currently have {customer.numOfLoyaltyPoints} loyalty
+                      points in your account.
                     </p>
                     <br />
                     <Checkbox
@@ -109,7 +183,7 @@ export const OrderModal = ({
                       variant="secondary"
                       isSelected={useLoyaltyPoints}
                       onChange={setUseLoyaltyPoints}
-                      isDisabled={loyaltyPoints < 100}
+                      isDisabled={customer.numOfLoyaltyPoints < 100}
                     >
                       <Checkbox.Control>
                         <Checkbox.Indicator />
@@ -221,7 +295,14 @@ export const OrderModal = ({
                     Cancel
                   </Button>
                 )}
-                {!isDone && <Button onPress={handleConfirm}>Confirm</Button>}
+                {!isDone && (
+                  <Button
+                    onPress={handleConfirm}
+                    isDisabled={isConfirmDisabled}
+                  >
+                    Confirm
+                  </Button>
+                )}
                 {isDone && (
                   <Button slot="close" onPress={handleDone}>
                     Done
