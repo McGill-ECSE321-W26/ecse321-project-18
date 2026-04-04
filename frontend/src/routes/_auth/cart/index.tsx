@@ -16,6 +16,7 @@ import type {
 } from "#/types/api";
 import { useAuth } from "#/auth";
 import Skeleton from "#/components/Skeleton";
+import Title from "#/components/Title";
 import { deleteRequest, putRequest } from "#/utils/httpClient";
 import { useCart, useClothingProducts } from "#/utils/helpers";
 
@@ -183,8 +184,8 @@ function Cart() {
 
   return (
     <>
-      <h2>Cart</h2>
-      {cartData?.shoppingCartList && cartData.shoppingCartList.length != 0 ? (
+      <div className="-mt-12 flex flex-col gap-4">
+        <Title pagename="Your Cart" />
         <div>
           <Form
             action={handleSubmit}
@@ -193,112 +194,138 @@ function Cart() {
           >
             {/* Left side */}
             <div className="grid grid-cols-1 gap-4 overflow-y-auto">
-              {cartData.shoppingCartList.map(
-                (cartItem: ShoppingCartItemResponse) => {
-                  // find the corresponding clothing product for each shopping cart item
-                  // required to retrieve certain information (price, image, etc.)
-                  const product = productsData?.find(
-                    (p: ClothingProductResponse) =>
-                      p.id === cartItem.clothingItem.clothingProductId,
-                  );
+              {cartData?.shoppingCartList &&
+              cartData.shoppingCartList.length != 0 ? (
+                cartData.shoppingCartList.map(
+                  (cartItem: ShoppingCartItemResponse) => {
+                    // find the corresponding clothing product for each shopping cart item
+                    // required to retrieve certain information (price, image, etc.)
+                    const product = productsData?.find(
+                      (p: ClothingProductResponse) =>
+                        p.id === cartItem.clothingItem.clothingProductId,
+                    );
 
-                  return (
-                    <Card
-                      key={cartItem.id}
-                      className="border-black border shadow-none"
-                    >
-                      {product && cartItem.quantity != 0 ? (
-                        <div className="grid grid-cols-[80px_1fr_130px] items-center gap-4 p-3">
-                          {/* Image */}
-                          <div className="h-20 w-20 overflow-hidden rounded-xl">
-                            <img
-                              src={
-                                product.image || defaultImg
-                              } /* TODO add default image? */
-                              alt={product.name}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-
-                          {/* Information */}
-                          <div className="grid grid-rows-[auto_auto] gap-1 min-w-0">
-                            <h4 className="font-bold text-lg">
-                              {product.name}
-                            </h4>
-                            <div>
-                              <p>Size: {cartItem.clothingItem.size}</p>
-                              <p>Colour: {cartItem.clothingItem.colour}</p>
-                              <p>Unit Price: {product.price}$</p>
+                    return (
+                      <Card
+                        key={cartItem.id}
+                        className="border-black border shadow-none"
+                      >
+                        {product && cartItem.quantity != 0 ? (
+                          <div className="grid grid-cols-[80px_1fr_130px] items-center gap-4 p-3">
+                            {/* Image */}
+                            <div className="h-20 w-20 overflow-hidden rounded-xl">
+                              <img
+                                src={
+                                  product.image || defaultImg
+                                } /* TODO add default image? */
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                                loading="lazy"
+                              />
                             </div>
-                          </div>
 
-                          {/* Right side of Card */}
-                          <div className="flex flex-col items-center justify-between h-full">
-                            {/* Quantity buttons */}
-                            <div className="w-full justify-between grid grid-cols-[32px_40px_32px] items-center bg-default-100 border border-black rounded-full overflow-hidden text-center">
+                            {/* Information */}
+                            <div className="grid grid-rows-[auto_auto] gap-1 min-w-0">
+                              <h4 className="font-bold text-lg">
+                                {product.name}
+                              </h4>
+                              <div>
+                                <p>Size: {cartItem.clothingItem.size}</p>
+                                <p>Colour: {cartItem.clothingItem.colour}</p>
+                                <p>Unit Price: {product.price}$</p>
+                              </div>
+                            </div>
+
+                            {/* Right side of Card */}
+                            <div className="flex flex-col items-center justify-between h-full">
+                              {/* Quantity buttons */}
+                              <div className="w-full justify-between grid grid-cols-[32px_40px_32px] items-center bg-default-100 border border-black rounded-full overflow-hidden text-center">
+                                <Button
+                                  onPress={() =>
+                                    handleUpdate(
+                                      cartItem,
+                                      cartItem.quantity - 1,
+                                    )
+                                  }
+                                  isDisabled={
+                                    isSubmitting || cartItem.quantity <= 1
+                                  }
+                                  size="sm"
+                                  className="rounded-l-full border-r w-full"
+                                >
+                                  -
+                                </Button>
+                                <div>{cartItem.quantity}</div>
+                                <Button
+                                  onPress={() =>
+                                    handleUpdate(
+                                      cartItem,
+                                      cartItem.quantity + 1,
+                                    )
+                                  }
+                                  isDisabled={isSubmitting}
+                                  size="sm"
+                                  className="rounded-r-full border-l w-full"
+                                >
+                                  +
+                                </Button>
+                              </div>
+
+                              {/* Delete button */}
                               <Button
-                                onPress={() =>
-                                  handleUpdate(cartItem, cartItem.quantity - 1)
-                                }
-                                isDisabled={
-                                  isSubmitting || cartItem.quantity <= 1
-                                }
-                                size="sm"
-                                className="rounded-l-full border-r w-full"
-                              >
-                                -
-                              </Button>
-                              <div>{cartItem.quantity}</div>
-                              <Button
-                                onPress={() =>
-                                  handleUpdate(cartItem, cartItem.quantity + 1)
-                                }
+                                onPress={() => handleDelete(cartItem)}
                                 isDisabled={isSubmitting}
-                                size="sm"
-                                className="rounded-r-full border-l w-full"
+                                size="md"
+                                className="rounded-full border-l bg-red-500 w-full"
                               >
-                                +
+                                <FaRegTrashAlt />
                               </Button>
                             </div>
-
-                            {/* Delete button */}
-                            <Button
-                              onPress={() => handleDelete(cartItem)}
-                              isDisabled={isSubmitting}
-                              size="md"
-                              className="rounded-full border-l bg-red-500 w-full"
-                            >
-                              <FaRegTrashAlt />
-                            </Button>
                           </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <Card.Header>No product found.</Card.Header>
-                        </div>
-                      )}
-                    </Card>
-                  );
-                },
+                        ) : (
+                          <div>
+                            <Card.Header>No product found.</Card.Header>
+                          </div>
+                        )}
+                      </Card>
+                    );
+                  },
+                )
+              ) : (
+                <Card className="border-black border shadow-none text-center justify-center font-bold">
+                  Your cart is currently empty.
+                </Card>
               )}
             </div>
 
+            {/* Right menu */}
             <div className="col-span-1">
               <Card className="grid border border-black h-full">
                 <div className="grid content-start gap-2">
-                  <h4 className="font-bold text-lg">Total</h4>
-                  <p>${cartData.price}</p>
+                  <Title pagename="Total" />
+                  <p>${cartData ? cartData.price : 0}</p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t border-black pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t border-black pt-4 mt-auto">
                   <Button
                     type="reset"
-                    isDisabled={isSubmitting}
-                    className="bg-red-500"
+                    isDisabled={
+                      isSubmitting ||
+                      !cartData ||
+                      cartData.shoppingCartList.length == 0
+                    }
+                    className="bg-red-500 w-full min-w-0"
                   >
                     Clear
                   </Button>
-                  <Button type="submit" isDisabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    isDisabled={
+                      isSubmitting ||
+                      !cartData ||
+                      cartData.shoppingCartList.length == 0
+                    }
+                    className="w-full min-w-0"
+                  >
                     Proceed
                   </Button>
                 </div>
@@ -306,9 +333,7 @@ function Cart() {
             </div>
           </Form>
         </div>
-      ) : (
-        <p>No items in cart.</p>
-      )}
+      </div>
     </>
   );
 }
