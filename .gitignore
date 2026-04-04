@@ -7,3 +7,4 @@ pgdata/
 # Other
 .tms.toml
 *.iml
+*.gen.ts
