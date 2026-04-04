@@ -14,6 +14,7 @@ import type {
   ShoppingCartListResponse,
   ShoppingCartResponse,
 } from "#/types/api";
+import { OrderModal } from "#/components/OrderModal";
 import { useAuth } from "#/auth";
 import Skeleton from "#/components/Skeleton";
 import Title from "#/components/Title";
@@ -175,7 +176,6 @@ function Cart() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    navigate({ to: "/cart/order" });
   };
 
   if (isCartLoading || isProductsLoading) return <Skeleton />;
@@ -317,17 +317,17 @@ function Cart() {
                   >
                     Clear
                   </Button>
-                  <Button
-                    type="submit"
+                  <OrderModal
+                    initialPrice={cartData ? cartData.price : 0}
                     isDisabled={
                       isSubmitting ||
                       !cartData ||
                       cartData.shoppingCartList.length == 0
                     }
-                    className="w-full min-w-0"
-                  >
-                    Proceed
-                  </Button>
+                    navigate={navigate}
+                    customerId={customerId}
+                    setIsSubmitting={setIsSubmitting}
+                  />
                 </div>
               </Card>
             </div>
