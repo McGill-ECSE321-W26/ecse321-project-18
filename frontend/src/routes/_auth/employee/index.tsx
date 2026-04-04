@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_auth/employee/")({
   ),
 });
 
-function EmployeeDashboard() {
+function EmployeeOrders() {
   const auth = useAuth();
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [actionError, setActionError] = useState<string | null>(null);

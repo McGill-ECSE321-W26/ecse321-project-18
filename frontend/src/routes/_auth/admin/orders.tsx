@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_auth/admin/orders")({
   ),
 });
 
-function OrderDashboard() {
+function Orders() {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [selectedEmployeeByOrder, setSelectedEmployeeByOrder] = useState<
     Record<number, string>

@@ -27,32 +27,22 @@ export const Route = createFileRoute("/_auth/admin/")({
 function AdminDashboard() {
   const navigate = useNavigate();
 
-  const {
-    isLoading: isOrdersLoading,
-    error: ordersError,
-    data: orders,
-  } = useOrders();
+  const { isLoading: isOrdersLoading, data: orders } = useOrders();
 
-  const {
-    isLoading: isAccountsLoading,
-    error: accountsError,
-    data: accounts,
-  } = useAccounts();
+  const { isLoading: isAccountsLoading, data: accounts } = useAccounts();
 
-  const {
-    isLoading: isProductsLoading,
-    error: productsError,
-    data: products,
-  } = useClothingProducts();
+  const { isLoading: isProductsLoading, data: products } =
+    useClothingProducts();
 
   if (isOrdersLoading || isAccountsLoading || isProductsLoading) {
     return <Skeleton />;
   }
 
+  if (!orders || !accounts || !products) {
+    return "An error has occurred: Server returned invalid data.";
+  }
+
   const totalOrders = orders.length;
-  const purchasedOrders = orders.filter(
-    (order: OrderResponse) => order.state === OrderState.PURCHASED,
-  ).length;
   const assignedOrders = orders.filter(
     (order: OrderResponse) => order.state === OrderState.ASSIGNED,
   ).length;
