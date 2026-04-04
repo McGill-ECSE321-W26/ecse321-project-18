@@ -108,7 +108,9 @@ function Product() {
     setProductImage("");
     setProductFormError("");
 
-    fileInputRef.current?.value = "";
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const openEditProductModal = () => {
