@@ -1,10 +1,10 @@
 import type { IconType } from "react-icons";
 
-export interface HomePageCardProps {
+export type HomePageCardProps = {
   title: string;
   description: string;
   logo?: IconType;
-}
+};
 
 export default function HomePageCard(props: HomePageCardProps) {
   return (

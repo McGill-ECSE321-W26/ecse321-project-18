@@ -5,7 +5,7 @@ import { AccountType } from "#/types/api";
 
 type TopNavProps = {
   account: AccountType | undefined;
-  logout?: () => void;
+  logout: () => void;
 };
 
 type navLink = {
@@ -83,7 +83,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
           </button>
           <Link to="/">
             <div className="flex items-center gap-3">
-              <img src="/images/stiltonslogo.png" alt="logo" width={50} />
+              <img src="/stiltonslogo.png" alt="logo" width={50} />
               <p className="font-bold">Stilton's Store</p>
             </div>
           </Link>

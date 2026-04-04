@@ -12,24 +12,22 @@ export default function HomePage() {
   return (
     <>
       <h1 className="hidden">Stilton's Store</h1>
-      <div className="flex justify-center">
+      <div className="grid lg:grid-cols-2 justify-center gap-7">
         <div>
-          <img className="w-xl" src="/images/homepage_suit.jpg"></img>
+          <img className="w-full" src="/images/homepage_suit.jpg"></img>
         </div>
-        <div className="flex items-center">
-          <div className="pl-20 w-[50vw]">
-            <p className="text-5xl font-bold">
-              Life imitates art, and we are the artists.
-            </p>
-            <p className="text-3xl pt-5">
-              Coming from New Mouse City, Stilton's Store delivers standard and
-              funky clothing options at the best quality.
-            </p>
-          </div>
+        <div className="flex flex-col justify-center gap-5 lg:gap-7">
+          <p className="text-5xl font-bold">
+            Life imitates art, and we are the artists.
+          </p>
+          <p className="text-3xl pt-5">
+            Coming from New Mouse City, Stilton's Store delivers standard and
+            funky clothing options at the best quality.
+          </p>
         </div>
       </div>
 
-      <h2>Who we are</h2>
+      <h2 className="title">Who we are</h2>
 
       <div className="flex justify-center">
         <HomePageCard
@@ -42,12 +40,12 @@ export default function HomePage() {
         ></HomePageCard>
       </div>
 
-      <h2>Sustainability</h2>
+      <h2 className="title">Sustainability</h2>
 
       <div className="flex justify-center">
         <HomePageCard
           title="Green"
-          description="We are proud to use recycled ingredients whenever possible."
+          description="We are proud to use recycled materials whenever possible."
           logo={FaRecycle}
         ></HomePageCard>
         <HomePageCard
@@ -62,12 +60,12 @@ export default function HomePage() {
         ></HomePageCard>
       </div>
 
-      <h2>Customer Satistfaction</h2>
+      <h2 className="title">Customer Satistfaction</h2>
 
       <div className="flex justify-center">
         <HomePageCard
           title="Rewards Program"
-          description="Our loyalty programs gives discounts to our recurring customers. Loyalty is valued by Stilton, and so should you."
+          description="Our loyalty programs gives discounts to our recurring customers. Stilton values both quality and loyalty!"
           logo={FaGift}
         ></HomePageCard>
         <HomePageCard

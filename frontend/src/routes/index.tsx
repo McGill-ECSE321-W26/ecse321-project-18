@@ -9,15 +9,5 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: () => <App />,
+  component: () => <HomePage />,
 });
-
-function App() {
-  return (
-    <>
-      <main className="px-4 pb-8 pt-14">
-        <HomePage />
-      </main>
-    </>
-  );
-}
