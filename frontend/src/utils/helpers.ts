@@ -4,14 +4,17 @@ import {
   deleteRequest,
   getRequest,
   getRequestWithParams,
+  postRequest,
   putRequest,
 } from "./httpClient";
 import type {
   AccountListResponse,
   ClothingColour,
+  ClothingItemRequest,
+  ClothingItemResponse,
+  ClothingProductRequest,
   ClothingProductResponse,
   ClothingSize,
-  ShoppingCartItemResponse,
   ShoppingCartListResponse,
 } from "#/types/api";
 
@@ -35,6 +38,45 @@ export function useClothingProducts() {
   });
 }
 
+export function createClothingProductRequest(product: ClothingProductRequest) {
+  return postRequest<ClothingProductResponse>("/clothingproduct", product);
+}
+
+export function useCreateClothingProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createClothingProductRequest,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["clothingProducts"] }),
+  });
+}
+
+export function updateClothingProduct(
+  productId: number,
+  product: ClothingProductRequest,
+) {
+  return putRequest<ClothingProductResponse>(
+    `/clothingproduct/${productId}`,
+    product,
+  );
+}
+
+export function useUpdateClothingProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      productId,
+      product,
+    }: {
+      productId: number;
+      product: ClothingProductRequest;
+    }) => updateClothingProduct(productId, product),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["clothingProducts"] }),
+  });
+}
+
 export function deleteClothingProduct(productId: number) {
   return deleteRequest(`/clothingproduct/${productId}`);
 }
@@ -52,6 +94,30 @@ export function useDeleteClothingProduct() {
 
 export function deleteClothingItem(productId: number, itemId: number) {
   return deleteRequest(`/clothingproduct/${productId}/clothingitem/${itemId}`);
+}
+
+export function createClothingItem(
+  productId: number,
+  item: ClothingItemRequest,
+) {
+  return postRequest<ClothingItemResponse>(
+    `/clothingproduct/${productId}/clothingitem`,
+    item,
+  );
+}
+
+export function useCreateClothingItem(productId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (item: ClothingItemRequest) =>
+      createClothingItem(productId, item),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["clothingProduct", productId],
+      });
+    },
+  });
 }
 
 export function useDeleteClothingItem(productId: number) {
