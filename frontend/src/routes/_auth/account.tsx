@@ -78,14 +78,7 @@ function Account() {
 
   const isOwner = user.accountType === AccountType.OWNER;
   const isCustomer = user.accountType === AccountType.CUSTOMER;
-
-  const currentAddress =
-    "address" in accountInfo ? (accountInfo.address ?? "") : "";
-
-  const currentLoyaltyPoints =
-    "numOfLoyaltyPoints" in accountInfo
-      ? (accountInfo.numOfLoyaltyPoints ?? 0)
-      : 0;
+  const isEmployee = user.accountType === AccountType.EMPLOYEE;
 
   const accountQuery = useQuery({
     queryKey: ["myAccount", user.id, user.accountType],
@@ -125,6 +118,14 @@ function Account() {
     };
   }, [accountQuery.data, user]);
 
+  const currentAddress =
+    "address" in accountInfo ? (accountInfo.address ?? "") : "";
+
+  const currentLoyaltyPoints =
+    "numOfLoyaltyPoints" in accountInfo
+      ? (accountInfo.numOfLoyaltyPoints ?? 0)
+      : 0;
+
   useEffect(() => {
     if ("address" in accountInfo) {
       setAddress(accountInfo.address ?? "");
@@ -142,7 +143,7 @@ function Account() {
       }
 
       if (user.accountType === AccountType.OWNER) {
-        const requestBody: AccountRequest = {
+        const requestBody = {
           email: accountInfo.email,
           password,
         };
@@ -154,7 +155,7 @@ function Account() {
       }
 
       if (user.accountType === AccountType.CUSTOMER) {
-        const requestBody: CustomerRequest = {
+        const requestBody = {
           email: accountInfo.email,
           password,
           address: currentAddress,
@@ -167,13 +168,25 @@ function Account() {
         );
       }
 
-      throw new Error("Employee password update is not wired correctly yet.");
+      if (user.accountType === AccountType.EMPLOYEE) {
+        const requestBody = {
+          email: accountInfo.email,
+          password,
+          address: currentAddress,
+          numOfLoyaltyPoints: currentLoyaltyPoints,
+        };
+
+        return putRequest<EmployeeResponse>(
+          `/account/employee/${user.id}`,
+          requestBody,
+        );
+      }
     },
   });
 
   const updateAddressMutation = useMutation({
     mutationFn: async () => {
-      const requestBody: CustomerRequest = {
+      const requestBody = {
         email: accountInfo.email,
         password: null,
         address,
@@ -217,7 +230,7 @@ function Account() {
       successToast("Address updated successfully.");
       await accountQuery.refetch();
     } catch (error) {
-      setPasswordErrors(extractErrors(error));
+      setAddressErrors(extractErrors(error));
     }
   };
 
@@ -368,7 +381,8 @@ function Account() {
                   variant="secondary"
                   isDisabled={updateAddressMutation.isPending}
                   onPress={() => {
-                    setAddress("");
+                    setAddress(currentAddress);
+                    setAddressErrors([]);
                   }}
                 >
                   Cancel
