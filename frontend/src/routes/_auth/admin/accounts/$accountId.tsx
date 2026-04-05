@@ -35,7 +35,7 @@ function useAccount(id: number) {
 function ManageAccount() {
   const { accountId }: { accountId: number } = Route.useParams();
 
-  const { isLoading, error, data } = useAccount(accountId);
+  const { isLoading, error } = useAccount(accountId);
 
   if (isLoading) return <Skeleton />;
 

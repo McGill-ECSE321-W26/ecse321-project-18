@@ -575,7 +575,6 @@ class OrderServiceTests {
     void updateOrderStatusToPreparedValidSuccess() {
         Order assignedOrder = createOrder(ORDER_ID, State.ASSIGNED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(assignedOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
 
@@ -597,7 +596,6 @@ class OrderServiceTests {
     @Test
     void updateOrderStatusToPreparedFromInvalidStateFail() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
         OrderStatusRequestDto dto = new OrderStatusRequestDto(State.PREPARED, EMPLOYEE_ID);
 
@@ -624,11 +622,10 @@ class OrderServiceTests {
     @Test
     void updateOrderStatusToCancelledSuccess() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
 
-        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, null);
 
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
@@ -649,11 +646,10 @@ class OrderServiceTests {
     void updateOrderStatusToCancelledWhenAlreadyCancelledSuccess() {
         Order cancelledOrder = createOrder(ORDER_ID, State.CANCELLED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(cancelledOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
         when(orderRepository.save(any(Order.class)))
                 .thenAnswer((InvocationOnMock inv) -> (Order) inv.getArgument(0));
 
-        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, null);
 
         Order result = orderService.updateOrderStatus(ORDER_ID, dto);
 
@@ -670,9 +666,8 @@ class OrderServiceTests {
     void updateOrderStatusToCancelledWhenDeliveredFail() {
         Order deliveredOrder = createOrder(ORDER_ID, State.DELIVERED, customer);
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(deliveredOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
-        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, null);
 
         FashionStoreException e =
                 assertThrows(
@@ -699,9 +694,8 @@ class OrderServiceTests {
         Order urgentOrder = createOrder(ORDER_ID, State.PURCHASED, customer);
         urgentOrder.setDeliveryDate(Date.valueOf(LocalDate.now()));
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(urgentOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
-        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, EMPLOYEE_ID);
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.CANCELLED, null);
 
         FashionStoreException e =
                 assertThrows(
@@ -726,9 +720,8 @@ class OrderServiceTests {
     @Test
     void updateOrderStatusToInvalidTransitionFail() {
         when(orderRepository.findById(ORDER_ID)).thenReturn(Optional.of(purchasedOrder));
-        when(employeeRepository.findById(EMPLOYEE_ID)).thenReturn(Optional.of(employee));
 
-        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.DELIVERED, EMPLOYEE_ID);
+        OrderStatusRequestDto dto = new OrderStatusRequestDto(State.DELIVERED, null);
 
         FashionStoreException e =
                 assertThrows(
