@@ -4,6 +4,8 @@ import { getRequest, getRequestWithParams } from "./httpClient";
 import type {
   AccountListResponse,
   ClothingProductResponse,
+  CustomerResponse,
+  OrderResponse,
   ShoppingCartListResponse,
 } from "#/types/api";
 
@@ -51,6 +53,29 @@ export function useAccounts() {
   return useQuery({
     queryKey: ["accounts"],
     queryFn: (): Promise<AccountListResponse> => getRequest("/account"),
+  });
+}
+
+export function useOrders() {
+  return useQuery({
+    queryKey: ["orders"],
+    queryFn: (): Promise<OrderResponse[]> => getRequest("/order"),
+  });
+}
+
+export function useCustomer(id: number) {
+  return useQuery({
+    queryKey: ["customer"],
+    queryFn: (): Promise<CustomerResponse> =>
+      getRequest(`/account/customer/${id}`),
+  });
+}
+
+export function useCustomerOrders(id: number) {
+  return useQuery({
+    queryKey: ["customerOrders"],
+    queryFn: (): Promise<OrderResponse[]> =>
+      getRequest(`/account/customer/${id}/order`),
   });
 }
 

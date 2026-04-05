@@ -34,7 +34,7 @@ function useClothingProduct(id: number) {
 function Product() {
   const { productId }: { productId: number } = Route.useParams();
 
-  const { isLoading, error, data } = useClothingProduct(productId);
+  const { isLoading, error } = useClothingProduct(productId);
 
   if (isLoading) return <Skeleton />;
 

@@ -34,6 +34,7 @@ public record OrderResponseDto(
         @NotNull(message = "Price must not be null.") @DecimalMin("0.01") Float price,
         @NotNull(message = "List of OrderItems must not be null.") List<@Valid OrderItemResponseDto> orderItems,
         Integer customerId,
+        String customerEmail,
         Integer employeeId) {
 
     /**
@@ -61,6 +62,7 @@ public record OrderResponseDto(
                 order.getPrice(),
                 OrderItemResponseDto.orderItemResponseDtos(order.getItems()),
                 order.getCustomer() != null ? order.getCustomer().getId() : null,
+                order.getCustomer() != null ? order.getCustomer().getEmail() : "None",
                 order.getEmployee() != null ? order.getEmployee().getId() : null);
     }
 
