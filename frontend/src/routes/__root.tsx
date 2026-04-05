@@ -54,10 +54,12 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
         <HeadContent />
         <Toast.Provider className="whitespace-pre-wrap" />
         <TopNav account={auth.user?.accountType} logout={handleLogout} />
-        <main className="px-6 pb-8 pt-14">
-          <Outlet />
-        </main>
-        <Footer />
+        <div className="min-h-screen flex flex-col">
+          <main className="px-6 pb-8 pt-14 flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
 
         <TanStackDevtools
           config={{

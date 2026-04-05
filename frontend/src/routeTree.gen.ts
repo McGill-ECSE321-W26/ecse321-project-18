@@ -23,7 +23,6 @@ import { Route as AuthEmployeeIndexRouteImport } from './routes/_auth/employee/i
 import { Route as AuthCartIndexRouteImport } from './routes/_auth/cart/index'
 import { Route as AuthAdminIndexRouteImport } from './routes/_auth/admin/index'
 import { Route as AuthProductsProductIdRouteImport } from './routes/_auth/products/$productId'
-import { Route as AuthCartOrderRouteImport } from './routes/_auth/cart/order'
 import { Route as AuthAdminProductsRouteImport } from './routes/_auth/admin/products'
 import { Route as AuthAdminOrdersRouteImport } from './routes/_auth/admin/orders'
 import { Route as AuthAdminAccountsIndexRouteImport } from './routes/_auth/admin/accounts/index'
@@ -98,11 +97,6 @@ const AuthProductsProductIdRoute = AuthProductsProductIdRouteImport.update({
   path: '/products/$productId',
   getParentRoute: () => AuthRoute,
 } as any)
-const AuthCartOrderRoute = AuthCartOrderRouteImport.update({
-  id: '/order',
-  path: '/order',
-  getParentRoute: () => AuthCartRouteRoute,
-} as any)
 const AuthAdminProductsRoute = AuthAdminProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -136,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/orders': typeof AuthOrdersRoute
   '/admin/orders': typeof AuthAdminOrdersRoute
   '/admin/products': typeof AuthAdminProductsRoute
-  '/cart/order': typeof AuthCartOrderRoute
   '/products/$productId': typeof AuthProductsProductIdRoute
   '/admin/': typeof AuthAdminIndexRoute
   '/cart/': typeof AuthCartIndexRoute
@@ -153,7 +146,6 @@ export interface FileRoutesByTo {
   '/orders': typeof AuthOrdersRoute
   '/admin/orders': typeof AuthAdminOrdersRoute
   '/admin/products': typeof AuthAdminProductsRoute
-  '/cart/order': typeof AuthCartOrderRoute
   '/products/$productId': typeof AuthProductsProductIdRoute
   '/admin': typeof AuthAdminIndexRoute
   '/cart': typeof AuthCartIndexRoute
@@ -175,7 +167,6 @@ export interface FileRoutesById {
   '/_auth/orders': typeof AuthOrdersRoute
   '/_auth/admin/orders': typeof AuthAdminOrdersRoute
   '/_auth/admin/products': typeof AuthAdminProductsRoute
-  '/_auth/cart/order': typeof AuthCartOrderRoute
   '/_auth/products/$productId': typeof AuthProductsProductIdRoute
   '/_auth/admin/': typeof AuthAdminIndexRoute
   '/_auth/cart/': typeof AuthCartIndexRoute
@@ -197,7 +188,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/admin/orders'
     | '/admin/products'
-    | '/cart/order'
     | '/products/$productId'
     | '/admin/'
     | '/cart/'
@@ -214,7 +204,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/admin/orders'
     | '/admin/products'
-    | '/cart/order'
     | '/products/$productId'
     | '/admin'
     | '/cart'
@@ -235,7 +224,6 @@ export interface FileRouteTypes {
     | '/_auth/orders'
     | '/_auth/admin/orders'
     | '/_auth/admin/products'
-    | '/_auth/cart/order'
     | '/_auth/products/$productId'
     | '/_auth/admin/'
     | '/_auth/cart/'
@@ -352,13 +340,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProductsProductIdRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/cart/order': {
-      id: '/_auth/cart/order'
-      path: '/order'
-      fullPath: '/cart/order'
-      preLoaderRoute: typeof AuthCartOrderRouteImport
-      parentRoute: typeof AuthCartRouteRoute
-    }
     '/_auth/admin/products': {
       id: '/_auth/admin/products'
       path: '/products'
@@ -411,12 +392,10 @@ const AuthAdminRouteRouteWithChildren = AuthAdminRouteRoute._addFileChildren(
 )
 
 interface AuthCartRouteRouteChildren {
-  AuthCartOrderRoute: typeof AuthCartOrderRoute
   AuthCartIndexRoute: typeof AuthCartIndexRoute
 }
 
 const AuthCartRouteRouteChildren: AuthCartRouteRouteChildren = {
-  AuthCartOrderRoute: AuthCartOrderRoute,
   AuthCartIndexRoute: AuthCartIndexRoute,
 }
 

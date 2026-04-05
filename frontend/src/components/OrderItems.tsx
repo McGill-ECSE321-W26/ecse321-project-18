@@ -28,7 +28,7 @@ export const OrderItems = ({ order, colNum }: OrderItemsProps) => {
                       <Table.Cell>{item.clothingItem.colour}</Table.Cell>
                       <Table.Cell>{item.clothingItem.size}</Table.Cell>
                       <Table.Cell>{item.quantity}</Table.Cell>
-                      <Table.Cell>{item.purchasePrice}</Table.Cell>
+                      <Table.Cell>${item.purchasePrice}</Table.Cell>
                     </Table.Row>
                   );
                 })}
