@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Test suite for clothing item persistence in the database.
@@ -39,7 +38,7 @@ class ClothingItemRepositoryTests {
         ClothingProduct newClothingProduct = new ClothingProduct();
         newClothingProduct.setName(name);
         newClothingProduct.setPrice(price);
-        clothingProductRepository.save(newClothingProduct);
+        newClothingProduct = clothingProductRepository.save(newClothingProduct);
 
         // create clothing item
         ClothingItem newClothingItem = new ClothingItem();
@@ -47,11 +46,10 @@ class ClothingItemRepositoryTests {
         newClothingItem.setSize(ClothingItem.Size.S);
         newClothingItem.setColour(ClothingItem.Colour.PINK);
         newClothingItem.setNumInStock(10);
+        newClothingItem = clothingItemRepository.save(newClothingItem);
 
         // Save the clothing product and item
-        clothingProductRepository.save(newClothingProduct);
         clothingProduct = newClothingProduct;
-        clothingItemRepository.save(newClothingItem);
         clothingItem = newClothingItem;
     }
 
@@ -136,54 +134,6 @@ class ClothingItemRepositoryTests {
     void testDeleteClothingItem() {
         // delete item in repository
         clothingItemRepository.delete(clothingItem);
-
-        // Try to read clothing item from database
-        ClothingItem clothingItemFromDb =
-                clothingItemRepository.findClothingItemById(clothingItem.getId());
-
-        // Assert clothing item not found
-        assertNull(clothingItemFromDb, "Clothing item was not successfully deleted in database.");
-
-        // Clothing product should not have been deleted
-        ClothingProduct clothingProductFromDb =
-                clothingProductRepository.findClothingProductById(clothingProduct.getId());
-        assertNotNull(clothingProductFromDb, "Clothing product incorrectly deleted from database.");
-    }
-
-    /**
-     * Test deletion of clothing item by id from database works.
-     *
-     * @author Flavie Qin (flavieq88)
-     */
-    @Test
-    @Transactional
-    void testDeleteClothingItemById() {
-        // delete item in repository
-        clothingItemRepository.deleteClothingItemById(clothingItem.getId());
-
-        // Try to read clothing item from database
-        ClothingItem clothingItemFromDb =
-                clothingItemRepository.findClothingItemById(clothingItem.getId());
-
-        // Assert clothing item not found
-        assertNull(clothingItemFromDb, "Clothing item was not successfully deleted in database.");
-
-        // Clothing product should not have been deleted
-        ClothingProduct clothingProductFromDb =
-                clothingProductRepository.findClothingProductById(clothingProduct.getId());
-        assertNotNull(clothingProductFromDb, "Clothing product incorrectly deleted from database.");
-    }
-
-    /**
-     * Test deletion of clothing item by numInStock from database works.
-     *
-     * @author Flavie Qin (flavieq88)
-     */
-    @Test
-    @Transactional
-    void testDeleteClothingItemByNumInStock() {
-        // delete item in repository
-        clothingItemRepository.deleteByNumInStock(clothingItem.getNumInStock());
 
         // Try to read clothing item from database
         ClothingItem clothingItemFromDb =

@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Transient;
 
 // line 4 "../../../../../../model.ump"
 // line 83 "../../../../../../model.ump"
@@ -32,8 +33,8 @@ public abstract class Account {
     private String password;
 
     // Helper Variables
-    private boolean canSetId;
-    private boolean canSetEmail;
+    @Transient private boolean canSetId;
+    @Transient private boolean canSetEmail;
 
     // ------------------------
     // CONSTRUCTOR

@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,12 +78,26 @@ public class ShoppingCartItemService {
         ClothingItem clothingItem =
                 Utils.findClothingItemById(clothingItemRepository, clothingItemId);
         Customer customer = Utils.findCustomerById(customerRepository, customerId);
-        newShoppingCartItem.setClothingItem(clothingItem);
-        newShoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
-        newShoppingCartItem.setCustomer(customer);
-        newShoppingCartItem = shoppingCartItemRepository.save(newShoppingCartItem);
+        Optional<ShoppingCartItem> shoppingCartItemOptional =
+                shoppingCartItemRepository.findByCustomerIdAndClothingItemId(
+                        customerId, clothingItemId);
+        if (shoppingCartItemOptional.isEmpty()) {
+            newShoppingCartItem.setClothingItem(clothingItem);
+            newShoppingCartItem.setQuantity(shoppingCartItemRequestDto.quantity());
+            newShoppingCartItem.setCustomer(customer);
+        } else {
+            newShoppingCartItem = shoppingCartItemOptional.get();
+            newShoppingCartItem.setQuantity(
+                    newShoppingCartItem.getQuantity() + shoppingCartItemRequestDto.quantity());
+        }
+        return addShoppingCartItemHelper(newShoppingCartItem, customer);
+    }
+
+    private ShoppingCartResponseDto addShoppingCartItemHelper(
+            ShoppingCartItem newShoppingCartItem, Customer customer) {
+        ShoppingCartItem shoppingCartItem = shoppingCartItemRepository.save(newShoppingCartItem);
         ShoppingCartItemResponseDto shoppingCartItemResponseDto =
-                new ShoppingCartItemResponseDto(newShoppingCartItem);
+                new ShoppingCartItemResponseDto(shoppingCartItem);
         float newPrice = calculateCartPrice(customer);
         return new ShoppingCartResponseDto(shoppingCartItemResponseDto, newPrice);
     }

@@ -11,10 +11,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 // line 69 "../../../../../../model.ump"
 // line 123 "../../../../../../model.ump"
 @Entity
+@Table(
+        name = "clothing_item",
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "clothingitem_productid_colour_size",
+                    columnNames = {"clothing_product_id", "colour", "size"})
+        })
 public class ClothingItem {
 
     // ------------------------
@@ -75,7 +85,7 @@ public class ClothingItem {
     @ManyToOne private ClothingProduct clothingProduct;
 
     // Helper Variables
-    private boolean canSetId;
+    @Transient private boolean canSetId;
 
     // ------------------------
     // CONSTRUCTOR

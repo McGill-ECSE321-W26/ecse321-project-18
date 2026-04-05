@@ -7,6 +7,7 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,10 +48,6 @@ public class ClothingItemService {
     public ClothingItem createClothingItem(
             @Valid ClothingItemRequestDto clothingItemRequestDto, int productId) {
         // create new clothing item
-        ClothingItem clothingItem = new ClothingItem();
-        clothingItem.setSize(clothingItemRequestDto.size());
-        clothingItem.setColour(clothingItemRequestDto.colour());
-        clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
         if (productId != clothingItemRequestDto.clothingProductId()) {
             throw new FashionStoreException(
                     HttpStatus.BAD_REQUEST,
@@ -58,12 +55,38 @@ public class ClothingItemService {
                             "Path variable productId %d does not match clothingProductId in request body %d.",
                             productId, clothingItemRequestDto.clothingProductId()));
         }
-        ClothingProduct clothingProduct =
-                Utils.findClothingProductById(this.clothingProductRepository, productId);
-        clothingItem.setClothingProduct(clothingProduct);
+
+        ClothingItem clothingItem = new ClothingItem();
+        Optional<ClothingItem> clothingItemOptional =
+                clothingItemRepository.findByClothingProductIdAndColourAndSize(
+                        productId, clothingItemRequestDto.colour(), clothingItemRequestDto.size());
+        clothingItem =
+                createClothingItemHelper(
+                        clothingItem, clothingItemOptional, clothingItemRequestDto, productId);
 
         // save clothing item to repository
         clothingItem = this.clothingItemRepository.save(clothingItem);
+        return clothingItem;
+    }
+
+    private ClothingItem createClothingItemHelper(
+            ClothingItem newClothingItem,
+            Optional<ClothingItem> clothingItemOptional,
+            ClothingItemRequestDto clothingItemRequestDto,
+            int productId) {
+        ClothingItem clothingItem = newClothingItem;
+        if (clothingItemOptional.isEmpty()) {
+            clothingItem.setSize(clothingItemRequestDto.size());
+            clothingItem.setColour(clothingItemRequestDto.colour());
+            clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
+            ClothingProduct clothingProduct =
+                    Utils.findClothingProductById(this.clothingProductRepository, productId);
+            clothingItem.setClothingProduct(clothingProduct);
+        } else {
+            clothingItem = clothingItemOptional.get();
+            clothingItem.setNumInStock(
+                    clothingItem.getNumInStock() + clothingItemRequestDto.numInStock());
+        }
         return clothingItem;
     }
 
