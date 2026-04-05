@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -76,6 +76,7 @@ function Account() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const isOwner = user.accountType === AccountType.OWNER;
+  const isCustomer = user.accountType === AccountType.CUSTOMER;
 
   const accountQuery = useQuery({
     queryKey: ["myAccount", user.id, user.accountType],
@@ -114,6 +115,12 @@ function Account() {
       email: user.email,
     };
   }, [accountQuery.data, user]);
+
+  useEffect(() => {
+    if ("address" in accountInfo) {
+      setAddress(accountInfo.address ?? "");
+    }
+  }, [accountInfo]);
 
   const updatePasswordMutation = useMutation({
     mutationFn: async () => {
@@ -154,14 +161,20 @@ function Account() {
     },
   });
 
-  // TODO update address
   const updateAddressMutation = useMutation({
     mutationFn: async () => {
+      if (!isCustomer) {
+        throw new Error("Only customers can update their address.");
+      }
+
       const requestBody: CustomerRequest = {
-        email: "",
+        email: accountInfo.email,
         password: "",
-        address: "",
-        numOfLoyaltyPoints: 0,
+        address,
+        numOfLoyaltyPoints:
+          "numOfLoyaltyPoints" in accountInfo
+            ? (accountInfo.numOfLoyaltyPoints ?? 0)
+            : 0,
       };
 
       return putRequest<CustomerResponse>(
@@ -193,14 +206,14 @@ function Account() {
     }
   };
 
-  // TODO handle address update
   const handleAddressUpdate = async () => {
     try {
-      await updatePasswordMutation.mutateAsync();
-      setAddress("");
-      successToast("Password updated successfully.");
+      await updateAddressMutation.mutateAsync();
+      successToast("Address updated successfully.");
       await accountQuery.refetch();
-    } catch (error) {}
+    } catch (error) {
+      setPasswordErrors(extractErrors(error));
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -240,17 +253,16 @@ function Account() {
           <p className="text-sm text-default-500">Account Type</p>
           <p className="font-medium">{user.accountType}</p>
         </div>
-        {
-          // TODO display address value
-          user.accountType !== AccountType.OWNER ? (
-            <div>
-              <p className="text-sm text-default-500">Address</p>
-              <p className="font-medium">{"TEMPORARY VALUE"}</p>
-            </div>
-          ) : (
-            <></>
-          )
-        }
+        {!isOwner && (
+          <div>
+            <p className="text-sm text-default-500">Address</p>
+            <p className="font-medium">
+              {"address" in accountInfo && accountInfo.address
+                ? accountInfo.address
+                : "No address on file"}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
@@ -318,7 +330,7 @@ function Account() {
         </Form>
       </div>
 
-      {!isOwner && (
+      {isCustomer && (
         <>
           <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
             <div>
