@@ -7,6 +7,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Button, EmptyState, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
+import { GoInbox } from "react-icons/go";
 import type { OrderResponse } from "#/types/api";
 import { useAuth } from "#/auth";
 import Skeleton from "#/components/Skeleton";
@@ -14,6 +15,7 @@ import { OrderItems } from "#/components/OrderItems";
 import { AccountType, OrderState } from "#/types/api";
 import { successToast, useOrders } from "#/utils/helpers";
 import { putRequest } from "#/utils/httpClient";
+import Title from "#/components/Title";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/_auth/employee/")({
   head: () => ({
     meta: [
       {
-        title: "Manage orders | Stilton's Store",
+        title: "Manage Orders | Stilton's Store",
       },
     ],
   }),
@@ -101,20 +103,25 @@ function EmployeeOrders() {
 
   const availableOrders = data.filter(
     (order: OrderResponse) =>
-      order.state === OrderState.PURCHASED && order.employeeId == null,
+      order.state === OrderState.PURCHASED &&
+      order.employeeId == null &&
+      order.customerId !== auth.user?.id,
   );
 
   const myOrders = data.filter(
     (order: OrderResponse) =>
-      order.employeeId === auth.user!.id &&
-      (order.state === OrderState.ASSIGNED ||
-        order.state === OrderState.PREPARED),
+      order.employeeId === auth.user!.id && order.state === OrderState.ASSIGNED,
+  );
+
+  const completedOrders = data.filter(
+    (order: OrderResponse) =>
+      order.employeeId === auth.user!.id && order.state === OrderState.PREPARED,
   );
 
   const renderTable = (
     title: string,
     orders: OrderResponse[],
-    mode: "available" | "mine",
+    mode: "available" | "mine" | "completed",
   ) => {
     return (
       <div className="flex flex-col gap-4">
@@ -135,9 +142,11 @@ function EmployeeOrders() {
                 <Table.Column>Item details</Table.Column>
               </Table.Header>
 
+              {/* TODO: Did not integrate with EmptyTable component */}
               <Table.Body
                 renderEmptyState={() => (
                   <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                    <GoInbox className="size-6 text-muted" />
                     <span className="text-sm text-muted">No orders found</span>
                   </EmptyState>
                 )}
@@ -209,19 +218,16 @@ function EmployeeOrders() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="-mt-12 flex flex-col gap-4">
       <div>
-        <h1 className="text-2xl font-semibold">Manage orders</h1>
-        <p className="text-sm text-default-500">
-          View available orders, assign them to yourself, and manage your own
-          assigned orders.
-        </p>
+        <Title pagename="Manage Orders" />
       </div>
 
       {actionError && <p className="text-sm text-danger">{actionError}</p>}
 
-      {renderTable("Available orders", availableOrders, "available")}
-      {renderTable("My assigned orders", myOrders, "mine")}
+      {renderTable("Available Orders", availableOrders, "available")}
+      {renderTable("My Assigned Orders", myOrders, "mine")}
+      {renderTable("My Completed Orders", completedOrders, "completed")}
     </div>
   );
 }

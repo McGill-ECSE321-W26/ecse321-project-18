@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureRestTestClient
-class AccountServiceIntegrationTests {
+class AccountIntegrationTests {
     @Autowired private RestTestClient client;
     @Autowired private EmployeeRepository employeeRepository;
     @Autowired private OwnerRepository ownerRepository;
@@ -58,6 +58,9 @@ class AccountServiceIntegrationTests {
     /** Setup for accountService integration tests. */
     @BeforeAll
     void setup() {
+        employeeRepository.deleteAll();
+        customerRepository.deleteAll();
+
         // initialize
         Owner owner = new Owner();
         owner.setEmail("owner@fashionstore.com");

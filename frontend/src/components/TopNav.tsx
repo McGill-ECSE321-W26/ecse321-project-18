@@ -20,7 +20,7 @@ const customerLinks: navLink[] = [
 
 const employeeLinks: navLink[] = [
   ...customerLinks,
-  { name: "Manage orders", href: "/employee" },
+  { name: "Manage Orders", href: "/employee" },
 ];
 
 const managerLinks: navLink[] = [
