@@ -151,6 +151,17 @@ public class ClothingItemService {
                             itemId, productId));
         }
 
+        performSafeItemDelete(itemId, item);
+    }
+
+    /**
+     * Helper method to delete clothing item
+     * @param itemId ID of the ClothingItem to delete
+     * @param item ClothingItem to delete
+     * @throws FashionStoreException if the item does not belong to the specified product
+     * @author Kenneth Wang (KennethWang6)
+     */
+    private void performSafeItemDelete(int itemId, ClothingItem item) {
         try {
                 clothingItemRepository.delete(item);
 

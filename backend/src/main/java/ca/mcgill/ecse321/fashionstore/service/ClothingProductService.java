@@ -93,20 +93,18 @@ public class ClothingProductService {
             clothingProductRepository.delete(product);
 
         } catch (DataIntegrityViolationException ex) {
-                // This happens when the item is referenced by orders or other FK constraints
-                throw new FashionStoreException(
-                        HttpStatus.CONFLICT,
-                        String.format(
-                            "ClothingProduct ID %d cannot be deleted because it is associated with existing orders.",
-                            productId));
+            throw new FashionStoreException(
+                    HttpStatus.CONFLICT,
+                    String.format(
+                        "ClothingProduct ID %d cannot be deleted because it is associated with existing orders.",
+                        productId));
 
         } catch (Exception ex) {
-                // Generic fallback for unexpected issues
-                throw new FashionStoreException(
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        String.format(
-                            "Failed to delete the ClothingProduct ID %d due to an unexpected error.",
-                            productId));
+            throw new FashionStoreException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    String.format(
+                        "Failed to delete the ClothingProduct ID %d due to an unexpected error.",
+                        productId));
         }
     }
 
