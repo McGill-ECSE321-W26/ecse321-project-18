@@ -1,4 +1,4 @@
-import { Button, Card, FieldError, Label, NumberField } from "@heroui/react";
+import { Button, Card, Label, NumberField } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -119,36 +119,31 @@ export default function AddItemToCart({
                 );
               })}
             </div>
-            <h3 className="text-xl">
-              {selectedNumInStock !== 0 ? (
-                <>
+            {selectedNumInStock !== 0 ? (
+              <>
+                <h3 className="text-xl">
                   <strong>In stock:</strong> {selectedNumInStock} remaining
-                  <div className="w-33">
-                    <NumberField
-                      className="w-full max-w-64"
-                      defaultValue={1}
-                      minValue={1}
-                      name="quantity"
-                      maxValue={selectedNumInStock}
-                      onChange={setQuantity}
-                      isDisabled={isManager}
-                    >
-                      <Label className="text-xl mt-2 font-bold">Quantity</Label>
-                      <NumberField.Group>
-                        <NumberField.DecrementButton />
-                        <NumberField.Input className="w-15" />
-                        <NumberField.IncrementButton />
-                      </NumberField.Group>
-                    </NumberField>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span className="font-bold text-red-500">Out of stock.</span>{" "}
-                  (You can still add this to your cart as a wishlist item.)
-                </>
-              )}
-            </h3>
+                </h3>
+                <NumberField
+                  className="w-full max-w-64 flex flex-row items-center gap-3"
+                  defaultValue={1}
+                  minValue={1}
+                  name="quantity"
+                  maxValue={selectedNumInStock}
+                  onChange={setQuantity}
+                  isDisabled={isManager}
+                >
+                  <Label className="text-xl font-bold">Quantity:</Label>
+                  <NumberField.Group className="text-center shadow-sm shadow-gray-400">
+                    <NumberField.DecrementButton />
+                    <NumberField.Input className="text-center" />
+                    <NumberField.IncrementButton />
+                  </NumberField.Group>
+                </NumberField>
+              </>
+            ) : (
+              <h3 className="text-xl font-bold text-red-500">Out of stock.</h3>
+            )}
           </>
         ) : (
           <p>No items available.</p>
@@ -159,7 +154,7 @@ export default function AddItemToCart({
           handleAddtoCart(createShoppingCartItemRequest(selectedSize, quantity))
         }
         isDisabled={selectedNumInStock <= 0 || isManager}
-        className="mt-5"
+        className="mt-5 w-full text-base"
       >
         {isManager ? <p>Cannot add as manager</p> : <p>Add to cart</p>}
       </Button>
