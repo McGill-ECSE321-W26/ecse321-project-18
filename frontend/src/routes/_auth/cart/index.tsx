@@ -146,7 +146,7 @@ function Cart() {
           },
         });
       }
-    } catch (err) {
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -157,7 +157,7 @@ function Cart() {
     setIsSubmitting(true);
     try {
       await deleteMutation.mutateAsync({ cartItemId: cartItem.id });
-    } catch (err) {
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
@@ -167,7 +167,7 @@ function Cart() {
     setIsSubmitting(true);
     try {
       await clearMutation.mutateAsync();
-    } catch (err) {
+    } catch {
     } finally {
       setIsSubmitting(false);
     }
