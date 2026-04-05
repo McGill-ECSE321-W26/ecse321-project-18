@@ -67,6 +67,7 @@ function Account() {
   const user = auth.user;
   if (user === null) return "Error: Invalid user.";
 
+  const [addressErrors, setAddressErrors] = useState<string[]>([]);
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -77,6 +78,14 @@ function Account() {
 
   const isOwner = user.accountType === AccountType.OWNER;
   const isCustomer = user.accountType === AccountType.CUSTOMER;
+
+  const currentAddress =
+    "address" in accountInfo ? (accountInfo.address ?? "") : "";
+
+  const currentLoyaltyPoints =
+    "numOfLoyaltyPoints" in accountInfo
+      ? (accountInfo.numOfLoyaltyPoints ?? 0)
+      : 0;
 
   const accountQuery = useQuery({
     queryKey: ["myAccount", user.id, user.accountType],
@@ -144,37 +153,31 @@ function Account() {
         );
       }
 
-      const requestBody: CustomerRequest = {
-        email: accountInfo.email,
-        password,
-        address: "address" in accountInfo ? (accountInfo.address ?? "") : "",
-        numOfLoyaltyPoints:
-          "numOfLoyaltyPoints" in accountInfo
-            ? (accountInfo.numOfLoyaltyPoints ?? 0)
-            : 0,
-      };
+      if (user.accountType === AccountType.CUSTOMER) {
+        const requestBody: CustomerRequest = {
+          email: accountInfo.email,
+          password,
+          address: currentAddress,
+          numOfLoyaltyPoints: currentLoyaltyPoints,
+        };
 
-      return putRequest<CustomerResponse>(
-        `/account/customer/${user.id}`,
-        requestBody,
-      );
+        return putRequest<CustomerResponse>(
+          `/account/customer/${user.id}`,
+          requestBody,
+        );
+      }
+
+      throw new Error("Employee password update is not wired correctly yet.");
     },
   });
 
   const updateAddressMutation = useMutation({
     mutationFn: async () => {
-      if (!isCustomer) {
-        throw new Error("Only customers can update their address.");
-      }
-
       const requestBody: CustomerRequest = {
         email: accountInfo.email,
-        password: "",
+        password: null,
         address,
-        numOfLoyaltyPoints:
-          "numOfLoyaltyPoints" in accountInfo
-            ? (accountInfo.numOfLoyaltyPoints ?? 0)
-            : 0,
+        numOfLoyaltyPoints: currentLoyaltyPoints,
       };
 
       return putRequest<CustomerResponse>(
@@ -207,6 +210,8 @@ function Account() {
   };
 
   const handleAddressUpdate = async () => {
+    setAddressErrors([]);
+
     try {
       await updateAddressMutation.mutateAsync();
       successToast("Address updated successfully.");
@@ -344,7 +349,7 @@ function Account() {
               <TextField
                 isRequired
                 name="address"
-                type="address"
+                type="text"
                 onChange={(value) => setAddress(value)}
               >
                 <Label>New Address</Label>
