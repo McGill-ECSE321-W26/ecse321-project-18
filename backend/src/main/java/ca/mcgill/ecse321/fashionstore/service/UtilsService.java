@@ -100,6 +100,8 @@ public class UtilsService {
         ClothingItem clothingItem3 = createClothingItem(Size.M, Colour.GREEN, 30);
         ClothingItem clothingItem4 = createClothingItem(Size.L, Colour.PINK, 40);
         ClothingItem clothingItem5 = createClothingItem(Size.XL, Colour.PURPLE, 50);
+        ClothingItem clothingItem6 = createClothingItem(Size.M, Colour.BLUE, 60);
+        ClothingItem clothingItem7 = createClothingItem(Size.XS, Colour.GREEN, 70);
 
         Order order0 =
                 createOrder(State.PURCHASED, 20f, ORDER_DATE, DELIVERY_DATE, "0 Language Avenue");
@@ -122,8 +124,10 @@ public class UtilsService {
 
         clothingProduct0.addItem(clothingItem0);
         clothingProduct0.addItem(clothingItem1);
+        clothingProduct0.addItem(clothingItem6);
         clothingProduct1.addItem(clothingItem2);
         clothingProduct1.addItem(clothingItem3);
+        clothingProduct1.addItem(clothingItem7);
         clothingProduct2.addItem(clothingItem4);
         clothingProduct2.addItem(clothingItem5);
 

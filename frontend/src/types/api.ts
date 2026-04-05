@@ -27,6 +27,20 @@ export enum ClothingColour {
   BROWN = "Brown",
 }
 
+export enum ClothingColourHexes {
+  RED = "#E7180B",
+  ORANGE = "#FF692A",
+  YELLOW = "#FFDF20",
+  GREEN = "#2AA63E",
+  BLUE = "#155DFC",
+  PURPLE = "#9810FA",
+  PINK = "#F6339A",
+  BLACK = "#000000",
+  GREY = "#364153",
+  WHITE = "#FFFFFF",
+  BROWN = "#461901",
+}
+
 export enum OrderState {
   PURCHASED = "Purchased",
   ASSIGNED = "Assigned",
