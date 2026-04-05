@@ -211,9 +211,11 @@ public class OrderService {
      */
     private void modifyStatusOrder(Order order, Date today) {
         if (order.getState() == State.PREPARED && order.getDeliveryDate().after(today)) {
+            // orders that were prepared in time are now delivered
             order.setState(State.DELIVERED);
         } else if ((order.getState() == State.PURCHASED || order.getState() == State.ASSIGNED)
-                && order.getDeliveryDate().after(today)) {
+                && order.getDeliveryDate().before(today)) {
+            // delivery date has passed without order being prepared, so automatically cancel
             order.setState(State.CANCELLED);
         }
         orderRepository.save(order);

@@ -1,4 +1,4 @@
-import { Button, Card, Form } from "@heroui/react";
+import { Button, Card, Form, NumberField } from "@heroui/react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -239,37 +239,23 @@ function Cart() {
                             {/* Right side of Card */}
                             <div className="flex flex-col items-center justify-between h-full">
                               {/* Quantity buttons */}
-                              <div className="w-full justify-between grid grid-cols-[32px_40px_32px] items-center bg-default-100 border border-black rounded-full overflow-hidden text-center">
-                                <Button
-                                  onPress={() =>
-                                    handleUpdate(
-                                      cartItem,
-                                      cartItem.quantity - 1,
-                                    )
-                                  }
-                                  isDisabled={
-                                    isSubmitting || cartItem.quantity <= 1
-                                  }
-                                  size="sm"
-                                  className="rounded-l-full border-r w-full"
-                                >
-                                  -
-                                </Button>
-                                <div>{cartItem.quantity}</div>
-                                <Button
-                                  onPress={() =>
-                                    handleUpdate(
-                                      cartItem,
-                                      cartItem.quantity + 1,
-                                    )
-                                  }
-                                  isDisabled={isSubmitting}
-                                  size="sm"
-                                  className="rounded-r-full border-l w-full"
-                                >
-                                  +
-                                </Button>
-                              </div>
+                              <NumberField
+                                variant="secondary"
+                                name="quantity"
+                                defaultValue={cartItem.quantity}
+                                minValue={1}
+                                maxValue={cartItem.clothingItem.numInStock}
+                                onChange={(newQuantity) =>
+                                  handleUpdate(cartItem, newQuantity)
+                                }
+                                aria-label="Item quantity"
+                              >
+                                <NumberField.Group>
+                                  <NumberField.DecrementButton />
+                                  <NumberField.Input className="text-center text-base" />
+                                  <NumberField.IncrementButton />
+                                </NumberField.Group>
+                              </NumberField>
 
                               {/* Delete button */}
                               <Button
