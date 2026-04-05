@@ -92,11 +92,23 @@ export default function TopNav({ account, logout }: TopNavProps) {
           <>
             <ul className="hidden items-center gap-4 md:flex">
               <li>
-                <Link to="/products">Shop</Link>
+                <Link
+                  to="/products"
+                  activeOptions={{ exact: true, includeSearch: false }}
+                  className="[&.active]:font-bold"
+                >
+                  Shop
+                </Link>
               </li>
               {navLinks.map(({ name, href }) => (
                 <li key={href}>
-                  <Link to={href}>{name}</Link>
+                  <Link
+                    to={href}
+                    activeOptions={{ exact: true, includeSearch: false }}
+                    className="[&.active]:font-bold"
+                  >
+                    {name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -105,13 +117,28 @@ export default function TopNav({ account, logout }: TopNavProps) {
         <div className="hidden items-center gap-4 md:flex">
           {account ? (
             <>
-              <Link to="/account">My Account</Link>
+              <Link
+                to="/account"
+                activeOptions={{ exact: true, includeSearch: false }}
+                className="[&.active]:font-bold"
+              >
+                My Account
+              </Link>
               <Button onClick={logout}>Log out</Button>
             </>
           ) : (
             <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">
+              <Link
+                to="/login"
+                activeOptions={{ exact: true, includeSearch: false }}
+                className="[&.active]:font-bold"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                activeOptions={{ exact: true, includeSearch: false }}
+              >
                 <Button>Sign Up</Button>
               </Link>
             </>
@@ -124,13 +151,23 @@ export default function TopNav({ account, logout }: TopNavProps) {
             {account ? (
               <>
                 <li>
-                  <Link to="/products" className="block py-2">
+                  <Link
+                    to="/products"
+                    activeOptions={{ exact: true, includeSearch: false }}
+                    className="[&.active]:font-bold block py-2"
+                  >
                     Shop
                   </Link>
                 </li>
                 {navLinks.map(({ name, href }) => (
                   <li key={href}>
-                    <Link to={href}>{name}</Link>
+                    <Link
+                      to={href}
+                      activeOptions={{ exact: true, includeSearch: false }}
+                      className="[&.active]:font-bold"
+                    >
+                      {name}
+                    </Link>
                   </li>
                 ))}
               </>
@@ -138,17 +175,31 @@ export default function TopNav({ account, logout }: TopNavProps) {
             <li className="mt-4 flex flex-col gap-2 border-t border-separator pt-4">
               {account ? (
                 <>
-                  <Link to="/account">My Account</Link>
+                  <Link
+                    to="/account"
+                    activeOptions={{ exact: true, includeSearch: false }}
+                    className="[&.active]:font-bold"
+                  >
+                    My Account
+                  </Link>
                   <Button className="w-full" onClick={logout}>
                     Log out
                   </Button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="block py-2">
+                  <Link
+                    to="/login"
+                    activeOptions={{ exact: true, includeSearch: false }}
+                    className="[&.active]:font-bold block py-2"
+                  >
                     Login
                   </Link>
-                  <Link to="/register" className="w-full">
+                  <Link
+                    to="/register"
+                    activeOptions={{ exact: true, includeSearch: false }}
+                    className="w-full"
+                  >
                     <Button className="w-full">Sign Up</Button>
                   </Link>
                 </>
