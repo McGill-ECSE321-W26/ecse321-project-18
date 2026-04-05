@@ -88,7 +88,7 @@ function Orders() {
                       <Table.Row>
                         <Table.Cell>{order.id}</Table.Cell>
                         <Table.Cell>{order.state}</Table.Cell>
-                        <Table.Cell>{order.price}</Table.Cell>
+                        <Table.Cell>${order.price}</Table.Cell>
                         <Table.Cell>{order.orderDate.toString()}</Table.Cell>
                         <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
                         <Table.Cell>{order.deliveryAddress}</Table.Cell>

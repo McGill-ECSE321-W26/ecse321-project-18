@@ -1,4 +1,4 @@
-import { Button, Card, Label, NumberField } from "@heroui/react";
+import { Button, Card, Label, NumberField, toast } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -9,7 +9,6 @@ import type {
   ShoppingCartItemRequest,
   ShoppingCartResponse,
 } from "#/types/api";
-import { successToast } from "#/utils/helpers";
 import { postRequest } from "#/utils/httpClient";
 import { useAuth } from "#/auth";
 
@@ -56,8 +55,15 @@ export default function AddItemToCart({
         shoppingCartItemRequest,
       ),
     onSuccess: () => {
-      successToast("Successfully added to cart!");
-      navigate({ to: "/cart" });
+      toast.success("Successfully added to cart!", {
+        actionProps: {
+          children: "Go to cart",
+          onPress: () => navigate({ to: "/cart" }),
+          className: "bg-success text-white",
+        },
+        description: "Continue shopping or place your order.",
+        timeout: 10000,
+      });
     },
   });
 
@@ -134,7 +140,7 @@ export default function AddItemToCart({
                   isDisabled={isManager}
                 >
                   <Label className="text-xl font-bold">Quantity:</Label>
-                  <NumberField.Group className="text-center shadow-sm shadow-gray-400">
+                  <NumberField.Group className="shadow-sm shadow-gray-400">
                     <NumberField.DecrementButton />
                     <NumberField.Input className="text-center" />
                     <NumberField.IncrementButton />

@@ -59,7 +59,7 @@ public class Order {
     private float price;
 
     // Order Associations
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 
     @ManyToOne private Customer customer;
