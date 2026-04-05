@@ -1,11 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type {
-  CustomerResponse,
-  EmployeeResponse,
-  OwnerResponse,
-} from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";

@@ -10,6 +10,7 @@ import type {
 import { AccountType } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { useAccounts } from "#/utils/helpers";
+import Title from "#/components/Title";
 
 const queryClient = new QueryClient();
 
@@ -62,8 +63,8 @@ function ManageAccount() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold">Account Details</h1>
+    <div className="-mt-12 mx-auto max-w-2xl flex flex-col gap-4">
+      <Title pagename="My Account" />
 
       <Card>
         <Card.Header>
