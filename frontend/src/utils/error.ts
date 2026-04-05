@@ -1,5 +1,17 @@
 import { toast } from "@heroui/react";
 
+export const displayError = (error: string) => {
+  toast.danger(error, {
+    actionProps: {
+      children: "Dismiss",
+      onPress: () => toast.clear(),
+      variant: "tertiary",
+      className: "",
+    },
+    timeout: 10000,
+  });
+};
+
 export const displayErrors = (errors: string[]) => {
   const msg = "We encountered a few issues:\n";
   const desc = `- ${errors.join("\n- ")}`;

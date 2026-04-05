@@ -27,6 +27,20 @@ export enum ClothingColour {
   BROWN = "Brown",
 }
 
+export enum ClothingColourHexes {
+  RED = "#E7180B",
+  ORANGE = "#FF692A",
+  YELLOW = "#FFDF20",
+  GREEN = "#2AA63E",
+  BLUE = "#155DFC",
+  PURPLE = "#9810FA",
+  PINK = "#F6339A",
+  BLACK = "#000000",
+  GREY = "#364153",
+  WHITE = "#FFFFFF",
+  BROWN = "#461901",
+}
+
 export enum OrderState {
   PURCHASED = "Purchased",
   ASSIGNED = "Assigned",
@@ -89,7 +103,7 @@ export interface OrderRequest {
 
 export interface OrderStatusRequest {
   state: OrderState;
-  employeeId: number;
+  employeeId: number | null;
 }
 
 export interface OwnerRequest extends AccountRequest {}
@@ -157,10 +171,14 @@ export interface OrderItemResponse {
   clothingItem: ClothingItemResponse;
   quantity: number;
   purchasePrice: number;
+  productName: string;
 }
 
 export interface OrderResponse extends OrderRequest {
   id: number;
+  customerId: number | null; // if customer account deleted
+  employeeId: number | null; // if no employee assigned
+  customerEmail: string;
   orderItems: OrderItemResponse[];
 }
 

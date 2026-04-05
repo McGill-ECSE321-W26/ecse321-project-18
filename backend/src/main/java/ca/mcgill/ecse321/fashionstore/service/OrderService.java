@@ -16,6 +16,8 @@ import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.sql.Date;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -197,10 +199,10 @@ public class OrderService {
     public Order updateOrderStatus(
             int orderId, @Valid OrderStatusRequestDto orderStatusRequestDto) {
         Order order = Utils.findOrderById(orderRepository, orderId);
-        Employee employee =
-                Utils.findEmployeeById(employeeRepository, orderStatusRequestDto.employeeId());
         State newState = orderStatusRequestDto.state();
         if (newState == State.ASSIGNED) {
+            @NotNull(message = "Employee ID must not be null.") @Positive(message = "Employee ID must be positive.") int employeeId = orderStatusRequestDto.employeeId();
+            Employee employee = Utils.findEmployeeById(employeeRepository, employeeId);
             validateAndAssign(order, employee);
         } else if (newState == State.PREPARED) {
             validatePrepared(order);
