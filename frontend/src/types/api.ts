@@ -89,7 +89,7 @@ export interface OrderRequest {
 
 export interface OrderStatusRequest {
   state: OrderState;
-  employeeId: number;
+  employeeId: number | null;
 }
 
 export interface OwnerRequest extends AccountRequest {}
@@ -157,10 +157,14 @@ export interface OrderItemResponse {
   clothingItem: ClothingItemResponse;
   quantity: number;
   purchasePrice: number;
+  productName: string;
 }
 
 export interface OrderResponse extends OrderRequest {
   id: number;
+  customerId: number | null; // if customer account deleted
+  employeeId: number | null; // if no employee assigned
+  customerEmail: string;
   orderItems: OrderItemResponse[];
 }
 

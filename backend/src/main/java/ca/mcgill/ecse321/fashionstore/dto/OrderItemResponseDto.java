@@ -3,6 +3,7 @@ package ca.mcgill.ecse321.fashionstore.dto;
 import ca.mcgill.ecse321.fashionstore.model.OrderItem;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
@@ -22,6 +23,7 @@ public record OrderItemResponseDto(
         @NotNull(message = "ClothingItemResponseDto must not be null.") @Valid ClothingItemResponseDto clothingItem,
         @NotNull(message = "Quantity must not be null.") @Positive(message = "Quantity must be positive.") Integer quantity,
         @NotNull(message = "Purchase price must not be null.") @DecimalMin("0.01") Float purchasePrice,
+        @NotBlank(message = "Product name must not be blank.") String productName,
         Integer orderId) {
 
     /**
@@ -36,6 +38,7 @@ public record OrderItemResponseDto(
                 new ClothingItemResponseDto(orderItem.getClothingItem()),
                 orderItem.getQuantity(),
                 orderItem.getPurchasePrice(),
+                orderItem.getClothingItem().getClothingProduct().getName(),
                 orderItem.getOrder().getId());
     }
 
