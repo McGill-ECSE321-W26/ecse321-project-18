@@ -1,5 +1,15 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import java.util.Optional;
+
+import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
 import ca.mcgill.ecse321.fashionstore.dto.ClothingItemRequestDto;
 import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
@@ -7,13 +17,6 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import jakarta.validation.Valid;
-import java.util.Optional;
-import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 /** Service class for ClothingItem. */
 @Service
@@ -148,7 +151,26 @@ public class ClothingItemService {
                             itemId, productId));
         }
 
-        clothingItemRepository.delete(item);
+        try {
+                clothingItemRepository.delete(item);
+
+        } catch (DataIntegrityViolationException ex) {
+                // This happens when the item is referenced by orders or other FK constraints
+                throw new FashionStoreException(
+                        HttpStatus.CONFLICT,
+                        String.format(
+                            "ClothingItem ID %d cannot be deleted because it is associated with existing orders.",
+                            itemId));
+                        
+
+        } catch (Exception ex) {
+                // Generic fallback for unexpected issues
+                throw new FashionStoreException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        String.format(
+                            "Failed to delete the ClothingItem ID %d due to an unexpected error.",
+                            itemId));
+        }
     }
 
     /**

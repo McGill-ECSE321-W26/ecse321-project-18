@@ -221,80 +221,95 @@ function Product() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <h2 className="text-2xl font-bold">{data.name}</h2>
-        <Button
-          className="bg-blue-600 text-white hover:bg-blue-700"
-          onPress={openEditProductModal}
-        >
-          Update Product
-        </Button>
+    <div className="space-y-8">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <img
+          src={data.image && data.image !== "string" ? data.image : defaultImg}
+          alt={data.name}
+          className="w-64 h-64 object-cover rounded-3xl shadow-md shadow-gray-400"
+          onError={(e) => {
+            e.currentTarget.src = defaultImg;
+          }}
+        />
+
+        <div className="flex flex-col gap-4">
+          <h2 className="text-3xl font-bold">{data.name}</h2>
+          <p className="text-xl font-semibold text-gray-700">
+            Price: ${data.price}
+          </p>
+
+          <Button
+            className="bg-blue-600 text-white hover:bg-blue-700 w-fit"
+            onPress={openEditProductModal}
+          >
+            Update Product
+          </Button>
+        </div>
       </div>
 
-      <img
-        src={data.image && data.image !== "string" ? data.image : defaultImg}
-        alt={data.name}
-        className="w-48 h-48 object-cover rounded"
-        onError={(e) => {
-          e.currentTarget.src = defaultImg;
-        }}
-      />
-
-      <p className="text-lg">Price: ${data.price}</p>
-
-      <div className="mt-4 items-center flex gap-4">
-        <h3 className="text-xl font-semibold">Items</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-2xl font-semibold">Items</h3>
         <Button
-          onPress={() => {
-            openCreateForm();
-          }}
+          onPress={openCreateForm}
+          className="bg-green-600 text-white hover:bg-green-700"
         >
           Add New Item
         </Button>
       </div>
 
-      <ul className="space-y-3 pl-6">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-4">
-            <span>
-              Size: {item.size} — Colour: {item.colour}
-            </span>
+          <div
+            key={item.id}
+            className="p-5 bg-white rounded-3xl shadow-sm shadow-gray-400 hover:shadow-blue-400 hover:bg-blue-50 transition-all flex flex-col gap-4"
+          >
+            <div className="flex justify-between items-center">
+              <p className="font-semibold text-lg">
+                {item.size} — {item.colour}
+              </p>
+            </div>
 
-            <Input
-              type="number"
-              defaultValue={item.numInStock}
-              className="w-24"
-              onChange={(e) =>
-                setEditedStock((prev) => ({
-                  ...prev,
-                  [item.id]: Number(e.target.value),
-                }))
-              }
-              aria-label="Stock quantity"
-            />
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-600">Stock</label>
+              <Input
+                type="number"
+                defaultValue={item.numInStock}
+                className="w-full"
+                onChange={(e) =>
+                  setEditedStock((prev) => ({
+                    ...prev,
+                    [item.id]: Number(e.target.value),
+                  }))
+                }
+              />
+            </div>
 
-            <Button
-              size="sm"
-              className="bg-blue-600 text-white hover:bg-blue-700"
-              onPress={() =>
-                handleUpdateStock(item, editedStock[item.id] ?? item.numInStock)
-              }
-            >
-              Update
-            </Button>
+            <div className="flex gap-3 mt-auto">
+              <Button
+                size="sm"
+                className="bg-blue-600 text-white hover:bg-blue-700 flex-1"
+                onPress={() =>
+                  handleUpdateStock(
+                    item,
+                    editedStock[item.id] ?? item.numInStock,
+                  )
+                }
+              >
+                Update
+              </Button>
 
-            <Button
-              size="sm"
-              isDisabled={deleteItemMutation.isPending}
-              onPress={() => deleteItemMutation.mutate(item.id)}
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
-              {deleteItemMutation.isPending ? "Deleting..." : "Delete"}
-            </Button>
-          </li>
+              <Button
+                size="sm"
+                isDisabled={deleteItemMutation.isPending}
+                onPress={() => deleteItemMutation.mutate(item.id)}
+                className="bg-red-600 text-white hover:bg-red-700 flex-1"
+              >
+                {deleteItemMutation.isPending ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <Modal.Backdrop
         isOpen={isCreateItemOpen}
