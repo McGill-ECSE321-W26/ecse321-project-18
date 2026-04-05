@@ -48,11 +48,6 @@ function Accounts() {
           <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
             <ul className="hidden items-center gap-4 md:flex">
               <li>
-                <Link to="." href="/admin/accounts">
-                  Accounts
-                </Link>
-              </li>
-              <li>
                 <Link to="." href="/admin/accounts#owners">
                   Owners
                 </Link>

@@ -255,6 +255,7 @@ function Orders() {
 
                           <Button
                             onPress={() => handleCancel(order)}
+                            variant="danger"
                             isDisabled={
                               updateStatusMutation.isPending ||
                               order.state === OrderState.DELIVERED ||

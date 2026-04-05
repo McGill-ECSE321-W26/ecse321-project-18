@@ -113,7 +113,7 @@ function AdminDashboard() {
     {
       label: "Total orders",
       value: totalOrders,
-      helper: "All order records",
+      helper: "Orders submitted",
     },
     {
       label: "Unassigned orders",
@@ -123,7 +123,7 @@ function AdminDashboard() {
     {
       label: "Assigned orders",
       value: assignedOrders,
-      helper: "In progress",
+      helper: "Assigned and being prepared",
     },
     {
       label: "Prepared orders",
@@ -143,12 +143,12 @@ function AdminDashboard() {
     {
       label: "Products",
       value: totalProducts,
-      helper: "Product catalog",
+      helper: "Products in the catalog",
     },
     {
       label: "Cancelled orders",
       value: cancelledOrders,
-      helper: "Cancelled history",
+      helper: "Cancelled",
     },
   ];
 
@@ -169,35 +169,24 @@ function AdminDashboard() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 justify-center">
         <Button onPress={() => navigate({ to: "/admin/orders" })}>
-          Manage Orders
+          Manage orders
         </Button>
-        <Button
-          variant="secondary"
-          onPress={() => navigate({ to: "/admin/accounts" })}
-        >
+        <Button onPress={() => navigate({ to: "/admin/accounts" })}>
           Manage accounts
         </Button>
-        <Button
-          variant="secondary"
-          onPress={() => navigate({ to: "/admin/products" })}
-        >
+        <Button onPress={() => navigate({ to: "/admin/products" })}>
           Manage products
         </Button>
-        <Button
-          variant="secondary"
-          onPress={() => navigate({ to: "/products" })}
-        >
-          View shop
-        </Button>
+        <Button onPress={() => navigate({ to: "/products" })}>View shop</Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Recent orders</h2>
+              <h3 className="text-xl font-semibold">Recent orders</h3>
             </div>
             <Button
               variant="secondary"
@@ -238,7 +227,7 @@ function AdminDashboard() {
 
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Employee workload</h2>
+            <h3 className="text-xl font-semibold">Employee workload</h3>
           </div>
 
           <Table className="table-fixed w-full">
@@ -272,7 +261,7 @@ function AdminDashboard() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Unassigned orders</h2>
+            <h3 className="text-xl font-semibold">Unassigned orders</h3>
           </div>
 
           <Table className="table-fixed w-full">
