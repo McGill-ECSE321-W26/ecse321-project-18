@@ -6,3 +6,4 @@ pgdata/
 
 # Other
 .tms.toml
+*.iml

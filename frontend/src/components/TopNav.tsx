@@ -5,7 +5,7 @@ import { AccountType } from "#/types/api";
 
 type TopNavProps = {
   account: AccountType | undefined;
-  logout?: () => void;
+  logout: () => void;
 };
 
 type navLink = {
@@ -20,7 +20,7 @@ const customerLinks: navLink[] = [
 
 const employeeLinks: navLink[] = [
   ...customerLinks,
-  { name: "Manage orders", href: "/employee" },
+  { name: "Manage Orders", href: "/employee" },
 ];
 
 const managerLinks: navLink[] = [

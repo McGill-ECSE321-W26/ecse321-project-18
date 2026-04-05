@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Button, EmptyState, Table } from "@heroui/react";
+import { Button, Table } from "@heroui/react";
 
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { OrderState } from "#/types/api";
 import { useAccounts, useClothingProducts, useOrders } from "#/utils/helpers";
+import EmptyTable from "#/components/EmptyTable";
+import Title from "#/components/Title";
 
 const queryClient = new QueryClient();
 
@@ -97,7 +99,7 @@ function AdminDashboard() {
     .flatMap((product) =>
       product.clothingItems.map((item) => ({
         productName: product.name,
-        itemId: item.id,
+        id: item.id,
         size: item.size,
         colour: item.colour,
         numInStock: item.numInStock,
@@ -111,7 +113,7 @@ function AdminDashboard() {
     {
       label: "Total orders",
       value: totalOrders,
-      helper: "All order records",
+      helper: "Orders submitted",
     },
     {
       label: "Unassigned orders",
@@ -121,7 +123,7 @@ function AdminDashboard() {
     {
       label: "Assigned orders",
       value: assignedOrders,
-      helper: "In progress",
+      helper: "Assigned and being prepared",
     },
     {
       label: "Prepared orders",
@@ -141,20 +143,18 @@ function AdminDashboard() {
     {
       label: "Products",
       value: totalProducts,
-      helper: "Product catalog",
+      helper: "Products in the catalog",
     },
     {
       label: "Cancelled orders",
       value: cancelledOrders,
-      helper: "Cancelled history",
+      helper: "Cancelled",
     },
   ];
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold">Dashboard</h1>
-      </div>
+    <div className="-mt-12 flex flex-col gap-4">
+      <Title pagename="Dashboard" />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {summaryCards.map((card) => (
@@ -169,35 +169,24 @@ function AdminDashboard() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 justify-center">
         <Button onPress={() => navigate({ to: "/admin/orders" })}>
           Manage orders
         </Button>
-        <Button
-          variant="secondary"
-          onPress={() => navigate({ to: "/admin/accounts" })}
-        >
+        <Button onPress={() => navigate({ to: "/admin/accounts" })}>
           Manage accounts
         </Button>
-        <Button
-          variant="secondary"
-          onPress={() => navigate({ to: "/admin/products" })}
-        >
+        <Button onPress={() => navigate({ to: "/admin/products" })}>
           Manage products
         </Button>
-        <Button
-          variant="secondary"
-          onPress={() => navigate({ to: "/products" })}
-        >
-          Manage shop
-        </Button>
+        <Button onPress={() => navigate({ to: "/products" })}>View shop</Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Recent orders</h2>
+              <h3 className="text-xl font-semibold">Recent orders</h3>
             </div>
             <Button
               variant="secondary"
@@ -218,16 +207,10 @@ function AdminDashboard() {
                   <Table.Column>Price</Table.Column>
                 </Table.Header>
 
-                <Table.Body
-                  renderEmptyState={() => (
-                    <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                      <span className="text-sm text-muted">
-                        No orders found
-                      </span>
-                    </EmptyState>
-                  )}
-                >
-                  {recentOrders.map((order: OrderResponse) => (
+                <EmptyTable
+                  data={recentOrders}
+                  message="No orders found"
+                  renderRow={(order: OrderResponse) => (
                     <Table.Row key={order.id}>
                       <Table.Cell>{order.id}</Table.Cell>
                       <Table.Cell>{order.state}</Table.Cell>
@@ -235,8 +218,8 @@ function AdminDashboard() {
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
                       <Table.Cell>{order.price}</Table.Cell>
                     </Table.Row>
-                  ))}
-                </Table.Body>
+                  )}
+                />
               </Table.Content>
             </Table.ScrollContainer>
           </Table>
@@ -244,7 +227,7 @@ function AdminDashboard() {
 
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Employee workload</h2>
+            <h3 className="text-xl font-semibold">Employee workload</h3>
           </div>
 
           <Table className="table-fixed w-full">
@@ -257,24 +240,18 @@ function AdminDashboard() {
                   <Table.Column>Total handled</Table.Column>
                 </Table.Header>
 
-                <Table.Body
-                  renderEmptyState={() => (
-                    <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                      <span className="text-sm text-muted">
-                        No employees found
-                      </span>
-                    </EmptyState>
-                  )}
-                >
-                  {employeeWorkload.map((employee) => (
+                <EmptyTable
+                  data={employeeWorkload}
+                  message="No employees found"
+                  renderRow={(employee) => (
                     <Table.Row key={employee.id}>
                       <Table.Cell>{employee.email}</Table.Cell>
                       <Table.Cell>{employee.assigned}</Table.Cell>
                       <Table.Cell>{employee.prepared}</Table.Cell>
                       <Table.Cell>{employee.total}</Table.Cell>
                     </Table.Row>
-                  ))}
-                </Table.Body>
+                  )}
+                />
               </Table.Content>
             </Table.ScrollContainer>
           </Table>
@@ -284,7 +261,7 @@ function AdminDashboard() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Unassigned orders</h2>
+            <h3 className="text-xl font-semibold">Unassigned orders</h3>
           </div>
 
           <Table className="table-fixed w-full">
@@ -297,31 +274,24 @@ function AdminDashboard() {
                   <Table.Column>Price</Table.Column>
                 </Table.Header>
 
-                <Table.Body
-                  renderEmptyState={() => (
-                    <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                      <span className="text-sm text-muted">
-                        No unassigned purchased orders
-                      </span>
-                    </EmptyState>
-                  )}
-                >
-                  {orders
+                <EmptyTable
+                  data={orders
                     .filter(
                       (order: OrderResponse) =>
                         order.state === OrderState.PURCHASED &&
                         order.employeeId == null,
                     )
-                    .slice(0, 5)
-                    .map((order: OrderResponse) => (
-                      <Table.Row key={order.id}>
-                        <Table.Cell>{order.id}</Table.Cell>
-                        <Table.Cell>{order.customerEmail}</Table.Cell>
-                        <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
-                        <Table.Cell>{order.price}</Table.Cell>
-                      </Table.Row>
-                    ))}
-                </Table.Body>
+                    .slice(0, 5)}
+                  message="No unassigned purchased orders"
+                  renderRow={(order: OrderResponse) => (
+                    <Table.Row key={order.id}>
+                      <Table.Cell>{order.id}</Table.Cell>
+                      <Table.Cell>{order.customerEmail}</Table.Cell>
+                      <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
+                      <Table.Cell>{order.price}</Table.Cell>
+                    </Table.Row>
+                  )}
+                />
               </Table.Content>
             </Table.ScrollContainer>
           </Table>
@@ -342,24 +312,18 @@ function AdminDashboard() {
                   <Table.Column>Stock</Table.Column>
                 </Table.Header>
 
-                <Table.Body
-                  renderEmptyState={() => (
-                    <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                      <span className="text-sm text-muted">
-                        No low stock items
-                      </span>
-                    </EmptyState>
-                  )}
-                >
-                  {stockAlerts.map((item) => (
-                    <Table.Row key={item.itemId}>
+                <EmptyTable
+                  data={stockAlerts}
+                  message="No low stock items"
+                  renderRow={(item) => (
+                    <Table.Row key={item.id}>
                       <Table.Cell>{item.productName}</Table.Cell>
                       <Table.Cell>{item.size}</Table.Cell>
                       <Table.Cell>{item.colour}</Table.Cell>
                       <Table.Cell>{item.numInStock}</Table.Cell>
                     </Table.Row>
-                  ))}
-                </Table.Body>
+                  )}
+                />
               </Table.Content>
             </Table.ScrollContainer>
           </Table>

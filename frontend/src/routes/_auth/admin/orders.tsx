@@ -7,12 +7,15 @@ import {
 import { Button, EmptyState, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
+import { GoInbox } from "react-icons/go";
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { OrderItems } from "#/components/OrderItems";
 import { OrderState } from "#/types/api";
 import { successToast, useAccounts, useOrders } from "#/utils/helpers";
 import { putRequest } from "#/utils/httpClient";
+import { displayError } from "#/utils/error";
+import Title from "#/components/Title";
 
 const queryClient = new QueryClient();
 
@@ -59,7 +62,7 @@ function Orders() {
     }: {
       orderId: number;
       state: OrderState;
-      employeeId: number;
+      employeeId: number | null;
     }) => {
       return putRequest(`/order/${orderId}/status`, {
         state,
@@ -91,6 +94,9 @@ function Orders() {
   if (isOrdersLoading || isAccountsLoading) return <Skeleton />;
   if (ordersError) return "An error has occurred: " + ordersError.message;
   if (accountsError) return "An error has occurred: " + accountsError.message;
+  if (accounts === undefined || orders === undefined) {
+    return "An error has occurred: undefined values.";
+  }
 
   const employees = accounts.employees;
 
@@ -109,10 +115,6 @@ function Orders() {
 
     if (order.employeeId != null) {
       return order.employeeId;
-    }
-
-    if (employees.length > 0) {
-      return employees[0].id;
     }
 
     return null;
@@ -134,7 +136,7 @@ function Orders() {
     const employeeId = getSelectedEmployeeId(order);
 
     if (employeeId == null) {
-      setActionError("No employee is available to assign.");
+      displayError("No employee can assigned.");
       return;
     }
 
@@ -156,10 +158,8 @@ function Orders() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="text-xl font-semibold">All Orders</h2>
-      </div>
+    <div className="-mt-12 flex flex-col gap-4">
+      <Title pagename="All Orders" />
 
       {actionError && <p className="text-sm text-danger">{actionError}</p>}
 
@@ -183,6 +183,7 @@ function Orders() {
             <Table.Body
               renderEmptyState={() => (
                 <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                  <GoInbox className="size-6 text-muted" />
                   <span className="text-sm text-muted">No orders found</span>
                 </EmptyState>
               )}
@@ -197,7 +198,7 @@ function Orders() {
                       <Table.Cell>{order.id}</Table.Cell>
                       <Table.Cell>{order.state}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
-                      <Table.Cell>{order.price}</Table.Cell>
+                      <Table.Cell>${order.price}</Table.Cell>
                       <Table.Cell>{order.orderDate.toString()}</Table.Cell>
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
                       <Table.Cell>{order.deliveryAddress}</Table.Cell>
@@ -217,14 +218,24 @@ function Orders() {
                             }))
                           }
                         >
+                          <option value="" disabled>
+                            Select an employee...
+                          </option>
                           {employees.length === 0 ? (
-                            <option value="">No employees available</option>
+                            <option value="" disabled>
+                              No employees available
+                            </option>
                           ) : (
-                            employees.map((employee: EmployeeResponse) => (
-                              <option key={employee.id} value={employee.id}>
-                                {employee.email}
-                              </option>
-                            ))
+                            employees
+                              .filter(
+                                (employee: EmployeeResponse) =>
+                                  employee.id !== order.customerId,
+                              )
+                              .map((employee: EmployeeResponse) => (
+                                <option key={employee.id} value={employee.id}>
+                                  {employee.email}
+                                </option>
+                              ))
                           )}
                         </select>
                       </Table.Cell>
@@ -244,10 +255,11 @@ function Orders() {
 
                           <Button
                             onPress={() => handleCancel(order)}
+                            variant="danger"
                             isDisabled={
                               updateStatusMutation.isPending ||
                               order.state === OrderState.DELIVERED ||
-                              employees.length === 0
+                              order.state === OrderState.CANCELLED
                             }
                           >
                             Cancel

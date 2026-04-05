@@ -89,7 +89,7 @@ export interface OrderRequest {
 
 export interface OrderStatusRequest {
   state: OrderState;
-  employeeId: number;
+  employeeId: number | null;
 }
 
 export interface OwnerRequest extends AccountRequest {}

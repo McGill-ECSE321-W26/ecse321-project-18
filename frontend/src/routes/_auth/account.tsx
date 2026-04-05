@@ -13,11 +13,13 @@ import type {
   CustomerRequest,
   CustomerResponse,
   EmployeeResponse,
+  OwnerResponse,
 } from "#/types/api";
 import { useAuth } from "#/auth";
 import { AccountType } from "#/types/api";
 import { deleteRequest, getRequest, putRequest } from "#/utils/httpClient";
 import { successToast } from "#/utils/helpers";
+import Title from "#/components/Title";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +65,9 @@ function Account() {
   const router = useRouter();
   const navigate = Route.useNavigate();
   const user = auth.user;
+  if (user === null) return "Error: Invalid user.";
 
+  const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
@@ -71,11 +75,10 @@ function Account() {
   const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
-  const isOwner = user?.accountType === AccountType.OWNER;
+  const isOwner = user.accountType === AccountType.OWNER;
 
   const accountQuery = useQuery({
-    queryKey: ["myAccount", user?.id, user?.accountType],
-    enabled: user != null,
+    queryKey: ["myAccount", user.id, user.accountType],
     queryFn: async (): Promise<AccountDetails> => {
       if (user.accountType === AccountType.CUSTOMER) {
         const customer = await getRequest<CustomerResponse>(
@@ -106,14 +109,10 @@ function Account() {
       return accountQuery.data.data;
     }
 
-    if (user) {
-      return {
-        id: user.id,
-        email: user.email,
-      };
-    }
-
-    return null;
+    return {
+      id: user.id,
+      email: user.email,
+    };
   }, [accountQuery.data, user]);
 
   const updatePasswordMutation = useMutation({
@@ -155,6 +154,23 @@ function Account() {
     },
   });
 
+  // TODO update address
+  const updateAddressMutation = useMutation({
+    mutationFn: async () => {
+      const requestBody: CustomerRequest = {
+        email: "",
+        password: "",
+        address: "",
+        numOfLoyaltyPoints: 0,
+      };
+
+      return putRequest<CustomerResponse>(
+        `/account/customer/${user.id}`,
+        requestBody,
+      );
+    },
+  });
+
   const deleteAccountMutation = useMutation({
     mutationFn: async () => {
       return deleteRequest<void>(`/account/${user.id}`);
@@ -175,6 +191,16 @@ function Account() {
     } catch (error) {
       setPasswordErrors(extractErrors(error));
     }
+  };
+
+  // TODO handle address update
+  const handleAddressUpdate = async () => {
+    try {
+      await updatePasswordMutation.mutateAsync();
+      setAddress("");
+      successToast("Password updated successfully.");
+      await accountQuery.refetch();
+    } catch (error) {}
   };
 
   const handleDeleteAccount = async () => {
@@ -200,24 +226,31 @@ function Account() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-8">
+    <div className="-mt-12 mx-auto max-w-2xl flex flex-col gap-4">
       <div>
-        <h2 className="text-2xl font-semibold">My Account</h2>
-        <p className="text-sm text-default-500">
-          View your account details, update your password, and manage your
-          account.
-        </p>
+        <Title pagename="My Account" />
       </div>
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>
           <p className="text-sm text-default-500">Email</p>
-          <p className="font-medium">{accountInfo?.email}</p>
+          <p className="font-medium">{accountInfo.email}</p>
         </div>
         <div>
           <p className="text-sm text-default-500">Account Type</p>
           <p className="font-medium">{user.accountType}</p>
         </div>
+        {
+          // TODO display address value
+          user.accountType !== AccountType.OWNER ? (
+            <div>
+              <p className="text-sm text-default-500">Address</p>
+              <p className="font-medium">{"TEMPORARY VALUE"}</p>
+            </div>
+          ) : (
+            <></>
+          )
+        }
       </div>
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
@@ -286,49 +319,93 @@ function Account() {
       </div>
 
       {!isOwner && (
-        <div className="flex flex-col gap-3 rounded-xl border border-red-200 p-6">
-          <div>
-            <p className="text-xl font-semibold text-red-600">Delete Account</p>
-            <p className="text-sm text-default-500">
-              This action is permanent and cannot be undone.
-            </p>
-          </div>
-
-          {deleteErrors.length > 0 && (
-            <div className="text-sm text-red-500 flex flex-col gap-1">
-              {deleteErrors.map((error, index) => (
-                <p key={index}>{error}</p>
-              ))}
-            </div>
-          )}
-
-          {confirmingDelete ? (
-            <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium">
-                Are you sure? This cannot be undone.
+        <>
+          <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+            <div>
+              <p className="text-xl font-semibold">Change Address</p>
+              <p className="text-sm text-default-500">
+                Enter a new address for your account.
               </p>
+            </div>
+
+            <Form action={handleAddressUpdate} className="flex flex-col gap-4">
+              <TextField
+                isRequired
+                name="address"
+                type="address"
+                onChange={(value) => setAddress(value)}
+              >
+                <Label>New Address</Label>
+                <Input placeholder="Enter your new address" value={address} />
+              </TextField>
+
               <div className="flex gap-2">
                 <Button
-                  onPress={handleDeleteAccount}
-                  isLoading={deleteAccountMutation.isPending}
+                  type="submit"
+                  isDisabled={updateAddressMutation.isPending}
                 >
-                  Yes, delete my account
+                  Save Address
                 </Button>
                 <Button
+                  type="button"
                   variant="secondary"
-                  onPress={() => setConfirmingDelete(false)}
-                  isDisabled={deleteAccountMutation.isPending}
+                  isDisabled={updateAddressMutation.isPending}
+                  onPress={() => {
+                    setAddress("");
+                  }}
                 >
                   Cancel
                 </Button>
               </div>
+            </Form>
+          </div>
+
+          <div className="flex flex-col gap-3 rounded-xl border border-red-200 p-6">
+            <div>
+              <p className="text-xl font-semibold text-red-600">
+                Delete Account
+              </p>
+              <p className="text-sm text-default-500">
+                This action is permanent and cannot be undone.
+              </p>
             </div>
-          ) : (
-            <Button onPress={() => setConfirmingDelete(true)}>
-              Delete Account
-            </Button>
-          )}
-        </div>
+
+            {deleteErrors.length > 0 && (
+              <div className="text-sm text-red-500 flex flex-col gap-1">
+                {deleteErrors.map((error, index) => (
+                  <p key={index}>{error}</p>
+                ))}
+              </div>
+            )}
+
+            {confirmingDelete ? (
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-medium">
+                  Are you sure? This cannot be undone.
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    onPress={handleDeleteAccount}
+                    isDisabled={deleteAccountMutation.isPending}
+                  >
+                    Yes, delete my account
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onPress={() => setConfirmingDelete(false)}
+                    isDisabled={deleteAccountMutation.isPending}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button onPress={() => setConfirmingDelete(true)}>
+                Delete Account
+              </Button>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

@@ -48,11 +48,6 @@ function Accounts() {
           <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
             <ul className="hidden items-center gap-4 md:flex">
               <li>
-                <Link to="." href="/admin/accounts">
-                  Accounts
-                </Link>
-              </li>
-              <li>
                 <Link to="." href="/admin/accounts#owners">
                   Owners
                 </Link>
@@ -81,25 +76,20 @@ function Accounts() {
                     <Table.Column>Email</Table.Column>
                     <Table.Column>Button</Table.Column>
                   </Table.Header>
-                  {data.owners.length === 0 ? (
-                    <EmptyTable />
-                  ) : (
-                    <Table.Body>
-                      {data.owners.map((owner: OwnerResponse) => {
-                        return (
-                          <Table.Row key={owner.id}>
-                            <Table.Cell>{owner.id}</Table.Cell>
-                            <Table.Cell>{owner.email}</Table.Cell>
-                            <Table.Cell>
-                              <Button onPress={() => handlePress(owner.id)}>
-                                View profile
-                              </Button>
-                            </Table.Cell>
-                          </Table.Row>
-                        );
-                      })}
-                    </Table.Body>
-                  )}
+                  <EmptyTable
+                    data={data.owners}
+                    renderRow={(owner) => (
+                      <Table.Row key={owner.id}>
+                        <Table.Cell>{owner.id}</Table.Cell>
+                        <Table.Cell>{owner.email}</Table.Cell>
+                        <Table.Cell>
+                          <Button onPress={() => handlePress(owner.id)}>
+                            View profile
+                          </Button>
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                  />
                 </Table.Content>
               </Table.ScrollContainer>
             </Table>
@@ -120,32 +110,25 @@ function Accounts() {
                     <Table.Column>Loyalty Points</Table.Column>
                     <Table.Column>Button</Table.Column>
                   </Table.Header>
-                  {data.customers.length === 0 ? (
-                    <EmptyTable />
-                  ) : (
-                    <Table.Body>
-                      {data.customers.map((customer: CustomerResponse) => {
-                        return (
-                          <Table.Row key={customer.id}>
-                            <Table.Cell>{customer.id}</Table.Cell>
-                            <Table.Cell>{customer.email}</Table.Cell>
-                            <Table.Cell>{customer.address}</Table.Cell>
-                            <Table.Cell>
-                              {customer.purchasedOrders.length}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {customer.numOfLoyaltyPoints}
-                            </Table.Cell>
-                            <Table.Cell>
-                              <Button onPress={() => handlePress(customer.id)}>
-                                View profile
-                              </Button>
-                            </Table.Cell>
-                          </Table.Row>
-                        );
-                      })}
-                    </Table.Body>
-                  )}
+                  <EmptyTable
+                    data={data.customers}
+                    renderRow={(customer) => (
+                      <Table.Row key={customer.id}>
+                        <Table.Cell>{customer.id}</Table.Cell>
+                        <Table.Cell>{customer.email}</Table.Cell>
+                        <Table.Cell>{customer.address}</Table.Cell>
+                        <Table.Cell>
+                          {customer.purchasedOrders.length}
+                        </Table.Cell>
+                        <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
+                        <Table.Cell>
+                          <Button onPress={() => handlePress(customer.id)}>
+                            View profile
+                          </Button>
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                  />
                 </Table.Content>
               </Table.ScrollContainer>
             </Table>
@@ -167,35 +150,28 @@ function Accounts() {
                     <Table.Column>Number of Assigned Orders</Table.Column>
                     <Table.Column>Button</Table.Column>
                   </Table.Header>
-                  {data.employees.length === 0 ? (
-                    <EmptyTable />
-                  ) : (
-                    <Table.Body>
-                      {data.employees.map((employee: EmployeeResponse) => {
-                        return (
-                          <Table.Row key={employee.id}>
-                            <Table.Cell>{employee.id}</Table.Cell>
-                            <Table.Cell>{employee.email}</Table.Cell>
-                            <Table.Cell>{employee.address}</Table.Cell>
-                            <Table.Cell>
-                              {employee.purchasedOrders.length}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {employee.assignedOrders.length}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {employee.numOfLoyaltyPoints}
-                            </Table.Cell>
-                            <Table.Cell>
-                              <Button onPress={() => handlePress(employee.id)}>
-                                View profile
-                              </Button>
-                            </Table.Cell>
-                          </Table.Row>
-                        );
-                      })}
-                    </Table.Body>
-                  )}
+                  <EmptyTable
+                    data={data.employees}
+                    renderRow={(employee) => (
+                      <Table.Row key={employee.id}>
+                        <Table.Cell>{employee.id}</Table.Cell>
+                        <Table.Cell>{employee.email}</Table.Cell>
+                        <Table.Cell>{employee.address}</Table.Cell>
+                        <Table.Cell>
+                          {employee.purchasedOrders.length}
+                        </Table.Cell>
+                        <Table.Cell>
+                          {employee.assignedOrders.length}
+                        </Table.Cell>
+                        <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
+                        <Table.Cell>
+                          <Button onPress={() => handlePress(employee.id)}>
+                            View profile
+                          </Button>
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                  />
                 </Table.Content>
               </Table.ScrollContainer>
             </Table>

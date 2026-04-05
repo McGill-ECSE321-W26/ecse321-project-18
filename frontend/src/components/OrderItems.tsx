@@ -10,7 +10,7 @@ export const OrderItems = ({ order, colNum }: OrderItemsProps) => {
   return (
     <Table.Row>
       <Table.Cell colSpan={colNum}>
-        <Table>
+        <Table variant="secondary">
           <Table.ScrollContainer>
             <Table.Content aria-label="Orders table">
               <Table.Header>
