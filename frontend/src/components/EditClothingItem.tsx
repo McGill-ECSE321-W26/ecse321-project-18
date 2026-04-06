@@ -1,4 +1,11 @@
-import { Button, Form, Input, Label, TextField } from "@heroui/react";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  TextField,
+} from "@heroui/react";
 import { useState } from "react";
 import type { ClothingItemResponse } from "#/types/api";
 import {
@@ -16,7 +23,7 @@ export const EditClothingItem = ({
   const [stock, setStock] = useState<string>(numInStock.toString());
 
   const deleteItemMutation = useDeleteClothingItem(clothingProductId);
-  const updateStockMutation = useUpdateStock(id);
+  const updateStockMutation = useUpdateStock(clothingProductId);
 
   async function handleUpdateStock(
     item: ClothingItemResponse,
@@ -59,6 +66,7 @@ export const EditClothingItem = ({
         >
           <Label className="text-sm font-medium text-gray-600">Stock</Label>
           <Input min={0} step={1} className="w-full" />
+          <FieldError />
         </TextField>
 
         <div className="flex gap-3 mt-auto">
