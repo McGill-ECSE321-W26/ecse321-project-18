@@ -15,4 +15,4 @@ import jakarta.validation.constraints.NotNull;
 public record ClothingProductRequestDto(
         @NotBlank(message = "Name must not be blank.") String name,
         @NotNull(message = "Price must not be null.") @DecimalMin("0.01") Float price,
-        @NotBlank(message = "Image must not be blank.") String image) {}
+        String image) {}

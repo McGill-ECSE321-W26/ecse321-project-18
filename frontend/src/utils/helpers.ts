@@ -1,9 +1,20 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@heroui/react";
-import { getRequest, getRequestWithParams } from "./httpClient";
+import {
+  deleteRequest,
+  getRequest,
+  getRequestWithParams,
+  postRequest,
+  putRequest,
+} from "./httpClient";
 import type {
   AccountListResponse,
+  ClothingColour,
+  ClothingItemRequest,
+  ClothingItemResponse,
+  ClothingProductRequest,
   ClothingProductResponse,
+  ClothingSize,
   CustomerResponse,
   OrderResponse,
   ShoppingCartListResponse,
@@ -29,10 +40,151 @@ export function useClothingProducts() {
   });
 }
 
-/* sizes and colours should really be ClothingSize[] and ClothingColour[], respectively.
-  UI components may not be able to enforce this stricter typing due to
-    the UI library expecting looser types, so be careful!
-*/
+export function createClothingProductRequest(product: ClothingProductRequest) {
+  return postRequest<ClothingProductResponse>("/clothingproduct", product);
+}
+
+export function useCreateClothingProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createClothingProductRequest,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["clothingProducts"] }),
+  });
+}
+
+export function updateClothingProduct(
+  productId: number,
+  product: ClothingProductRequest,
+) {
+  return putRequest<ClothingProductResponse>(
+    `/clothingproduct/${productId}`,
+    product,
+  );
+}
+
+export function useUpdateClothingProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      productId,
+      product,
+    }: {
+      productId: number;
+      product: ClothingProductRequest;
+    }) => updateClothingProduct(productId, product),
+    onSuccess: (updatedProduct: ClothingProductResponse, variables) => {
+      queryClient.setQueryData(
+        ["clothingProduct", variables.productId],
+        (oldData: ClothingProductResponse | undefined) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            name: updatedProduct.name,
+            price: updatedProduct.price,
+            image: updatedProduct.image,
+          };
+        },
+      );
+    },
+  });
+}
+
+export function deleteClothingProduct(productId: number) {
+  return deleteRequest(`/clothingproduct/${productId}`);
+}
+
+export function useDeleteClothingProduct() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteClothingProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["clothingProducts"] });
+    },
+  });
+}
+
+export function deleteClothingItem(productId: number, itemId: number) {
+  return deleteRequest(`/clothingproduct/${productId}/clothingitem/${itemId}`);
+}
+
+export function createClothingItem(
+  productId: number,
+  item: ClothingItemRequest,
+) {
+  return postRequest<ClothingItemResponse>(
+    `/clothingproduct/${productId}/clothingitem`,
+    item,
+  );
+}
+
+export function useCreateClothingItem(productId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (item: ClothingItemRequest) =>
+      createClothingItem(productId, item),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["clothingProduct", productId],
+      });
+    },
+  });
+}
+
+export function useDeleteClothingItem(productId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (itemId: number) => deleteClothingItem(productId, itemId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["clothingProduct", productId],
+      });
+    },
+  });
+}
+
+export function updateItemStock(
+  productId: number,
+  item: {
+    id: number;
+    size: ClothingSize;
+    colour: ClothingColour;
+    numInStock: number;
+  },
+  newStock: number,
+) {
+  return putRequest(`/clothingproduct/${productId}/clothingitem/${item.id}`, {
+    size: item.size,
+    colour: item.colour,
+    clothingProductId: productId,
+    numInStock: newStock,
+  });
+}
+
+export function useUpdateStock(productId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      item,
+      newStock,
+    }: {
+      item: ClothingItemResponse;
+      newStock: number;
+    }) => updateItemStock(productId, item, newStock),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["clothingProduct", productId],
+      });
+    },
+  });
+}
+
 export function useMatchingClothingProducts(
   name: string,
   sizes: string[],

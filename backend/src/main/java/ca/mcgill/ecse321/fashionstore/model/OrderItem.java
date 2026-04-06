@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 // line 45 "../../../../../../model.ump"
 // line 108 "../../../../../../model.ump"
@@ -31,7 +32,7 @@ public class OrderItem {
     @ManyToOne private Order order;
 
     // Helper Variables
-    private boolean canSetId;
+    @Transient private boolean canSetId;
 
     // ------------------------
     // CONSTRUCTOR

@@ -253,9 +253,7 @@ function Account() {
 
   return (
     <div className="-mt-12 mx-auto max-w-2xl flex flex-col gap-4">
-      <div>
-        <Title pagename="My Account" />
-      </div>
+      <Title pagename="My Account" />
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>

@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.sql.Date;
 import java.util.*;
 
@@ -65,7 +66,7 @@ public class Order {
     @ManyToOne private Employee employee;
 
     // Helper Variables
-    private boolean canSetId;
+    @Transient private boolean canSetId;
 
     // ------------------------
     // CONSTRUCTOR

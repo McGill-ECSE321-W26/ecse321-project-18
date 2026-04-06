@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -85,7 +87,17 @@ public class ClothingProductService {
         ClothingProduct product =
                 Utils.findClothingProductById(clothingProductRepository, productId);
 
-        clothingProductRepository.delete(product);
+        try {
+            clothingProductRepository.delete(product);
+
+        } catch (DataIntegrityViolationException ex) {
+            throw new FashionStoreException(
+                    HttpStatus.CONFLICT,
+                    String.format(
+                            "ClothingProduct ID %d cannot be deleted because it is associated with existing orders.",
+                            productId),
+                    ex);
+        }
     }
 
     /**

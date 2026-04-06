@@ -7,8 +7,10 @@ import ca.mcgill.ecse321.fashionstore.model.ClothingProduct;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,10 +49,6 @@ public class ClothingItemService {
     public ClothingItem createClothingItem(
             @Valid ClothingItemRequestDto clothingItemRequestDto, int productId) {
         // create new clothing item
-        ClothingItem clothingItem = new ClothingItem();
-        clothingItem.setSize(clothingItemRequestDto.size());
-        clothingItem.setColour(clothingItemRequestDto.colour());
-        clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
         if (productId != clothingItemRequestDto.clothingProductId()) {
             throw new FashionStoreException(
                     HttpStatus.BAD_REQUEST,
@@ -58,12 +56,38 @@ public class ClothingItemService {
                             "Path variable productId %d does not match clothingProductId in request body %d.",
                             productId, clothingItemRequestDto.clothingProductId()));
         }
-        ClothingProduct clothingProduct =
-                Utils.findClothingProductById(this.clothingProductRepository, productId);
-        clothingItem.setClothingProduct(clothingProduct);
+
+        ClothingItem clothingItem = new ClothingItem();
+        Optional<ClothingItem> clothingItemOptional =
+                clothingItemRepository.findByClothingProductIdAndColourAndSize(
+                        productId, clothingItemRequestDto.colour(), clothingItemRequestDto.size());
+        clothingItem =
+                createClothingItemHelper(
+                        clothingItem, clothingItemOptional, clothingItemRequestDto, productId);
 
         // save clothing item to repository
         clothingItem = this.clothingItemRepository.save(clothingItem);
+        return clothingItem;
+    }
+
+    private ClothingItem createClothingItemHelper(
+            ClothingItem newClothingItem,
+            Optional<ClothingItem> clothingItemOptional,
+            ClothingItemRequestDto clothingItemRequestDto,
+            int productId) {
+        ClothingItem clothingItem = newClothingItem;
+        if (clothingItemOptional.isEmpty()) {
+            clothingItem.setSize(clothingItemRequestDto.size());
+            clothingItem.setColour(clothingItemRequestDto.colour());
+            clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
+            ClothingProduct clothingProduct =
+                    Utils.findClothingProductById(this.clothingProductRepository, productId);
+            clothingItem.setClothingProduct(clothingProduct);
+        } else {
+            clothingItem = clothingItemOptional.get();
+            clothingItem.setNumInStock(
+                    clothingItem.getNumInStock() + clothingItemRequestDto.numInStock());
+        }
         return clothingItem;
     }
 
@@ -125,7 +149,29 @@ public class ClothingItemService {
                             itemId, productId));
         }
 
-        clothingItemRepository.delete(item);
+        performSafeItemDelete(itemId, item);
+    }
+
+    /**
+     * Helper method to delete clothing item
+     *
+     * @param itemId ID of the ClothingItem to delete
+     * @param item ClothingItem to delete
+     * @throws FashionStoreException if the item does not belong to the specified product
+     * @author Kenneth Wang (KennethWang6)
+     */
+    private void performSafeItemDelete(int itemId, ClothingItem item) {
+        try {
+            clothingItemRepository.delete(item);
+
+        } catch (DataIntegrityViolationException ex) {
+            throw new FashionStoreException(
+                    HttpStatus.CONFLICT,
+                    String.format(
+                            "ClothingItem ID %d cannot be deleted because it is associated with existing orders.",
+                            itemId),
+                    ex);
+        }
     }
 
     /**

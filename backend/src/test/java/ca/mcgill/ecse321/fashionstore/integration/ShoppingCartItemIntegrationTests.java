@@ -50,6 +50,7 @@ class ShoppingCartItemIntegrationTests {
     private int customerId;
     private int clothingItemId1;
     private int clothingItemId2;
+    private int clothingItemId3;
     private int shoppingCartItemId1;
     private int shoppingCartItemId2;
     private int shoppingCartItemId3;
@@ -72,6 +73,9 @@ class ShoppingCartItemIntegrationTests {
 
         ClothingItem clothingItem2 = createClothingItem(clothingProduct);
         clothingItemId2 = clothingItem2.getId();
+
+        ClothingItem clothingItem3 = createClothingItem(clothingProduct);
+        clothingItemId3 = clothingItem3.getId();
 
         Customer customer = createCustomer();
         customerId = customer.getId();
@@ -253,7 +257,7 @@ class ShoppingCartItemIntegrationTests {
     void testAddShoppingCartItemsByValidId2() {
         // Arrange
         ShoppingCartItemRequestDto body =
-                new ShoppingCartItemRequestDto(clothingItemId2, VALID_QUANTITY_2);
+                new ShoppingCartItemRequestDto(clothingItemId3, VALID_QUANTITY_2);
 
         // Act
         ShoppingCartResponseDto response =
