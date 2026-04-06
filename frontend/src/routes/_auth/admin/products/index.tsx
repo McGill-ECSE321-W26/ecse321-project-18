@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ClothingProductRequest } from "#/types/api";
 
 import {
+  successToast,
   useClothingProducts,
   useCreateClothingProduct,
   useDeleteClothingProduct,
@@ -69,8 +70,20 @@ function AdminProducts() {
       price: Number(Number(price).toFixed(2)),
       image: image.trim(),
     };
-    await createMutation.mutateAsync(product);
-    closeCreateModal();
+    try {
+      await createMutation.mutateAsync(product);
+      successToast("Successfully created product.");
+    } catch (error) {
+    } finally {
+      closeCreateModal();
+    }
+  };
+
+  const handleDeleteProduct = async (id: number) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      successToast("Successfully deleted product.");
+    } catch (error) {}
   };
 
   const handleImageSelect = async (e: { target: { files: any[] } }) => {
@@ -93,7 +106,7 @@ function AdminProducts() {
 
   return (
     <div className="-mt-12 flex flex-col gap-4">
-      <Title pagename="Stilton's Store's Accounts" />
+      <Title pagename="Stilton's Store's Products" />
       <Button onPress={openCreateModal}>
         <HiOutlinePlusSm />
         Add Product
@@ -124,7 +137,7 @@ function AdminProducts() {
                   <Button
                     size="sm"
                     isDisabled={deleteMutation.isPending}
-                    onPress={() => deleteMutation.mutate(id)}
+                    onPress={() => handleDeleteProduct(id)}
                     className="bg-red-600 text-white hover:bg-red-700"
                   >
                     Delete

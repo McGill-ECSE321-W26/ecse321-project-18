@@ -24,6 +24,7 @@ import type {
 import { ClothingColour, ClothingSize } from "#/types/api";
 import { getRequest } from "#/utils/httpClient";
 import {
+  successToast,
   useCreateClothingItem,
   useDeleteClothingItem,
   useUpdateClothingProduct,
@@ -117,14 +118,19 @@ function Product() {
 
     if (!size || !colour) return;
 
-    await createItemMutation.mutateAsync({
-      size,
-      colour,
-      numInStock: parsedStock,
-      clothingProductId: id,
-    });
-    setEditedStock({});
-    closeCreateForm();
+    try {
+      setEditedStock({});
+      await createItemMutation.mutateAsync({
+        size,
+        colour,
+        numInStock: parsedStock,
+        clothingProductId: id,
+      });
+      successToast("Successfully created item.");
+    } catch (error) {
+    } finally {
+      closeCreateForm();
+    }
   };
 
   const handleUpdateProduct = async () => {
@@ -134,11 +140,16 @@ function Product() {
       image: productImage.trim(),
     };
 
-    await updateProductMutation.mutateAsync({
-      productId: id,
-      product,
-    });
-    setIsEditProductOpen(false);
+    try {
+      await updateProductMutation.mutateAsync({
+        productId: id,
+        product,
+      });
+      successToast("Successfully updated product.");
+    } catch (error) {
+    } finally {
+      setIsEditProductOpen(false);
+    }
   };
 
   const handleProductImageSelect = async (e: { target: { files: any[] } }) => {
@@ -163,8 +174,18 @@ function Product() {
     item: ClothingItemResponse,
     newStock: number,
   ) {
-    updateStockMutation.mutate({ item, newStock });
-    setEditedStock({});
+    try {
+      await updateStockMutation.mutateAsync({ item, newStock });
+      setEditedStock({});
+      successToast("Successfully updated item stock.");
+    } catch (error) {}
+  }
+
+  async function handleDeleteItem(id: number) {
+    try {
+      await deleteItemMutation.mutateAsync(id);
+      successToast("Successfully deleted item.");
+    } catch (error) {}
   }
 
   return (
@@ -206,55 +227,57 @@ function Product() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
-          <div
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdateStock(item, editedStock[item.id] ?? item.numInStock);
+            }}
             key={item.id}
-            className="p-5 bg-white rounded-3xl shadow-sm shadow-gray-400 hover:shadow-blue-400 hover:bg-blue-50 transition-all flex flex-col gap-4"
           >
-            <div className="flex justify-between items-center">
-              <p className="font-semibold text-lg">
-                {item.size} — {item.colour}
-              </p>
-            </div>
+            <div className="p-5 bg-white rounded-3xl shadow-sm shadow-gray-400 hover:shadow-blue-400 hover:bg-blue-50 transition-all flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <p className="font-semibold text-lg">
+                  {item.size} — {item.colour}
+                </p>
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-gray-600">Stock</label>
-              <Input
-                type="number"
-                value={editedStock[item.id] ?? item.numInStock}
-                className="w-full"
-                onChange={(e) =>
-                  setEditedStock((prev) => ({
-                    ...prev,
-                    [item.id]: Number(e.target.value),
-                  }))
-                }
-              />
-            </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-gray-600">
+                  Stock
+                </label>
+                <Input
+                  type="number"
+                  value={editedStock[item.id] ?? item.numInStock}
+                  className="w-full"
+                  onChange={(e) =>
+                    setEditedStock((prev) => ({
+                      ...prev,
+                      [item.id]: Number(e.target.value),
+                    }))
+                  }
+                />
+              </div>
 
-            <div className="flex gap-3 mt-auto">
-              <Button
-                size="sm"
-                className="bg-blue-600 text-white hover:bg-blue-700 flex-1"
-                onPress={() =>
-                  handleUpdateStock(
-                    item,
-                    editedStock[item.id] ?? item.numInStock,
-                  )
-                }
-              >
-                Update
-              </Button>
+              <div className="flex gap-3 mt-auto">
+                <Button
+                  size="sm"
+                  className="bg-blue-600 text-white hover:bg-blue-700 flex-1"
+                  type="submit"
+                >
+                  Update
+                </Button>
 
-              <Button
-                size="sm"
-                isDisabled={deleteItemMutation.isPending}
-                onPress={() => deleteItemMutation.mutate(item.id)}
-                className="bg-red-600 text-white hover:bg-red-700 flex-1"
-              >
-                Delete
-              </Button>
+                <Button
+                  size="sm"
+                  isDisabled={deleteItemMutation.isPending}
+                  onPress={() => handleDeleteItem(item.id)}
+                  className="bg-red-600 text-white hover:bg-red-700 flex-1"
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
-          </div>
+          </Form>
         ))}
       </div>
 

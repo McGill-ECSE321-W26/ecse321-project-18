@@ -178,8 +178,6 @@ export function useUpdateStock(productId: number) {
     }) => updateItemStock(productId, item, newStock),
 
     onSuccess: () => {
-      successToast("Stock updated successfully");
-
       queryClient.invalidateQueries({
         queryKey: ["clothingProduct", productId],
       });
