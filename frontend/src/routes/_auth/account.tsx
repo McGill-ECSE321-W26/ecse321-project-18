@@ -67,7 +67,6 @@ function Account() {
   const user = auth.user;
   if (user === null) return "Error: Invalid user.";
 
-  const [_, setAddressErrors] = useState<string[]>([]);
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -151,6 +150,7 @@ function Account() {
         return putRequest<OwnerResponse>(
           `/account/owner/${user.id}`,
           requestBody,
+          false,
         );
       }
 
@@ -222,15 +222,11 @@ function Account() {
   };
 
   const handleAddressUpdate = async () => {
-    setAddressErrors([]);
-
     try {
       await updateAddressMutation.mutateAsync();
       successToast("Address updated successfully.");
       await accountQuery.refetch();
-    } catch (error) {
-      setAddressErrors(extractErrors(error));
-    }
+    } catch (error) {}
   };
 
   const handleDeleteAccount = async () => {
@@ -381,7 +377,6 @@ function Account() {
                   isDisabled={updateAddressMutation.isPending}
                   onPress={() => {
                     setAddress(currentAddress);
-                    setAddressErrors([]);
                   }}
                 >
                   Cancel
