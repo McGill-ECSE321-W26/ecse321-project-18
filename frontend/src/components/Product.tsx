@@ -16,7 +16,11 @@ export const Product = ({ id, name, price, image }: ProductProps) => {
       params={{ productId: id.toString() }}
     >
       <Card className="shadow-sm shadow-gray-400 hover:shadow-blue-400 hover:bg-blue-50 transition-all">
-        <img src={image || "/stiltonslogo.png"} alt={name} />
+        <img
+          className="rounded-md h-50 object-cover"
+          src={image || "/stiltonslogo.png"}
+          alt={name}
+        />
         <Card.Header className="flex gap-1">
           <Card.Title className="text-lg font-bold">{name}</Card.Title>
           <Card.Description className="text-base text-black">

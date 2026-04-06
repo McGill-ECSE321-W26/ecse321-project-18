@@ -17,7 +17,6 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import type {
-  ClothingItemResponse,
   ClothingProductRequest,
   ClothingProductResponse,
 } from "#/types/api";
@@ -26,11 +25,10 @@ import { getRequest } from "#/utils/httpClient";
 import {
   successToast,
   useCreateClothingItem,
-  useDeleteClothingItem,
   useUpdateClothingProduct,
-  useUpdateStock,
 } from "#/utils/helpers";
 import { ProductForm } from "#/components/ProductForm";
+import { EditClothingItem } from "#/components/EditClothingItem";
 
 const queryClient = new QueryClient();
 const defaultImg = "/stiltonslogo.png";
@@ -67,7 +65,7 @@ function useClothingProduct(id: number, initialData?: ClothingProductResponse) {
 function Product() {
   const { productId } = Route.useParams();
   const id = Number(productId);
-  const [editedStock, setEditedStock] = useState<Record<number, number>>({});
+  const [_, setEditedStock] = useState<Record<number, number>>({});
 
   const [isCreateItemOpen, setIsCreateItemOpen] = useState(false);
   const [size, setSize] = useState<ClothingSize | null>(null);
@@ -83,10 +81,9 @@ function Product() {
 
   const initialData = Route.useLoaderData();
   const { data } = useClothingProduct(id, initialData);
-  const deleteItemMutation = useDeleteClothingItem(id);
+
   const createItemMutation = useCreateClothingItem(id);
   const updateProductMutation = useUpdateClothingProduct();
-  const updateStockMutation = useUpdateStock(id);
 
   const resetCreateForm = () => {
     setSize(null);
@@ -170,24 +167,6 @@ function Product() {
 
   const items = [...data.clothingItems].sort((a, b) => a.id - b.id);
 
-  async function handleUpdateStock(
-    item: ClothingItemResponse,
-    newStock: number,
-  ) {
-    try {
-      await updateStockMutation.mutateAsync({ item, newStock });
-      setEditedStock({});
-      successToast("Successfully updated item stock.");
-    } catch (error) {}
-  }
-
-  async function handleDeleteItem(id: number) {
-    try {
-      await deleteItemMutation.mutateAsync(id);
-      successToast("Successfully deleted item.");
-    } catch (error) {}
-  }
-
   return (
     <div className="space-y-8">
       <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -227,57 +206,7 @@ function Product() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleUpdateStock(item, editedStock[item.id] ?? item.numInStock);
-            }}
-            key={item.id}
-          >
-            <div className="p-5 bg-white rounded-3xl shadow-sm shadow-gray-400 hover:shadow-blue-400 hover:bg-blue-50 transition-all flex flex-col gap-4">
-              <div className="flex justify-between items-center">
-                <p className="font-semibold text-lg">
-                  {item.size} — {item.colour}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-600">
-                  Stock
-                </label>
-                <Input
-                  type="number"
-                  value={editedStock[item.id] ?? item.numInStock}
-                  className="w-full"
-                  onChange={(e) =>
-                    setEditedStock((prev) => ({
-                      ...prev,
-                      [item.id]: Number(e.target.value),
-                    }))
-                  }
-                />
-              </div>
-
-              <div className="flex gap-3 mt-auto">
-                <Button
-                  size="sm"
-                  className="bg-blue-600 text-white hover:bg-blue-700 flex-1"
-                  type="submit"
-                >
-                  Update
-                </Button>
-
-                <Button
-                  size="sm"
-                  isDisabled={deleteItemMutation.isPending}
-                  onPress={() => handleDeleteItem(item.id)}
-                  className="bg-red-600 text-white hover:bg-red-700 flex-1"
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </Form>
+          <EditClothingItem key={item.id} clothingItem={item} />
         ))}
       </div>
 

@@ -163,7 +163,7 @@ function Products() {
       </Form>
       {/* display products (matching search and filters, if applicable) */}
       {data && data.length > 0 ? (
-        <div className="grid gap-3 sm:gap-5 md:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid gap-3 auto-rows-[1fr] sm:gap-5 md:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {data.map(({ name, price, image, id }) => {
             return (
               <Product

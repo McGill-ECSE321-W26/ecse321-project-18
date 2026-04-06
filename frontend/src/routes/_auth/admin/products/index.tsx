@@ -1,8 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Card, Modal } from "@heroui/react";
-import { HiOutlinePlusSm } from "react-icons/hi";
 import { useRef, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { FaPencil } from "react-icons/fa6";
 import type { ClothingProductRequest } from "#/types/api";
 
 import {
@@ -105,32 +106,35 @@ function AdminProducts() {
   }
 
   return (
-    <div className="-mt-12 flex flex-col gap-4">
+    <div className="-mt-10 flex flex-col gap-4">
       <Title pagename="Stilton's Store's Products" />
       <Button onPress={openCreateModal}>
-        <HiOutlinePlusSm />
+        <FaPlus />
         Add Product
       </Button>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {data.map(({ id, name, image }) => {
           return (
-            <Card key={id}>
+            <Card key={id} className="shadow-sm shadow-gray-400">
               <Card.Header className="flex justify-between items-center">
-                <span className="font-medium">{name}</span>
+                <h3 className="font-bold text-lg">{name}</h3>
                 <img
                   src={image && image !== "string" ? image : defaultImg}
                   alt={name}
-                  className="w-48 h-48 object-cover rounded"
-                  onError={(e) => {
-                    e.currentTarget.src = defaultImg;
-                  }}
+                  className="my-3 h-48 object-cover rounded"
                 />
-                <div className="flex gap-3 items-center">
+                <div className="flex gap-3 items-center mt-2 w-full">
                   <Link
                     to="/admin/products/$productId"
                     params={{ productId: `${id}` }}
+                    className="w-full"
                   >
-                    <Button size="sm" isDisabled={deleteMutation.isPending}>
+                    <Button
+                      size="sm"
+                      isDisabled={deleteMutation.isPending}
+                      className="w-full"
+                    >
+                      <FaPencil />
                       Edit
                     </Button>
                   </Link>
@@ -138,8 +142,10 @@ function AdminProducts() {
                     size="sm"
                     isDisabled={deleteMutation.isPending}
                     onPress={() => handleDeleteProduct(id)}
-                    className="bg-red-600 text-white hover:bg-red-700"
+                    variant="danger"
+                    className="w-full"
                   >
+                    <FaRegTrashAlt />
                     Delete
                   </Button>
                 </div>
