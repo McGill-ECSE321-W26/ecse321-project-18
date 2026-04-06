@@ -76,8 +76,15 @@ public class CustomerService {
     @Transactional
     public Customer updateCustomer(int id, @Valid CustomerRequestDto customerRequestDto) {
         Customer customer = Utils.findCustomerById(customerRepository, id);
-        customer.setPassword(customerRequestDto.password());
-        customer.setAddress(customerRequestDto.address());
+        customer.setEmail(customerRequestDto.email());
+
+        if (customerRequestDto.password() != null && !customerRequestDto.password().isBlank()) {
+            customer.setPassword(customerRequestDto.password());
+        }
+        if (customerRequestDto.address() != null && !customerRequestDto.address().isBlank()) {
+            customer.setAddress(customerRequestDto.address());
+        }
+
         return customerRepository.save(customer);
     }
 }

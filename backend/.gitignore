@@ -1,5 +1,6 @@
 HELP.md
 .gradle
+.gradle-cache
 build/
 src/main/resources/static/
 *.jar
