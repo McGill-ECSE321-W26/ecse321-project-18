@@ -127,7 +127,7 @@ function AdminProducts() {
                     onPress={() => deleteMutation.mutate(id)}
                     className="bg-red-600 text-white hover:bg-red-700"
                   >
-                    {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                    Delete
                   </Button>
                 </div>
               </Card.Header>

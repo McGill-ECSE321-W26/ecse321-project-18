@@ -249,7 +249,7 @@ function Product() {
                 onPress={() => deleteItemMutation.mutate(item.id)}
                 className="bg-red-600 text-white hover:bg-red-700 flex-1"
               >
-                {deleteItemMutation.isPending ? "Deleting..." : "Delete"}
+                Delete
               </Button>
             </div>
           </div>
@@ -286,26 +286,16 @@ function Product() {
                     </Select.Trigger>
                     <Select.Popover>
                       <ListBox>
-                        <ListBox.Item id={ClothingSize.XS} textValue="XS">
-                          XS
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingSize.S} textValue="S">
-                          S
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingSize.M} textValue="M">
-                          M
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingSize.L} textValue="L">
-                          L
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingSize.XL} textValue="XL">
-                          XL
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
+                        {Object.values(ClothingSize).map((value) => (
+                          <ListBox.Item
+                            key={value}
+                            id={value}
+                            textValue={value}
+                          >
+                            {value}
+                            <ListBox.ItemIndicator />
+                          </ListBox.Item>
+                        ))}
                       </ListBox>
                     </Select.Popover>
                   </Select>
@@ -325,71 +315,16 @@ function Product() {
                     </Select.Trigger>
                     <Select.Popover>
                       <ListBox>
-                        <ListBox.Item id={ClothingColour.RED} textValue="Red">
-                          Red
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.ORANGE}
-                          textValue="Orange"
-                        >
-                          Orange
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.YELLOW}
-                          textValue="Yellow"
-                        >
-                          Yellow
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.GREEN}
-                          textValue="Green"
-                        >
-                          Green
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingColour.BLUE} textValue="Blue">
-                          Blue
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.PURPLE}
-                          textValue="Purple"
-                        >
-                          Purple
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingColour.PINK} textValue="Pink">
-                          Pink
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.BLACK}
-                          textValue="Black"
-                        >
-                          Black
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item id={ClothingColour.GREY} textValue="Grey">
-                          Grey
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.WHITE}
-                          textValue="White"
-                        >
-                          White
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
-                        <ListBox.Item
-                          id={ClothingColour.BROWN}
-                          textValue="Brown"
-                        >
-                          Brown
-                          <ListBox.ItemIndicator />
-                        </ListBox.Item>
+                        {Object.values(ClothingColour).map((value) => (
+                          <ListBox.Item
+                            key={value}
+                            id={value}
+                            textValue={value}
+                          >
+                            {value}
+                            <ListBox.ItemIndicator />
+                          </ListBox.Item>
+                        ))}
                       </ListBox>
                     </Select.Popover>
                   </Select>

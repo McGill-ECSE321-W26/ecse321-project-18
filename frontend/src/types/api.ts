@@ -14,17 +14,17 @@ export enum ClothingSize {
 }
 
 export enum ClothingColour {
-  RED = "Red",
-  ORANGE = "Orange",
-  YELLOW = "Yellow",
-  GREEN = "Green",
-  BLUE = "Blue",
-  PURPLE = "Purple",
-  PINK = "Pink",
   BLACK = "Black",
-  GREY = "Grey",
-  WHITE = "White",
+  BLUE = "Blue",
   BROWN = "Brown",
+  GREEN = "Green",
+  GREY = "Grey",
+  ORANGE = "Orange",
+  PINK = "Pink",
+  PURPLE = "Purple",
+  RED = "Red",
+  WHITE = "White",
+  YELLOW = "Yellow",
 }
 
 export enum ClothingColourHexes {
