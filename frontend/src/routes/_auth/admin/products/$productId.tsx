@@ -123,6 +123,7 @@ function Product() {
       numInStock: parsedStock,
       clothingProductId: id,
     });
+    setEditedStock({});
     closeCreateForm();
   };
 
@@ -156,13 +157,14 @@ function Product() {
     );
   }
 
-  const items = data.clothingItems.sort((a, b) => a.id - b.id);
+  const items = [...data.clothingItems].sort((a, b) => a.id - b.id);
 
   async function handleUpdateStock(
     item: ClothingItemResponse,
     newStock: number,
   ) {
     updateStockMutation.mutate({ item, newStock });
+    setEditedStock({});
   }
 
   return (
@@ -218,7 +220,7 @@ function Product() {
               <label className="text-sm font-medium text-gray-600">Stock</label>
               <Input
                 type="number"
-                defaultValue={item.numInStock}
+                value={editedStock[item.id] ?? item.numInStock}
                 className="w-full"
                 onChange={(e) =>
                   setEditedStock((prev) => ({
@@ -269,7 +271,10 @@ function Product() {
             <Modal.Body className="overflow-visible">
               <Form
                 className="flex w-full min-w-[18rem] max-w-[90vw] flex-col gap-4"
-                onSubmit={handleCreateItem}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  void handleCreateItem();
+                }}
                 id="create-item"
               >
                 <div className="flex flex-col gap-2">

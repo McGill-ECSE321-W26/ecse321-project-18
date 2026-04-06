@@ -39,7 +39,10 @@ export function ProductForm({
   return (
     <Form
       className="flex w-full min-w-[18rem] max-w-[90vw] flex-col gap-4"
-      onSubmit={onSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        void onSubmit();
+      }}
       id={formId}
     >
       <TextField isRequired name="name" value={name} onChange={setName}>

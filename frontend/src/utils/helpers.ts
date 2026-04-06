@@ -77,7 +77,8 @@ export function useUpdateClothingProduct() {
     onSuccess: (updatedProduct: ClothingProductResponse, variables) => {
       queryClient.setQueryData(
         ["clothingProduct", variables.productId],
-        (oldData: ClothingProductResponse) => {
+        (oldData: ClothingProductResponse | undefined) => {
+          if (!oldData) return oldData;
           return {
             ...oldData,
             name: updatedProduct.name,

@@ -66,7 +66,7 @@ function AdminProducts() {
   const handleCreateProduct = async () => {
     const product: ClothingProductRequest = {
       name: name.trim(),
-      price: Number(price),
+      price: Number(Number(price).toFixed(2)),
       image: image.trim(),
     };
     await createMutation.mutateAsync(product);
