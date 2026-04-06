@@ -152,10 +152,29 @@ export function updateItemStock(
     numInStock: newStock,
   });
 }
-/* sizes and colours should really be ClothingSize[] and ClothingColour[], respectively.
-  UI components may not be able to enforce this stricter typing due to
-    the UI library expecting looser types, so be careful!
-*/
+
+export function useUpdateStock(productId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      item,
+      newStock,
+    }: {
+      item: ClothingItemResponse;
+      newStock: number;
+    }) => updateItemStock(productId, item, newStock),
+
+    onSuccess: () => {
+      successToast("Stock updated successfully");
+
+      queryClient.invalidateQueries({
+        queryKey: ["clothingProduct", productId],
+      });
+    },
+  });
+}
+
 export function useMatchingClothingProducts(
   name: string,
   sizes: string[],

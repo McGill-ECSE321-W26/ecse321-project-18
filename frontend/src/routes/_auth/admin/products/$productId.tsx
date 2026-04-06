@@ -22,10 +22,10 @@ import type {
 import { ClothingColour, ClothingSize } from "#/types/api";
 import { getRequest } from "#/utils/httpClient";
 import {
-  updateItemStock,
   useCreateClothingItem,
   useDeleteClothingItem,
   useUpdateClothingProduct,
+  useUpdateStock,
 } from "#/utils/helpers";
 import { ProductForm } from "#/components/ProductForm";
 
@@ -85,6 +85,7 @@ function Product() {
   const deleteItemMutation = useDeleteClothingItem(id);
   const createItemMutation = useCreateClothingItem(id);
   const updateProductMutation = useUpdateClothingProduct();
+  const updateStockMutation = useUpdateStock(id);
 
   const resetCreateForm = () => {
     setSize(ClothingSize.M);
@@ -217,7 +218,7 @@ function Product() {
     item: ClothingItemResponse,
     newStock: number,
   ) {
-    await updateItemStock(id, item, newStock);
+    updateStockMutation.mutate({ item, newStock });
   }
 
   return (
