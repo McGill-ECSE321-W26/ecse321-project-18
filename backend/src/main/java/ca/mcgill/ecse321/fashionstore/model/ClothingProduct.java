@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
-
 import java.util.*;
 
 // line 60 "../../../../../../model.ump"
@@ -41,8 +40,7 @@ public class ClothingProduct {
     private List<ClothingItem> items;
 
     // Helper Variables
-    @Transient
-    private boolean canSetId;
+    @Transient private boolean canSetId;
 
     // ------------------------
     // CONSTRUCTOR

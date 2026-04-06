@@ -94,15 +94,9 @@ public class ClothingProductService {
             throw new FashionStoreException(
                     HttpStatus.CONFLICT,
                     String.format(
-                        "ClothingProduct ID %d cannot be deleted because it is associated with existing orders.",
-                        productId));
-
-        } catch (Exception ex) {
-            throw new FashionStoreException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    String.format(
-                        "Failed to delete the ClothingProduct ID %d due to an unexpected error.",
-                        productId));
+                            "ClothingProduct ID %d cannot be deleted because it is associated with existing orders.",
+                            productId),
+                    ex);
         }
     }
 

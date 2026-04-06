@@ -18,6 +18,12 @@ public class FashionStoreException extends RuntimeException {
         this.status = status;
     }
 
+    /** FashionStoreException constructor with ex */
+    public FashionStoreException(@NonNull HttpStatus status, String message, Throwable cause) {
+        super(message, cause);
+        this.status = status;
+    }
+
     public HttpStatus getStatus() {
         return status;
     }
