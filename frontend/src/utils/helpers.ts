@@ -74,8 +74,19 @@ export function useUpdateClothingProduct() {
       productId: number;
       product: ClothingProductRequest;
     }) => updateClothingProduct(productId, product),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["clothingProducts"] }),
+    onSuccess: (updatedProduct: ClothingProductResponse, variables) => {
+      queryClient.setQueryData(
+        ["clothingProduct", variables.productId],
+        (oldData: ClothingProductResponse) => {
+          return {
+            ...oldData,
+            name: updatedProduct.name,
+            price: updatedProduct.price,
+            image: updatedProduct.image,
+          };
+        },
+      );
+    },
   });
 }
 

@@ -9,7 +9,9 @@ import {
   Form,
   Input,
   Label,
+  ListBox,
   Modal,
+  Select,
   TextField,
 } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
@@ -67,8 +69,8 @@ function Product() {
   const [editedStock, setEditedStock] = useState<Record<number, number>>({});
 
   const [isCreateItemOpen, setIsCreateItemOpen] = useState(false);
-  const [size, setSize] = useState<ClothingSize>(ClothingSize.M);
-  const [colour, setColour] = useState<ClothingColour>(ClothingColour.BLACK);
+  const [size, setSize] = useState<ClothingSize | null>(null);
+  const [colour, setColour] = useState<ClothingColour | null>(null);
   const [numInStock, setNumInStock] = useState("0");
   const [formError, setFormError] = useState("");
 
@@ -88,8 +90,8 @@ function Product() {
   const updateStockMutation = useUpdateStock(id);
 
   const resetCreateForm = () => {
-    setSize(ClothingSize.M);
-    setColour(ClothingColour.BLACK);
+    setSize(null);
+    setColour(null);
     setNumInStock("0");
     setFormError("");
   };
@@ -102,17 +104,6 @@ function Product() {
   const closeCreateForm = () => {
     setIsCreateItemOpen(false);
     resetCreateForm();
-  };
-
-  const resetProductForm = () => {
-    setProductName("");
-    setProductPrice("");
-    setProductImage("");
-    setProductFormError("");
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
 
   const openEditProductModal = () => {
@@ -134,6 +125,8 @@ function Product() {
         "Stock must be a whole number greater than or equal to 0.",
       );
     }
+    if (!size) return setFormError("Size is required.");
+    if (!colour) return setFormError("Colour is required.");
 
     try {
       await createItemMutation.mutateAsync({
@@ -156,7 +149,6 @@ function Product() {
     setProductFormError("");
 
     if (!productName.trim()) return setFormError("Name is required.");
-    if (!productImage.trim()) return setFormError("Image is required.");
 
     const parsedPrice = Number(productPrice);
     if ((parsedPrice * 100) % 1 != 0) {
@@ -178,7 +170,6 @@ function Product() {
         product,
       });
       setIsEditProductOpen(false);
-      resetProductForm();
     } catch (error) {
       if (error instanceof Error) {
         setProductFormError(error.message);
@@ -243,7 +234,7 @@ function Product() {
             className="bg-blue-600 text-white hover:bg-blue-700 w-fit"
             onPress={openEditProductModal}
           >
-            Update Product
+            Edit Product
           </Button>
         </div>
       </div>
@@ -328,41 +319,126 @@ function Product() {
                 onSubmit={handleCreateItem}
               >
                 <div className="flex flex-col gap-2">
-                  <Label>Size</Label>
-                  <select
-                    className="rounded-medium border border-default-200 bg-content1 px-3 py-2"
-                    value={size}
-                    onChange={(e) => setSize(e.target.value as ClothingSize)}
+                  <Select
+                    className="w-[256px]"
+                    placeholder="Select size"
+                    isRequired
+                    onChange={(key) => setSize(key as ClothingSize)}
                   >
-                    <option value="XS">XS</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                  </select>
+                    <Label>Size</Label>
+                    <Select.Trigger>
+                      <Select.Value />
+                      <Select.Indicator />
+                    </Select.Trigger>
+                    <Select.Popover>
+                      <ListBox>
+                        <ListBox.Item id={ClothingSize.XS} textValue="XS">
+                          XS
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingSize.S} textValue="S">
+                          S
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingSize.M} textValue="M">
+                          M
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingSize.L} textValue="L">
+                          L
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingSize.XL} textValue="XL">
+                          XL
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <Label>Colour</Label>
-                  <select
-                    className="rounded-medium border border-default-200 bg-content1 px-3 py-2"
-                    value={colour}
-                    onChange={(e) =>
-                      setColour(e.target.value as ClothingColour)
-                    }
+                  <Select
+                    className="w-[256px]"
+                    placeholder="Select colour"
+                    isRequired
+                    onChange={(key) => setColour(key as ClothingColour)}
                   >
-                    <option value="Red">Red</option>
-                    <option value="Orange">Orange</option>
-                    <option value="Yellow">Yellow</option>
-                    <option value="Green">Green</option>
-                    <option value="Blue">Blue</option>
-                    <option value="Purple">Purple</option>
-                    <option value="Pink">Pink</option>
-                    <option value="Black">Black</option>
-                    <option value="Grey">Grey</option>
-                    <option value="White">White</option>
-                    <option value="Brown">Brown</option>
-                  </select>
+                    <Label>Colour</Label>
+                    <Select.Trigger>
+                      <Select.Value />
+                      <Select.Indicator />
+                    </Select.Trigger>
+                    <Select.Popover>
+                      <ListBox>
+                        <ListBox.Item id={ClothingColour.RED} textValue="Red">
+                          Red
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.ORANGE}
+                          textValue="Orange"
+                        >
+                          Orange
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.YELLOW}
+                          textValue="Yellow"
+                        >
+                          Yellow
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.GREEN}
+                          textValue="Green"
+                        >
+                          Green
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingColour.BLUE} textValue="Blue">
+                          Blue
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.PURPLE}
+                          textValue="Purple"
+                        >
+                          Purple
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingColour.PINK} textValue="Pink">
+                          Pink
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.BLACK}
+                          textValue="Black"
+                        >
+                          Black
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item id={ClothingColour.GREY} textValue="Grey">
+                          Grey
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.WHITE}
+                          textValue="White"
+                        >
+                          White
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                        <ListBox.Item
+                          id={ClothingColour.BROWN}
+                          textValue="Brown"
+                        >
+                          Brown
+                          <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                      </ListBox>
+                    </Select.Popover>
+                  </Select>
                 </div>
 
                 <TextField
@@ -382,12 +458,7 @@ function Product() {
               </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button
-                isDisabled={createItemMutation.isPending}
-                onPress={handleCreateItem}
-              >
-                {createItemMutation.isPending ? "Creating..." : "Confirm"}
-              </Button>
+              <Button onPress={handleCreateItem}>Confirm</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -401,7 +472,7 @@ function Product() {
           <Modal.Dialog className="w-fit max-w-[95vw]">
             <Modal.CloseTrigger />
             <Modal.Header>
-              <Modal.Heading>Update Product</Modal.Heading>
+              <Modal.Heading>Edit Product</Modal.Heading>
             </Modal.Header>
             <Modal.Body>
               <ProductForm
@@ -417,12 +488,7 @@ function Product() {
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button
-                isDisabled={updateProductMutation.isPending}
-                onPress={handleUpdateProduct}
-              >
-                {updateProductMutation.isPending ? "Updating..." : "Confirm"}
-              </Button>
+              <Button onPress={handleUpdateProduct}>Confirm</Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>

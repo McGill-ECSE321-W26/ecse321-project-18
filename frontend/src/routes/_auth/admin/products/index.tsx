@@ -69,7 +69,6 @@ function AdminProducts() {
     setFormError("");
 
     if (!name.trim()) return setFormError("Name is required.");
-    if (!image.trim()) return setFormError("Image is required.");
 
     const parsedPrice = Number(price);
     if ((parsedPrice * 100) % 1 != 0) {
