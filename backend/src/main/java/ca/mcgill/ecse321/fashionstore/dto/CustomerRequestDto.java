@@ -17,6 +17,6 @@ import jakarta.validation.constraints.Size;
  */
 public record CustomerRequestDto(
         @NotBlank(message = "Email is required.") @Email(message = "Email must be a valid email address.") String email,
-        @NotBlank(message = "Password is required.") @Size(min = 8, max = 32, message = "Password must be between 8 and 32 characters.") String password,
-        @NotBlank(message = "Address is required.") String address,
+        @Size(min = 8, max = 32, message = "Password must be between 8 and 32 characters.") String password,
+        String address,
         @NotNull(message = "Number of loyalty points must not be null.") @PositiveOrZero(message = "Number of loyalty points must be positive or zero.") Integer numOfLoyaltyPoints) {}

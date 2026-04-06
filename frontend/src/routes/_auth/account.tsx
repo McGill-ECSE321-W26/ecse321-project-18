@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -9,8 +9,6 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, Form, Input, Label, TextField } from "@heroui/react";
 
 import type {
-  AccountRequest,
-  CustomerRequest,
   CustomerResponse,
   EmployeeResponse,
   OwnerResponse,
@@ -26,6 +24,8 @@ const queryClient = new QueryClient();
 type AccountInfo = {
   id: number;
   email: string;
+  address?: string;
+  numOfLoyaltyPoints?: number;
 };
 
 export const Route = createFileRoute("/_auth/account")({
@@ -76,18 +76,20 @@ function Account() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const isOwner = user.accountType === AccountType.OWNER;
+  const isCustomer = user.accountType === AccountType.CUSTOMER;
+  const isEmployee = user.accountType === AccountType.EMPLOYEE;
 
   const accountQuery = useQuery({
     queryKey: ["myAccount", user.id, user.accountType],
     queryFn: async (): Promise<AccountDetails> => {
-      if (user.accountType === AccountType.CUSTOMER) {
+      if (isCustomer) {
         const customer = await getRequest<CustomerResponse>(
           `/account/customer/${user.id}`,
         );
         return { kind: AccountType.CUSTOMER, data: customer };
       }
 
-      if (user.accountType === AccountType.EMPLOYEE) {
+      if (isEmployee) {
         const employee = await getRequest<EmployeeResponse>(
           `/account/employee/${user.id}`,
         );
@@ -115,6 +117,20 @@ function Account() {
     };
   }, [accountQuery.data, user]);
 
+  const currentAddress =
+    "address" in accountInfo ? (accountInfo.address ?? "") : "";
+
+  const currentLoyaltyPoints =
+    "numOfLoyaltyPoints" in accountInfo
+      ? (accountInfo.numOfLoyaltyPoints ?? 0)
+      : 0;
+
+  useEffect(() => {
+    if ("address" in accountInfo) {
+      setAddress("");
+    }
+  }, [accountInfo]);
+
   const updatePasswordMutation = useMutation({
     mutationFn: async () => {
       if (password.length < 8 || password.length > 32) {
@@ -125,8 +141,8 @@ function Account() {
         throw new Error("Passwords do not match.");
       }
 
-      if (user.accountType === AccountType.OWNER) {
-        const requestBody: AccountRequest = {
+      if (isOwner) {
+        const requestBody = {
           email: accountInfo.email,
           password,
         };
@@ -134,34 +150,46 @@ function Account() {
         return putRequest<OwnerResponse>(
           `/account/owner/${user.id}`,
           requestBody,
+          false,
         );
       }
 
-      const requestBody: CustomerRequest = {
-        email: accountInfo.email,
-        password,
-        address: "address" in accountInfo ? (accountInfo.address ?? "") : "",
-        numOfLoyaltyPoints:
-          "numOfLoyaltyPoints" in accountInfo
-            ? (accountInfo.numOfLoyaltyPoints ?? 0)
-            : 0,
-      };
+      if (isCustomer) {
+        const requestBody = {
+          email: accountInfo.email,
+          password,
+          address: currentAddress,
+          numOfLoyaltyPoints: currentLoyaltyPoints,
+        };
 
-      return putRequest<CustomerResponse>(
-        `/account/customer/${user.id}`,
-        requestBody,
-      );
+        return putRequest<CustomerResponse>(
+          `/account/customer/${user.id}`,
+          requestBody,
+        );
+      }
+
+      if (user.accountType === AccountType.EMPLOYEE) {
+        const requestBody = {
+          email: accountInfo.email,
+          password,
+          address: currentAddress,
+          numOfLoyaltyPoints: currentLoyaltyPoints,
+        };
+
+        return putRequest<EmployeeResponse>(
+          `/account/employee/${user.id}`,
+          requestBody,
+        );
+      }
     },
   });
 
-  // TODO update address
   const updateAddressMutation = useMutation({
     mutationFn: async () => {
-      const requestBody: CustomerRequest = {
-        email: "",
-        password: "",
-        address: "",
-        numOfLoyaltyPoints: 0,
+      const requestBody = {
+        email: accountInfo.email,
+        address,
+        numOfLoyaltyPoints: currentLoyaltyPoints,
       };
 
       return putRequest<CustomerResponse>(
@@ -193,12 +221,10 @@ function Account() {
     }
   };
 
-  // TODO handle address update
   const handleAddressUpdate = async () => {
     try {
-      await updatePasswordMutation.mutateAsync();
-      setAddress("");
-      successToast("Password updated successfully.");
+      await updateAddressMutation.mutateAsync();
+      successToast("Address updated successfully.");
       await accountQuery.refetch();
     } catch (error) {}
   };
@@ -240,17 +266,16 @@ function Account() {
           <p className="text-sm text-default-500">Account Type</p>
           <p className="font-medium">{user.accountType}</p>
         </div>
-        {
-          // TODO display address value
-          user.accountType !== AccountType.OWNER ? (
-            <div>
-              <p className="text-sm text-default-500">Address</p>
-              <p className="font-medium">{"TEMPORARY VALUE"}</p>
-            </div>
-          ) : (
-            <></>
-          )
-        }
+        {!isOwner && (
+          <div>
+            <p className="text-sm text-default-500">Address</p>
+            <p className="font-medium">
+              {"address" in accountInfo && accountInfo.address
+                ? accountInfo.address
+                : "No address found"}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
@@ -318,7 +343,7 @@ function Account() {
         </Form>
       </div>
 
-      {!isOwner && (
+      {isCustomer && (
         <>
           <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
             <div>
@@ -332,7 +357,7 @@ function Account() {
               <TextField
                 isRequired
                 name="address"
-                type="address"
+                type="text"
                 onChange={(value) => setAddress(value)}
               >
                 <Label>New Address</Label>
@@ -351,7 +376,7 @@ function Account() {
                   variant="secondary"
                   isDisabled={updateAddressMutation.isPending}
                   onPress={() => {
-                    setAddress("");
+                    setAddress(currentAddress);
                   }}
                 >
                   Cancel
