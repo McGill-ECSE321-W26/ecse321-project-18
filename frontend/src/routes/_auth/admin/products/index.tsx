@@ -41,7 +41,6 @@ function AdminProducts() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
-  const [formError, setFormError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -49,7 +48,6 @@ function AdminProducts() {
     setName("");
     setPrice("");
     setImage("");
-    setFormError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -66,50 +64,21 @@ function AdminProducts() {
   };
 
   const handleCreateProduct = async () => {
-    setFormError("");
-
-    if (!name.trim()) return setFormError("Name is required.");
-
-    const parsedPrice = Number(price);
-    if ((parsedPrice * 100) % 1 != 0) {
-      return setFormError("Price must have at most 2 decimal places.");
-    }
-    if (!Number.isFinite(parsedPrice) || parsedPrice < 0.01) {
-      return setFormError("Price must be at least 0.01.");
-    }
-
     const product: ClothingProductRequest = {
       name: name.trim(),
-      price: parsedPrice,
+      price: Number(price),
       image: image.trim(),
     };
-
-    try {
-      await createMutation.mutateAsync(product);
-      closeCreateModal();
-    } catch (err) {
-      if (err instanceof Error) {
-        setFormError(err.message);
-      } else {
-        setFormError("An unknown error occurred. Product could not be created");
-      }
-    }
+    await createMutation.mutateAsync(product);
+    closeCreateModal();
   };
 
   const handleImageSelect = async (e: { target: { files: any[] } }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    try {
-      const dataUrl = await fileToDataUrl(file);
-      setImage(dataUrl);
-    } catch (err) {
-      if (err instanceof Error) {
-        setFormError(err.message);
-      } else {
-        setFormError("Could not read the selected image.");
-      }
-    }
+    const dataUrl = await fileToDataUrl(file);
+    setImage(dataUrl);
   };
 
   if (isLoading) return <Skeleton />;
@@ -169,30 +138,27 @@ function AdminProducts() {
 
       <Modal.Backdrop isOpen={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <Modal.Container>
-          <Modal.Dialog className="w-fit max-w-[95vw]">
+          <Modal.Dialog className="w-fit max-w-[95vw] overflow-visible">
             <Modal.CloseTrigger />
             <Modal.Header>
               <Modal.Heading>Add New Product</Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="overflow-visible">
               <ProductForm
+                formId="create-product"
                 name={name}
                 setName={setName}
                 price={price}
                 setPrice={setPrice}
                 image={image}
-                formError={formError}
                 fileInputRef={fileInputRef}
                 onImageSelect={handleImageSelect}
                 onSubmit={handleCreateProduct}
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button
-                isDisabled={createMutation.isPending}
-                onPress={handleCreateProduct}
-              >
-                {createMutation.isPending ? "Creating..." : "Confirm"}
+              <Button type="submit" form="create-product">
+                Confirm
               </Button>
             </Modal.Footer>
           </Modal.Dialog>

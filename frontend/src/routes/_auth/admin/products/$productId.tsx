@@ -72,13 +72,11 @@ function Product() {
   const [size, setSize] = useState<ClothingSize | null>(null);
   const [colour, setColour] = useState<ClothingColour | null>(null);
   const [numInStock, setNumInStock] = useState("0");
-  const [formError, setFormError] = useState("");
 
   const [isEditProductOpen, setIsEditProductOpen] = useState(false);
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState("");
   const [productImage, setProductImage] = useState("");
-  const [productFormError, setProductFormError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -93,7 +91,6 @@ function Product() {
     setSize(null);
     setColour(null);
     setNumInStock("0");
-    setFormError("");
   };
 
   const openCreateForm = () => {
@@ -112,87 +109,43 @@ function Product() {
     setProductName(data.name);
     setProductPrice(String(data.price));
     setProductImage(data.image);
-    setProductFormError("");
     setIsEditProductOpen(true);
   };
 
   const handleCreateItem = async () => {
-    setFormError("");
     const parsedStock = Number(numInStock);
 
-    if (!Number.isInteger(parsedStock) || parsedStock < 0) {
-      return setFormError(
-        "Stock must be a whole number greater than or equal to 0.",
-      );
-    }
-    if (!size) return setFormError("Size is required.");
-    if (!colour) return setFormError("Colour is required.");
+    if (!size || !colour) return;
 
-    try {
-      await createItemMutation.mutateAsync({
-        size,
-        colour,
-        numInStock: parsedStock,
-        clothingProductId: id,
-      });
-      closeCreateForm();
-    } catch (error) {
-      if (error instanceof Error) {
-        setFormError(error.message);
-      } else {
-        setFormError("Could not create item.");
-      }
-    }
+    await createItemMutation.mutateAsync({
+      size,
+      colour,
+      numInStock: parsedStock,
+      clothingProductId: id,
+    });
+    closeCreateForm();
   };
 
   const handleUpdateProduct = async () => {
-    setProductFormError("");
-
-    if (!productName.trim()) return setFormError("Name is required.");
-
-    const parsedPrice = Number(productPrice);
-    if ((parsedPrice * 100) % 1 != 0) {
-      return setFormError("Price must have at most 2 decimal places.");
-    }
-    if (!Number.isFinite(parsedPrice) || parsedPrice < 0.01) {
-      return setFormError("Price must be at least 0.01.");
-    }
-
     const product: ClothingProductRequest = {
       name: productName.trim(),
-      price: parsedPrice,
+      price: Number(Number(productPrice).toFixed(2)),
       image: productImage.trim(),
     };
 
-    try {
-      await updateProductMutation.mutateAsync({
-        productId: id,
-        product,
-      });
-      setIsEditProductOpen(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        setProductFormError(error.message);
-      } else {
-        setProductFormError("Could not update product.");
-      }
-    }
+    await updateProductMutation.mutateAsync({
+      productId: id,
+      product,
+    });
+    setIsEditProductOpen(false);
   };
 
   const handleProductImageSelect = async (e: { target: { files: any[] } }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    try {
-      const dataUrl = await fileToDataUrl(file);
-      setProductImage(dataUrl);
-    } catch (error) {
-      if (error instanceof Error) {
-        setFormError(error.message);
-      } else {
-        setFormError("Could not read the selected image.");
-      }
-    }
+    const dataUrl = await fileToDataUrl(file);
+    setProductImage(dataUrl);
   };
 
   if (!data) {
@@ -308,21 +261,22 @@ function Product() {
         onOpenChange={setIsCreateItemOpen}
       >
         <Modal.Container>
-          <Modal.Dialog className="w-fit max-w-[95vw]">
+          <Modal.Dialog className="w-fit max-w-[95vw] overflow-visible">
             <Modal.CloseTrigger />
             <Modal.Header>
               <Modal.Heading>Add New Item</Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="overflow-visible">
               <Form
                 className="flex w-full min-w-[18rem] max-w-[90vw] flex-col gap-4"
                 onSubmit={handleCreateItem}
+                id="create-item"
               >
                 <div className="flex flex-col gap-2">
                   <Select
+                    isRequired
                     className="w-[256px]"
                     placeholder="Select size"
-                    isRequired
                     onChange={(key) => setSize(key as ClothingSize)}
                   >
                     <Label>Size</Label>
@@ -452,13 +406,12 @@ function Product() {
                   <Input min={0} step={1} />
                   <FieldError />
                 </TextField>
-                {formError ? (
-                  <p className="text-sm text-red-600">{formError}</p>
-                ) : null}
               </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button onPress={handleCreateItem}>Confirm</Button>
+              <Button type="submit" form="create-item">
+                Confirm
+              </Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
@@ -469,26 +422,28 @@ function Product() {
         onOpenChange={setIsEditProductOpen}
       >
         <Modal.Container>
-          <Modal.Dialog className="w-fit max-w-[95vw]">
+          <Modal.Dialog className="w-fit max-w-[95vw] overflow-visible">
             <Modal.CloseTrigger />
             <Modal.Header>
               <Modal.Heading>Edit Product</Modal.Heading>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="overflow-visible">
               <ProductForm
+                formId={"edit-product-form"}
                 name={productName}
                 setName={setProductName}
                 price={productPrice}
                 setPrice={setProductPrice}
                 image={productImage}
-                formError={productFormError}
                 fileInputRef={fileInputRef}
                 onImageSelect={handleProductImageSelect}
                 onSubmit={handleUpdateProduct}
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button onPress={handleUpdateProduct}>Confirm</Button>
+              <Button type="submit" form="edit-product-form">
+                Confirm
+              </Button>
             </Modal.Footer>
           </Modal.Dialog>
         </Modal.Container>
