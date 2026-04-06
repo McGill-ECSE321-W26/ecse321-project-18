@@ -80,8 +80,9 @@ export interface ClothingProductRequest {
   image: string;
 }
 
-export interface CustomerRequest extends AccountRequest {
-  address: string;
+export interface CustomerRequest extends Omit<AccountRequest, "password"> {
+  password?: string;
+  address?: string;
   numOfLoyaltyPoints: number;
 }
 

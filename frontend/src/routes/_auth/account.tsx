@@ -9,8 +9,6 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, Form, Input, Label, TextField } from "@heroui/react";
 
 import type {
-  AccountRequest,
-  CustomerRequest,
   CustomerResponse,
   EmployeeResponse,
   OwnerResponse,
@@ -26,6 +24,8 @@ const queryClient = new QueryClient();
 type AccountInfo = {
   id: number;
   email: string;
+  address?: string;
+  numOfLoyaltyPoints?: number;
 };
 
 export const Route = createFileRoute("/_auth/account")({
@@ -67,7 +67,7 @@ function Account() {
   const user = auth.user;
   if (user === null) return "Error: Invalid user.";
 
-  const [addressErrors, setAddressErrors] = useState<string[]>([]);
+  const [_, setAddressErrors] = useState<string[]>([]);
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -83,14 +83,14 @@ function Account() {
   const accountQuery = useQuery({
     queryKey: ["myAccount", user.id, user.accountType],
     queryFn: async (): Promise<AccountDetails> => {
-      if (user.accountType === AccountType.CUSTOMER) {
+      if (isCustomer) {
         const customer = await getRequest<CustomerResponse>(
           `/account/customer/${user.id}`,
         );
         return { kind: AccountType.CUSTOMER, data: customer };
       }
 
-      if (user.accountType === AccountType.EMPLOYEE) {
+      if (isEmployee) {
         const employee = await getRequest<EmployeeResponse>(
           `/account/employee/${user.id}`,
         );
@@ -128,7 +128,7 @@ function Account() {
 
   useEffect(() => {
     if ("address" in accountInfo) {
-      setAddress(accountInfo.address ?? "");
+      setAddress("");
     }
   }, [accountInfo]);
 
@@ -142,7 +142,7 @@ function Account() {
         throw new Error("Passwords do not match.");
       }
 
-      if (user.accountType === AccountType.OWNER) {
+      if (isOwner) {
         const requestBody = {
           email: accountInfo.email,
           password,
@@ -154,7 +154,7 @@ function Account() {
         );
       }
 
-      if (user.accountType === AccountType.CUSTOMER) {
+      if (isCustomer) {
         const requestBody = {
           email: accountInfo.email,
           password,
@@ -188,7 +188,6 @@ function Account() {
     mutationFn: async () => {
       const requestBody = {
         email: accountInfo.email,
-        password: null,
         address,
         numOfLoyaltyPoints: currentLoyaltyPoints,
       };
@@ -277,7 +276,7 @@ function Account() {
             <p className="font-medium">
               {"address" in accountInfo && accountInfo.address
                 ? accountInfo.address
-                : "No address on file"}
+                : "No address found"}
             </p>
           </div>
         )}
