@@ -9,16 +9,16 @@ import { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import type {
   ClothingProductResponse,
+  CustomerResponse,
   ShoppingCartItemRequest,
   ShoppingCartItemResponse,
   ShoppingCartListResponse,
   ShoppingCartResponse,
 } from "#/types/api";
 import { OrderModal } from "#/components/OrderModal";
-import { useAuth } from "#/auth";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import Title from "#/components/Title";
-import { deleteRequest, putRequest } from "#/utils/httpClient";
+import { deleteRequest, getRequest, putRequest } from "#/utils/httpClient";
 import { useCart, useClothingProducts } from "#/utils/helpers";
 
 const defaultImg = "/stiltonslogo.png";
@@ -26,6 +26,21 @@ const defaultImg = "/stiltonslogo.png";
 const queryClient = new QueryClient();
 
 export const Route = createFileRoute("/_auth/cart/")({
+  loader: async ({ context }) => {
+    const { user } = context.auth;
+
+    // fetch number of loyalty points
+    try {
+      // user should not be null if they can stay on this page, but typechecker is strict
+      // and doesn't hurt to be more careful anyway
+      const res: CustomerResponse = await getRequest(
+        `/account/customer/${user?.id}`,
+      );
+      return { customerId: user?.id, loyaltyPoints: res.numOfLoyaltyPoints };
+    } catch (err) {
+      return { customerId: null, loyaltyPoints: null };
+    }
+  },
   head: () => ({
     meta: [
       {
@@ -41,8 +56,9 @@ export const Route = createFileRoute("/_auth/cart/")({
 });
 
 function Cart() {
-  const auth = useAuth();
-  const customerId = auth.user?.id;
+  // const auth = useAuth();
+  // const customerId = auth.user?.id;
+  const { customerId, loyaltyPoints } = Route.useLoaderData();
   const navigate = Route.useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,7 +194,7 @@ function Cart() {
     setIsSubmitting(true);
   };
 
-  if (isCartLoading || isProductsLoading) return <Skeleton />;
+  if (isCartLoading || isProductsLoading) return <CustomSkeleton />;
   if (cartError) return "An error has occurred: " + cartError.message;
   if (productsError) return "An error has occurred: " + productsError.message;
 
@@ -190,7 +206,7 @@ function Cart() {
           <Form
             action={handleSubmit}
             onReset={handleClear}
-            className="grid grid-cols-[1fr] md:grid-cols-[3fr_1fr] gap-8 items-stretch"
+            className="grid lg:grid-cols-[3fr_1fr] gap-8 items-stretch"
           >
             {/* Left side */}
             <div className="grid grid-cols-1 gap-4 overflow-y-auto">
@@ -232,7 +248,7 @@ function Cart() {
                               <div>
                                 <p>Size: {cartItem.clothingItem.size}</p>
                                 <p>Colour: {cartItem.clothingItem.colour}</p>
-                                <p>Unit Price: {product.price}$</p>
+                                <p>Unit price: ${product.price.toFixed(2)}</p>
                               </div>
                             </div>
 
@@ -244,6 +260,7 @@ function Cart() {
                                 name="quantity"
                                 defaultValue={cartItem.quantity}
                                 minValue={1}
+                                step={1}
                                 maxValue={cartItem.clothingItem.numInStock}
                                 onChange={(newQuantity) =>
                                   handleUpdate(cartItem, newQuantity)
@@ -252,7 +269,15 @@ function Cart() {
                               >
                                 <NumberField.Group>
                                   <NumberField.DecrementButton />
-                                  <NumberField.Input className="text-center text-base" />
+                                  <NumberField.Input
+                                    className="text-center text-base"
+                                    onChange={(e) =>
+                                      handleUpdate(
+                                        cartItem,
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                  />
                                   <NumberField.IncrementButton />
                                 </NumberField.Group>
                               </NumberField>
@@ -262,7 +287,8 @@ function Cart() {
                                 onPress={() => handleDelete(cartItem)}
                                 isDisabled={isSubmitting}
                                 size="md"
-                                className="rounded-full border-l bg-red-500 w-full"
+                                variant="danger"
+                                className="w-full"
                               >
                                 <FaRegTrashAlt />
                               </Button>
@@ -285,13 +311,23 @@ function Cart() {
             </div>
 
             {/* Right menu */}
-            <div className="col-span-1">
-              <Card className="grid border border-black h-full">
-                <div className="grid content-start gap-2">
-                  <Title pagename="Total" />
-                  <p>${cartData ? cartData.price : 0}</p>
+            <div className="col-span-1 relative">
+              <Card className="grid border border-black md:fixed md:w-[stretch] md:mr-6">
+                <div className="grid content-start gap-2 md:text-lg">
+                  <p>
+                    <strong>Cart subtotal:</strong> $
+                    {cartData ? cartData.price.toFixed(2) : 0}
+                  </p>
+                  <p>
+                    <strong>
+                      You currently have {loyaltyPoints} loyalty points.{" "}
+                    </strong>
+                    {loyaltyPoints < 100
+                      ? `Earn ${100 - loyaltyPoints} more points to redeem a discount on a future order!`
+                      : "You can choose to redeem 100 points for a discount during checkout!"}
+                  </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border-t border-black pt-4 mt-auto">
+                <div className="grid sm:grid-cols-2 gap-2 border-t border-black pt-4 mt-auto">
                   <Button
                     type="reset"
                     isDisabled={
@@ -299,8 +335,10 @@ function Cart() {
                       !cartData ||
                       cartData.shoppingCartList.length == 0
                     }
-                    className="bg-red-500 w-full min-w-0"
+                    className="w-full"
+                    variant="danger"
                   >
+                    <FaRegTrashAlt />
                     Clear
                   </Button>
                   <OrderModal

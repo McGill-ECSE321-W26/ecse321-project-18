@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Button, Table } from "@heroui/react";
 
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { OrderState } from "#/types/api";
 import { useAccounts, useClothingProducts, useOrders } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
@@ -37,7 +37,7 @@ function AdminDashboard() {
     useClothingProducts();
 
   if (isOrdersLoading || isAccountsLoading || isProductsLoading) {
-    return <Skeleton />;
+    return <CustomSkeleton />;
   }
 
   if (!orders || !accounts || !products) {
@@ -216,7 +216,7 @@ function AdminDashboard() {
                       <Table.Cell>{order.state}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
-                      <Table.Cell>{order.price}</Table.Cell>
+                      <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
                     </Table.Row>
                   )}
                 />
@@ -288,7 +288,7 @@ function AdminDashboard() {
                       <Table.Cell>{order.id}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
-                      <Table.Cell>{order.price}</Table.Cell>
+                      <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
                     </Table.Row>
                   )}
                 />

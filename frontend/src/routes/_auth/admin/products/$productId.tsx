@@ -16,6 +16,9 @@ import {
 } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { FaPencil } from "react-icons/fa6";
+import { FaPlus } from "react-icons/fa";
+import { IoMdCheckmark } from "react-icons/io";
 import type {
   ClothingProductRequest,
   ClothingProductResponse,
@@ -182,25 +185,21 @@ function Product() {
         <div className="flex flex-col gap-4">
           <h2 className="text-3xl font-bold">{data.name}</h2>
           <p className="text-xl font-semibold text-gray-700">
-            Price: ${data.price}
+            Price: ${data.price.toFixed(2)}
           </p>
 
-          <Button
-            className="bg-blue-600 text-white hover:bg-blue-700 w-fit"
-            onPress={openEditProductModal}
-          >
-            Edit Product
+          <Button className="w-fit" onPress={openEditProductModal}>
+            <FaPencil />
+            Edit product
           </Button>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-semibold">Items</h3>
-        <Button
-          onPress={openCreateForm}
-          className="bg-green-600 text-white hover:bg-green-700"
-        >
-          Add New Item
+        <Button onPress={openCreateForm}>
+          <FaPlus />
+          Add new item
         </Button>
       </div>
 
@@ -214,15 +213,17 @@ function Product() {
         isOpen={isCreateItemOpen}
         onOpenChange={setIsCreateItemOpen}
       >
-        <Modal.Container>
-          <Modal.Dialog className="w-fit max-w-[95vw] overflow-visible">
+        <Modal.Container size="lg">
+          <Modal.Dialog className="bg-gray-50">
             <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>Add New Item</Modal.Heading>
+            <Modal.Header className="px-2 py-1">
+              <Modal.Heading className="text-2xl font-bold">
+                Add new item
+              </Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="overflow-visible">
+            <Modal.Body className="px-2 py-1">
               <Form
-                className="flex w-full min-w-[18rem] max-w-[90vw] flex-col gap-4"
+                className="flex w-full flex-col gap-4"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void handleCreateItem();
@@ -232,11 +233,10 @@ function Product() {
                 <div className="flex flex-col gap-2">
                   <Select
                     isRequired
-                    className="w-[256px]"
                     placeholder="Select size"
                     onChange={(key) => setSize(key as ClothingSize)}
                   >
-                    <Label>Size</Label>
+                    <Label className="text-base">Size</Label>
                     <Select.Trigger>
                       <Select.Value />
                       <Select.Indicator />
@@ -260,12 +260,11 @@ function Product() {
 
                 <div className="flex flex-col gap-2">
                   <Select
-                    className="w-[256px]"
                     placeholder="Select colour"
                     isRequired
                     onChange={(key) => setColour(key as ClothingColour)}
                   >
-                    <Label>Colour</Label>
+                    <Label className="text-base">Colour</Label>
                     <Select.Trigger>
                       <Select.Value />
                       <Select.Indicator />
@@ -294,14 +293,15 @@ function Product() {
                   value={numInStock}
                   onChange={setNumInStock}
                 >
-                  <Label>Stock</Label>
-                  <Input min={0} step={1} />
+                  <Label className="text-base">Stock</Label>
+                  <Input className="text-base" min={0} step={1} />
                   <FieldError />
                 </TextField>
               </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button type="submit" form="create-item">
+                <IoMdCheckmark />
                 Confirm
               </Button>
             </Modal.Footer>
@@ -313,13 +313,15 @@ function Product() {
         isOpen={isEditProductOpen}
         onOpenChange={setIsEditProductOpen}
       >
-        <Modal.Container>
-          <Modal.Dialog className="w-fit max-w-[95vw] overflow-visible">
+        <Modal.Container size="lg">
+          <Modal.Dialog className="bg-gray-50">
             <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>Edit Product</Modal.Heading>
+            <Modal.Header className="px-2 py-1">
+              <Modal.Heading className="text-2xl font-bold">
+                Edit product
+              </Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="overflow-visible">
+            <Modal.Body className="px-2 py-1">
               <ProductForm
                 formId={"edit-product-form"}
                 name={productName}
@@ -334,6 +336,7 @@ function Product() {
             </Modal.Body>
             <Modal.Footer>
               <Button type="submit" form="edit-product-form">
+                <IoMdCheckmark />
                 Confirm
               </Button>
             </Modal.Footer>

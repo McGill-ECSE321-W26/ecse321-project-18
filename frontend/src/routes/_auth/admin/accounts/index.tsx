@@ -1,7 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Skeleton from "#/components/Skeleton";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
 import Title from "#/components/Title";
@@ -27,7 +28,7 @@ function Accounts() {
   const navigate = Route.useNavigate();
   const { isLoading, error, data } = useAccounts();
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "An error has occurred: Server returned invalid data.";
 
@@ -79,6 +80,7 @@ function Accounts() {
                         <Table.Cell>{owner.email}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handlePress(owner.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
@@ -118,6 +120,7 @@ function Accounts() {
                         <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handlePress(customer.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
@@ -161,6 +164,7 @@ function Accounts() {
                         <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handlePress(employee.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
