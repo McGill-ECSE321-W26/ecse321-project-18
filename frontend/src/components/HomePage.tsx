@@ -1,17 +1,13 @@
 import { IoIosLeaf } from "react-icons/io";
-import { FaGift, FaHome, FaMoneyBill } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { FaRecycle } from "react-icons/fa6";
 
-import { Button, Description, Separator } from "@heroui/react";
+import { Button, Separator } from "@heroui/react";
 import { BsArrowRight } from "react-icons/bs";
 import { useNavigate } from "@tanstack/react-router";
-import HomePageCard from "#/components/HomePageCard";
 
 export default function HomePage() {
   const navigate = useNavigate();
-  // Description of G. Stilton
-  const founderDescription =
-    "G. M. Stilton was born in 1976 and lived his whole life in New York City. A young dreamer moving from city to city, Stilton knew first hand what durable clothes meant. He sold clothes he found to a thrift store to fund his college fashion degree, where he was regarded as one of the most unique and creative designers of the school.";
 
   return (
     <>
@@ -33,7 +29,7 @@ export default function HomePage() {
             variant="tertiary"
             onPress={() => navigate({ to: "/products" })}
           >
-            Check our produts
+            Shop now
             <BsArrowRight />
           </Button>
         </div>
