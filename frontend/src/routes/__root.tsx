@@ -62,18 +62,6 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
           </main>
           <Footer />
         </div>
-
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "TanStack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
       </>
     );
   },

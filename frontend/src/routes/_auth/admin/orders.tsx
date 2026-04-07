@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_auth/admin/orders")({
   head: () => ({
     meta: [
       {
-        title: "Orders | Stilton's Store",
+        title: "Manage orders | Stilton's Store",
       },
     ],
   }),
@@ -125,7 +125,7 @@ function Orders() {
     const employeeId = getSelectedEmployeeId(order);
 
     if (employeeId == null) {
-      displayError("No employee can assigned.");
+      displayError("Must select an employee to assign.");
       return;
     }
 
@@ -216,7 +216,7 @@ function Orders() {
                           placeholder="Select an employee"
                           value={selectedEmployeeId ?? ""}
                           aria-label="Employee selector"
-                          isDisabled={order.state === OrderState.DELIVERED}
+                          isDisabled={order.state !== OrderState.PURCHASED}
                           onChange={(value) =>
                             setSelectedEmployeeByOrder(
                               (prev) =>

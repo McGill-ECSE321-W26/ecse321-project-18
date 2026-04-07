@@ -3,7 +3,7 @@ import {
   QueryClientProvider,
   useMutation,
 } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { Button, EmptyState, Spinner, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_auth/employee/")({
   head: () => ({
     meta: [
       {
-        title: "Manage Orders | Stilton's Store",
+        title: "Manage orders | Stilton's Store",
       },
     ],
   }),
@@ -232,10 +232,37 @@ function EmployeeOrders() {
   return (
     <div className="-mt-12 flex flex-col gap-4">
       <Title pagename="Manage Orders" />
+      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+        <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+          <ul className="hidden items-center gap-4 md:flex">
+            <li>
+              <Link to="." href="/employee#available">
+                Available Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/employee#assigned">
+                My Assigned Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/employee#prepared">
+                My Prepared Orders
+              </Link>
+            </li>
+          </ul>
+        </header>
+      </nav>
 
-      {renderTable("Available Orders", availableOrders, "available")}
-      {renderTable("My Assigned Orders", myOrders, "mine")}
-      {renderTable("My Prepared Orders", preparedOrders, "prepared")}
+      <section id="available">
+        {renderTable("Available Orders", availableOrders, "available")}
+      </section>
+      <section id="assigned">
+        {renderTable("My Assigned Orders", myOrders, "mine")}
+      </section>
+      <section id="prepared">
+        {renderTable("My Prepared Orders", preparedOrders, "prepared")}
+      </section>
     </div>
   );
 }

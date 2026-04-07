@@ -96,9 +96,10 @@ function Product() {
     <>
       {data ? (
         <>
-          <h2 className="text-2xl font-bold lg:hidden">{product.name}</h2>
-          <div className="w-full grid gap-5 justify-center lg:grid-cols-2 xl:grid-cols-3">
+          <h2 className="text-2xl mb-2 font-bold lg:hidden">{product.name}</h2>
+          <div className="w-full grid gap-5 justify-center md:grid-cols-2 xl:grid-cols-3">
             <img
+              className="rounded-2xl shadow-md shadow-gray-400"
               src={product.image || "/stiltonslogo.png"}
               alt={product.name}
             />

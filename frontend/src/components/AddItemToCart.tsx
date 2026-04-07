@@ -2,6 +2,7 @@ import { Button, Card, Label, NumberField, toast } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { FaCartPlus } from "react-icons/fa6";
 import type {
   ClothingColour,
   ClothingItemResponse,
@@ -163,7 +164,8 @@ export default function AddItemToCart({
         isDisabled={selectedNumInStock <= 0 || isManager}
         className="mt-5 w-full text-base"
       >
-        {isManager ? <p>Cannot add as manager</p> : <p>Add to cart</p>}
+        <FaCartPlus />
+        {isManager ? "Cannot add as manager" : "Add to cart"}
       </Button>
     </>
   );
