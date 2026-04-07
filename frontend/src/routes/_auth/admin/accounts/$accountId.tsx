@@ -8,7 +8,7 @@ import type {
   OwnerResponse,
 } from "#/types/api";
 import { AccountType } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { useAccounts } from "#/utils/helpers";
 import Title from "#/components/Title";
 
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_auth/admin/accounts/$accountId")({
   head: ({ loaderData }) => ({
     meta: [
       {
-        title: `Manage account ${loaderData} | Stilton's Store`,
+        title: `View account ${loaderData} | Stilton's Store`,
       },
     ],
   }),
@@ -36,7 +36,7 @@ function ManageAccount() {
   const id = Number(accountId);
   const { isLoading, error, account } = useAccount(id);
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
 
   if (error) {
     return (
@@ -64,99 +64,96 @@ function ManageAccount() {
 
   return (
     <div className="-mt-12 mx-auto max-w-2xl flex flex-col gap-4">
-      <Title pagename="My Account" />
+      <Title pagename={`Account ID ${id}`} />
 
-      <Card>
-        <Card.Header>
-          <h3 className="text-xl font-semibold">Profile</h3>
-        </Card.Header>
-        <Card.Content className="space-y-3">
-          <Label className="font-semibold"> Account type </Label>
-          <Input disabled value={account.accountType}></Input>
-          <Label className="font-semibold"> Email </Label>
-          <Input disabled value={account.email}></Input>
-          <Label className="font-semibold"> ID </Label>
-          <Input disabled value={String(account.id)}></Input>
-        </Card.Content>
-      </Card>
+      <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+        <h3 className="text-xl font-bold">Profile</h3>
+
+        <div className="flex flex-col gap-2 text-base">
+          <div>
+            <p className="text-sm font-bold">ID</p>
+            <p>{account.id}</p>
+          </div>
+          <div>
+            <p className="text-sm font-bold">Email</p>
+            <p>{account.email}</p>
+          </div>
+          <div>
+            <p className="text-sm font-bold">Account type</p>
+            <p>{account.accountType}</p>
+          </div>
+        </div>
+      </div>
 
       {account.accountType === AccountType.CUSTOMER ||
       account.accountType === AccountType.EMPLOYEE ? (
-        <Card>
-          <Card.Header>
-            <h3 className="text-xl font-semibold">Customer details</h3>
-          </Card.Header>
-          <Card.Content className="space-y-3">
-            <Label className="font-semibold"> Address </Label>
-            <Input disabled value={String(account.address)}></Input>
-            <Label className="font-semibold"> Loyalty points </Label>
-            <Input disabled value={String(account.numOfLoyaltyPoints)}></Input>
-            <Label className="font-semibold"> Shopping cart items </Label>
-            <Input
-              disabled
-              value={String(account.shoppingCartItems.length)}
-            ></Input>
-            <Label className="font-semibold"> Purchased orders </Label>
-            <Input
-              disabled
-              value={String(account.purchasedOrders.length)}
-            ></Input>
-          </Card.Content>
-        </Card>
+        <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+          <h3 className="text-xl font-bold">Customer details</h3>
+
+          <div className="text-base flex flex-col gap-2">
+            <div>
+              <p className="text-sm font-bold">Address</p>
+              <p>{account.address}</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold">Loyalty points</p>
+              <p>{account.numOfLoyaltyPoints}</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold">Shopping cart items</p>
+              <p>{account.shoppingCartItems.length}</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold">Purchased orders</p>
+              <p>{account.purchasedOrders.length}</p>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       {account.accountType === AccountType.EMPLOYEE ? (
-        <Card>
-          <Card.Header>
-            <h3 className="text-xl font-semibold">Employee details</h3>
-          </Card.Header>
-          <Card.Content className="space-y-3">
-            <Label className="font-semibold">
-              {" "}
-              Assigned orders: {String(account.assignedOrders.length)}{" "}
-            </Label>
+        <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+          <h3 className="text-xl font-bold">Employee details</h3>
+          <div className="text-base flex flex-col gap-2">
+            <p className="text-sm">
+              <strong>Number of assigned orders:</strong>{" "}
+              {account.assignedOrders.length}
+            </p>
 
             {account.assignedOrders.length === 0 ? (
-              <p className="text-sm text-gray-600">No assigned orders.</p>
+              <p className="text-gray-600">No assigned orders.</p>
             ) : (
-              <div className="space-y-3">
-                <Table>
-                  <Table.ScrollContainer>
-                    <Table.Content>
-                      <Table.Header>
-                        <Table.Column>ID</Table.Column>
-                        <Table.Column>state</Table.Column>
-                        <Table.Column>Price</Table.Column>
-                        <Table.Column>Delivery Date</Table.Column>
-                        <Table.Column>Delivery Address</Table.Column>
-                        <Table.Column>Order Date</Table.Column>
-                      </Table.Header>
-                      <Table.Body>
-                        {account.assignedOrders.map((order) => (
-                          <Table.Row key={order.id}>
-                            <Table.Cell>{order.id}</Table.Cell>
-                            <Table.Cell>{order.state}</Table.Cell>
-                            <Table.Cell>
-                              {formatCurrency(order.price)}
-                            </Table.Cell>
-                            <Table.Cell>
-                              {formatSafeDate(order.deliveryDate)}
-                            </Table.Cell>
-                            <Table.Cell>{order.deliveryAddress}</Table.Cell>
-                            <Table.Cell>
-                              {formatSafeDate(order.orderDate)}
-                            </Table.Cell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table.Content>
-                  </Table.ScrollContainer>
-                  <Table.Footer>{/* Optional footer content */}</Table.Footer>
-                </Table>
-              </div>
+              <Table className="mt-2">
+                <Table.ScrollContainer>
+                  <Table.Content aria-label="Assigned orders table">
+                    <Table.Header>
+                      <Table.Column isRowHeader>ID</Table.Column>
+                      <Table.Column>State</Table.Column>
+                      <Table.Column>Price</Table.Column>
+                      <Table.Column>Delivery Date</Table.Column>
+                      <Table.Column>Delivery Address</Table.Column>
+                      <Table.Column>Order Date</Table.Column>
+                    </Table.Header>
+                    <Table.Body>
+                      {account.assignedOrders.map((order) => (
+                        <Table.Row key={order.id}>
+                          <Table.Cell>{order.id}</Table.Cell>
+                          <Table.Cell>{order.state}</Table.Cell>
+                          <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
+                          <Table.Cell>
+                            {order.deliveryDate.toString()}
+                          </Table.Cell>
+                          <Table.Cell>{order.deliveryAddress}</Table.Cell>
+                          <Table.Cell>{order.orderDate.toString()}</Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Content>
+                </Table.ScrollContainer>
+              </Table>
             )}
-          </Card.Content>
-        </Card>
+          </div>
+        </div>
       ) : null}
     </div>
   );
@@ -191,19 +188,4 @@ function findAccountById(
   }
 
   return undefined;
-}
-
-function formatSafeDate(value: string | Date) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "N/A";
-  }
-  return date.toLocaleString();
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency: "CAD",
-  }).format(value);
 }

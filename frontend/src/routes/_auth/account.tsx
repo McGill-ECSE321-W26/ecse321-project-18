@@ -6,8 +6,19 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { Button, Form, Input, Label, TextField } from "@heroui/react";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  Spinner,
+  TextField,
+} from "@heroui/react";
 
+import { FaClockRotateLeft } from "react-icons/fa6";
+import { IoMdClose } from "react-icons/io";
+import { FaRegTrashAlt } from "react-icons/fa";
 import type {
   CustomerResponse,
   EmployeeResponse,
@@ -18,6 +29,7 @@ import { AccountType } from "#/types/api";
 import { deleteRequest, getRequest, putRequest } from "#/utils/httpClient";
 import { successToast } from "#/utils/helpers";
 import Title from "#/components/Title";
+import { PasswordToggleInput } from "#/components/PasswordToggleInput";
 
 const queryClient = new QueryClient();
 
@@ -133,14 +145,6 @@ function Account() {
 
   const updatePasswordMutation = useMutation({
     mutationFn: async () => {
-      if (password.length < 8 || password.length > 32) {
-        throw new Error("Password must be between 8 and 32 characters.");
-      }
-
-      if (password !== confirmPassword) {
-        throw new Error("Passwords do not match.");
-      }
-
       if (isOwner) {
         const requestBody = {
           email: accountInfo.email,
@@ -152,9 +156,7 @@ function Account() {
           requestBody,
           false,
         );
-      }
-
-      if (isCustomer) {
+      } else if (isCustomer || isEmployee) {
         const requestBody = {
           email: accountInfo.email,
           password,
@@ -164,20 +166,6 @@ function Account() {
 
         return putRequest<CustomerResponse>(
           `/account/customer/${user.id}`,
-          requestBody,
-        );
-      }
-
-      if (user.accountType === AccountType.EMPLOYEE) {
-        const requestBody = {
-          email: accountInfo.email,
-          password,
-          address: currentAddress,
-          numOfLoyaltyPoints: currentLoyaltyPoints,
-        };
-
-        return putRequest<EmployeeResponse>(
-          `/account/employee/${user.id}`,
           requestBody,
         );
       }
@@ -236,6 +224,10 @@ function Account() {
       await deleteAccountMutation.mutateAsync();
       await auth.logout();
       await router.invalidate();
+      successToast(
+        "Account deleted successfully.",
+        "We're sorry to see you go.",
+      );
       await navigate({ to: "/login" });
     } catch (error) {
       setDeleteErrors(extractErrors(error));
@@ -257,17 +249,17 @@ function Account() {
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>
-          <p className="text-sm text-default-500">Email</p>
-          <p className="font-medium">{accountInfo.email}</p>
+          <p className="text-sm font-bold">Email</p>
+          <p>{accountInfo.email}</p>
         </div>
         <div>
-          <p className="text-sm text-default-500">Account Type</p>
-          <p className="font-medium">{user.accountType}</p>
+          <p className="text-sm font-bold">Account Type</p>
+          <p>{user.accountType}</p>
         </div>
         {!isOwner && (
           <div>
-            <p className="text-sm text-default-500">Address</p>
-            <p className="font-medium">
+            <p className="text-sm font-bold">Address</p>
+            <p>
               {"address" in accountInfo && accountInfo.address
                 ? accountInfo.address
                 : "No address found"}
@@ -278,13 +270,17 @@ function Account() {
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>
-          <p className="text-xl font-semibold">Change Password</p>
-          <p className="text-sm text-default-500">
-            Enter a new password for your account.
-          </p>
+          <p className="text-xl font-semibold mb-1">Change password</p>
+          <p className="text-sm">Enter a new password for your account.</p>
         </div>
 
-        <Form action={handleUpdatePassword} className="flex flex-col gap-4">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdatePassword();
+          }}
+          className="flex flex-col gap-4"
+        >
           {passwordErrors.length > 0 && (
             <div className="text-sm text-red-500 flex flex-col gap-1">
               {passwordErrors.map((error, index) => (
@@ -297,32 +293,31 @@ function Account() {
             <p className="text-sm text-green-600">{passwordSuccess}</p>
           )}
 
-          <TextField
-            isRequired
-            name="password"
-            type="password"
-            onChange={(value) => setPassword(value)}
-          >
-            <Label>New Password</Label>
-            <Input placeholder="Enter your new password" value={password} />
-          </TextField>
+          <PasswordToggleInput
+            label="New password"
+            placeholder="Enter your new password"
+            password={password}
+            handleChange={setPassword}
+          />
 
-          <TextField
-            isRequired
-            name="confirmPassword"
-            type="password"
-            onChange={(value) => setConfirmPassword(value)}
-          >
-            <Label>Confirm Password</Label>
-            <Input
-              placeholder="Confirm your new password"
-              value={confirmPassword}
-            />
-          </TextField>
+          <PasswordToggleInput
+            label="Confirm password"
+            placeholder="Re-enter your new password"
+            password={confirmPassword}
+            handleChange={setConfirmPassword}
+            validateFn={(value) =>
+              value === password ? null : "Passwords do not match."
+            }
+          />
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-2">
             <Button type="submit" isDisabled={updatePasswordMutation.isPending}>
-              Save Password
+              {updatePasswordMutation.isPending ? (
+                <Spinner size="sm" color="current" />
+              ) : (
+                <FaClockRotateLeft />
+              )}
+              Save password
             </Button>
             <Button
               type="button"
@@ -335,17 +330,18 @@ function Account() {
                 setPasswordSuccess(null);
               }}
             >
+              <IoMdClose />
               Cancel
             </Button>
           </div>
         </Form>
       </div>
 
-      {(isEmployee || isCustomer) && (
+      {(isCustomer || isEmployee) && (
         <>
           <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
             <div>
-              <p className="text-xl font-semibold">Change Address</p>
+              <p className="text-xl font-semibold mb-1">Change address</p>
               <p className="text-sm text-default-500">
                 Enter a new address for your account.
               </p>
@@ -356,18 +352,23 @@ function Account() {
                 isRequired
                 name="address"
                 type="text"
-                onChange={(value) => setAddress(value)}
+                onChange={setAddress}
               >
-                <Label>New Address</Label>
+                <Label>New address</Label>
                 <Input placeholder="Enter your new address" value={address} />
               </TextField>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-2">
                 <Button
                   type="submit"
                   isDisabled={updateAddressMutation.isPending}
                 >
-                  Save Address
+                  {updateAddressMutation.isPending ? (
+                    <Spinner size="sm" color="current" />
+                  ) : (
+                    <FaClockRotateLeft />
+                  )}
+                  Save address
                 </Button>
                 <Button
                   type="button"
@@ -377,17 +378,16 @@ function Account() {
                     setAddress(currentAddress);
                   }}
                 >
+                  <IoMdClose />
                   Cancel
                 </Button>
               </div>
             </Form>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-xl border border-red-200 p-6">
+          <div className="flex flex-col gap-4 rounded-xl border border-red-400 p-6 text-red-600">
             <div>
-              <p className="text-xl font-semibold text-red-600">
-                Delete Account
-              </p>
+              <p className="text-xl font-semibold mb-1">Delete account</p>
               <p className="text-sm text-default-500">
                 This action is permanent and cannot be undone.
               </p>
@@ -403,14 +403,20 @@ function Account() {
 
             {confirmingDelete ? (
               <div className="flex flex-col gap-2">
-                <p className="text-sm font-medium">
-                  Are you sure? This cannot be undone.
+                <p className="text-base font-bold">
+                  Are you sure? Account deletion cannot be undone.
                 </p>
                 <div className="flex gap-2">
                   <Button
                     onPress={handleDeleteAccount}
                     isDisabled={deleteAccountMutation.isPending}
+                    variant="danger"
                   >
+                    {deleteAccountMutation.isPending ? (
+                      <Spinner size="sm" color="current" />
+                    ) : (
+                      <FaRegTrashAlt />
+                    )}
                     Yes, delete my account
                   </Button>
                   <Button
@@ -418,13 +424,18 @@ function Account() {
                     onPress={() => setConfirmingDelete(false)}
                     isDisabled={deleteAccountMutation.isPending}
                   >
+                    <IoMdClose />
                     Cancel
                   </Button>
                 </div>
               </div>
             ) : (
-              <Button onPress={() => setConfirmingDelete(true)}>
-                Delete Account
+              <Button
+                onPress={() => setConfirmingDelete(true)}
+                variant="danger"
+              >
+                <FaRegTrashAlt />
+                Delete account
               </Button>
             )}
           </div>

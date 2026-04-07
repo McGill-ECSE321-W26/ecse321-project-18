@@ -82,7 +82,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
             </svg>
           </button>
           <Link to="/">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <img src="/stiltonslogo.png" alt="logo" width={50} />
               <p className="font-bold">Stilton's Store</p>
             </div>

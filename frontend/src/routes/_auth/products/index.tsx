@@ -13,7 +13,7 @@ import {
 
 import { useState } from "react";
 import { ClothingColour, ClothingSize } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { useMatchingClothingProducts } from "#/utils/helpers";
 import { Product } from "#/components/Product";
 
@@ -70,7 +70,7 @@ function Products() {
     setIsSubmitting(false);
   };
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
 
   if (error) return "An error has occurred: " + error.message;
 
@@ -163,7 +163,7 @@ function Products() {
       </Form>
       {/* display products (matching search and filters, if applicable) */}
       {data && data.length > 0 ? (
-        <div className="grid gap-3 auto-rows-[1fr] sm:gap-5 md:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid gap-3 auto-rows-[1fr] sm:gap-5 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {data.map(({ name, price, image, id }) => {
             return (
               <Product

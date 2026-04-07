@@ -8,7 +8,7 @@ import { ColorSwatch } from "@heroui/react";
 import { useState } from "react";
 import type { ClothingColour, ClothingProductResponse } from "#/types/api";
 import { AccountType, ClothingColourHexes, ClothingSize } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { getRequest } from "#/utils/httpClient";
 import { useAuth } from "#/auth";
 import AddItemToCart from "#/components/AddItemToCart";
@@ -72,7 +72,7 @@ function Product() {
   // Fetch clothing product
   const { isLoading, error, data } = useClothingProduct(productId);
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error)
     return <p>We couldn't find or load a product with ID {productId}!</p>;
 

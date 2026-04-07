@@ -6,7 +6,8 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import Skeleton from "#/components/Skeleton";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { successToast, useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
 import Title from "#/components/Title";
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/_auth/admin/accounts/")({
 function Accounts() {
   const navigate = Route.useNavigate();
   const { isLoading, error, data } = useAccounts();
+
   const queryClient = useQueryClient();
 
   const handleView = async (id: number) => {
@@ -52,7 +54,7 @@ function Accounts() {
     } catch (error) {}
   };
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "An error has occurred: Server returned invalid data.";
 
@@ -100,6 +102,7 @@ function Accounts() {
                         <Table.Cell>{owner.email}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handleView(owner.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
@@ -140,6 +143,7 @@ function Accounts() {
                         <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handleView(customer.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
@@ -192,6 +196,7 @@ function Accounts() {
                         </Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handleView(employee.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
