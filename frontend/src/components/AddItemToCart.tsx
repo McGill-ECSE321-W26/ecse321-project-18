@@ -95,7 +95,7 @@ export default function AddItemToCart({
     <>
       <Card>
         <h3 className="text-xl">
-          <strong>Price:</strong> ${price}
+          <strong>Price:</strong> ${price.toFixed(2)}
         </h3>
         <h3 className="text-xl">
           <strong>Size:</strong> {selectedSize || "no size selected."}

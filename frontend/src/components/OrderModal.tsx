@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
+import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import type { UseNavigateResult } from "@tanstack/react-router";
 import type { DateValue } from "@internationalized/date";
 import type {
@@ -142,7 +143,7 @@ export const OrderModal = ({
       </Button>
       <Modal.Backdrop isDismissable={false} isKeyboardDismissDisabled>
         <Modal.Container size="lg">
-          <Modal.Dialog className="bg-gray-100">
+          <Modal.Dialog className="bg-gray-50">
             <Modal.Header className="px-2 py-1">
               <Modal.Heading className="text-2xl font-bold">
                 {!isDone && "Confirm Order"}
@@ -167,7 +168,7 @@ export const OrderModal = ({
               {!isDone && (
                 <>
                   <div className="flex flex-col gap-2">
-                    <p>Your order subtotal is ${initialPrice}.</p>
+                    <p>Your order subtotal is ${initialPrice.toFixed(2)}.</p>
                     <p>
                       You currently have {customer.numOfLoyaltyPoints} loyalty
                       points in your account.
@@ -194,7 +195,7 @@ export const OrderModal = ({
                     </Checkbox>
                     <hr />
                     <p className="text-xl mt-2 font-bold">
-                      Your final order total is ${finalPrice}.
+                      Your final order total is ${finalPrice.toFixed(2)}.
                     </p>
                     <p>
                       You will receive {newLoyaltyPoints} loyalty points from
@@ -284,6 +285,7 @@ export const OrderModal = ({
                   onPress={() => setIsSubmitting(false)}
                   size="lg"
                 >
+                  <IoMdClose />
                   Cancel
                 </Button>
               )}
@@ -293,11 +295,13 @@ export const OrderModal = ({
                   isDisabled={isConfirmDisabled}
                   size="lg"
                 >
+                  <IoMdCheckmark />
                   Confirm
                 </Button>
               )}
               {isDone && (
                 <Button slot="close" onPress={handleDone}>
+                  <IoMdCheckmark />
                   Done
                 </Button>
               )}

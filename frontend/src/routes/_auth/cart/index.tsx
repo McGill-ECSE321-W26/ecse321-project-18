@@ -232,7 +232,7 @@ function Cart() {
                               <div>
                                 <p>Size: {cartItem.clothingItem.size}</p>
                                 <p>Colour: {cartItem.clothingItem.colour}</p>
-                                <p>Unit Price: {product.price}$</p>
+                                <p>Unit price: ${product.price.toFixed(2)}</p>
                               </div>
                             </div>
 

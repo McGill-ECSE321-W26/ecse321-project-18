@@ -9,14 +9,20 @@ import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 type PasswordToggleInputProps = {
+  label?: string;
+  placeholder?: string;
   password: string;
   handleChange: (value: string) => void;
+  validateFn?: (value: string) => string | null;
 };
 
 /* input component that allows the user to toggle password visibility */
 export const PasswordToggleInput = ({
+  label,
+  placeholder,
   password,
   handleChange,
+  validateFn,
 }: PasswordToggleInputProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
@@ -29,12 +35,13 @@ export const PasswordToggleInput = ({
       maxLength={32}
       value={password}
       onChange={handleChange}
+      validate={validateFn}
     >
-      <Label>Password</Label>
+      <Label>{label || "Password"}</Label>
       <InputGroup>
         <InputGroup.Input
           className="w-full"
-          placeholder="Enter your password"
+          placeholder={placeholder || "Enter your password"}
         />
         <InputGroup.Suffix className="pr-0">
           <Button

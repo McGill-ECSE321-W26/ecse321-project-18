@@ -6,8 +6,18 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { Button, Form, Input, Label, TextField } from "@heroui/react";
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  Spinner,
+  TextField,
+} from "@heroui/react";
 
+import { FaClockRotateLeft } from "react-icons/fa6";
+import { IoMdClose } from "react-icons/io";
 import type {
   CustomerResponse,
   EmployeeResponse,
@@ -18,6 +28,7 @@ import { AccountType } from "#/types/api";
 import { deleteRequest, getRequest, putRequest } from "#/utils/httpClient";
 import { successToast } from "#/utils/helpers";
 import Title from "#/components/Title";
+import { PasswordToggleInput } from "#/components/PasswordToggleInput";
 
 const queryClient = new QueryClient();
 
@@ -133,14 +144,6 @@ function Account() {
 
   const updatePasswordMutation = useMutation({
     mutationFn: async () => {
-      if (password.length < 8 || password.length > 32) {
-        throw new Error("Password must be between 8 and 32 characters.");
-      }
-
-      if (password !== confirmPassword) {
-        throw new Error("Passwords do not match.");
-      }
-
       if (isOwner) {
         const requestBody = {
           email: accountInfo.email,
@@ -236,6 +239,10 @@ function Account() {
       await deleteAccountMutation.mutateAsync();
       await auth.logout();
       await router.invalidate();
+      successToast(
+        "Account deleted successfully.",
+        "We're sorry to see you go.",
+      );
       await navigate({ to: "/login" });
     } catch (error) {
       setDeleteErrors(extractErrors(error));
@@ -278,13 +285,17 @@ function Account() {
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>
-          <p className="text-xl font-semibold">Change Password</p>
-          <p className="text-sm text-default-500">
-            Enter a new password for your account.
-          </p>
+          <p className="text-xl font-semibold mb-2">Change password</p>
+          <p className="text-sm">Enter a new password for your account.</p>
         </div>
 
-        <Form action={handleUpdatePassword} className="flex flex-col gap-4">
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleUpdatePassword();
+          }}
+          className="flex flex-col gap-4"
+        >
           {passwordErrors.length > 0 && (
             <div className="text-sm text-red-500 flex flex-col gap-1">
               {passwordErrors.map((error, index) => (
@@ -297,32 +308,31 @@ function Account() {
             <p className="text-sm text-green-600">{passwordSuccess}</p>
           )}
 
-          <TextField
-            isRequired
-            name="password"
-            type="password"
-            onChange={(value) => setPassword(value)}
-          >
-            <Label>New Password</Label>
-            <Input placeholder="Enter your new password" value={password} />
-          </TextField>
+          <PasswordToggleInput
+            label="New password"
+            placeholder="Enter your new password"
+            password={password}
+            handleChange={setPassword}
+          />
 
-          <TextField
-            isRequired
-            name="confirmPassword"
-            type="password"
-            onChange={(value) => setConfirmPassword(value)}
-          >
-            <Label>Confirm Password</Label>
-            <Input
-              placeholder="Confirm your new password"
-              value={confirmPassword}
-            />
-          </TextField>
+          <PasswordToggleInput
+            label="Confirm password"
+            placeholder="Re-enter your new password"
+            password={confirmPassword}
+            handleChange={setConfirmPassword}
+            validateFn={(value) =>
+              value === password ? null : "Passwords do not match."
+            }
+          />
 
           <div className="flex gap-2">
             <Button type="submit" isDisabled={updatePasswordMutation.isPending}>
-              Save Password
+              {updatePasswordMutation.isPending ? (
+                <Spinner size="sm" color="current" />
+              ) : (
+                <FaClockRotateLeft />
+              )}
+              Save password
             </Button>
             <Button
               type="button"
@@ -335,6 +345,7 @@ function Account() {
                 setPasswordSuccess(null);
               }}
             >
+              <IoMdClose />
               Cancel
             </Button>
           </div>
@@ -377,6 +388,7 @@ function Account() {
                     setAddress(currentAddress);
                   }}
                 >
+                  <IoMdClose />
                   Cancel
                 </Button>
               </div>
@@ -418,6 +430,7 @@ function Account() {
                     onPress={() => setConfirmingDelete(false)}
                     isDisabled={deleteAccountMutation.isPending}
                   >
+                    <IoMdClose />
                     Cancel
                   </Button>
                 </div>

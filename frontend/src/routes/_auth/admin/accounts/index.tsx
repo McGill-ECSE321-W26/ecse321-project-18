@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import Skeleton from "#/components/Skeleton";
 import { useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
@@ -79,6 +80,7 @@ function Accounts() {
                         <Table.Cell>{owner.email}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handlePress(owner.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
@@ -118,6 +120,7 @@ function Accounts() {
                         <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handlePress(customer.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>
@@ -161,6 +164,7 @@ function Accounts() {
                         <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handlePress(employee.id)}>
+                            <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
                         </Table.Cell>

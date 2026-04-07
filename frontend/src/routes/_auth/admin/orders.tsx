@@ -8,6 +8,7 @@ import { Button, EmptyState, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
 import { GoInbox } from "react-icons/go";
+import { IoMdClose, IoMdEye, IoMdEyeOff, IoMdPersonAdd } from "react-icons/io";
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
 import Skeleton from "#/components/Skeleton";
 import { OrderItems } from "#/components/OrderItems";
@@ -250,6 +251,7 @@ function Orders() {
                               employees.length === 0
                             }
                           >
+                            <IoMdPersonAdd />
                             Assign
                           </Button>
 
@@ -262,14 +264,28 @@ function Orders() {
                               order.state === OrderState.CANCELLED
                             }
                           >
+                            <IoMdClose />
                             Cancel
                           </Button>
                         </div>
                       </Table.Cell>
 
                       <Table.Cell>
-                        <Button onPress={() => toggleRow(order.id)}>
-                          {isExpanded ? "Hide" : "Show"}
+                        <Button
+                          variant="secondary"
+                          onPress={() => toggleRow(order.id)}
+                        >
+                          {isExpanded ? (
+                            <>
+                              <IoMdEyeOff />
+                              Hide
+                            </>
+                          ) : (
+                            <>
+                              <IoMdEye />
+                              Show
+                            </>
+                          )}
                         </Button>
                       </Table.Cell>
                     </Table.Row>

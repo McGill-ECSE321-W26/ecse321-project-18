@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
+import { IoMdCheckmark } from "react-icons/io";
 import type { ClothingProductRequest } from "#/types/api";
 
 import {
@@ -110,7 +111,7 @@ function AdminProducts() {
       <Title pagename="Stilton's Store's Products" />
       <Button onPress={openCreateModal}>
         <FaPlus />
-        Add Product
+        Add product
       </Button>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {data.map(({ id, name, image }) => {
@@ -156,13 +157,15 @@ function AdminProducts() {
       </div>
 
       <Modal.Backdrop isOpen={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <Modal.Container>
-          <Modal.Dialog className="w-fit max-w-[95vw] overflow-visible">
+        <Modal.Container size="lg">
+          <Modal.Dialog className="bg-gray-50">
             <Modal.CloseTrigger />
-            <Modal.Header>
-              <Modal.Heading>Add New Product</Modal.Heading>
+            <Modal.Header className="px-2 py-1">
+              <Modal.Heading className="text-2xl font-bold">
+                Add new product
+              </Modal.Heading>
             </Modal.Header>
-            <Modal.Body className="overflow-visible">
+            <Modal.Body className="px-2 py-1">
               <ProductForm
                 formId="create-product"
                 name={name}
@@ -177,6 +180,7 @@ function AdminProducts() {
             </Modal.Body>
             <Modal.Footer>
               <Button type="submit" form="create-product">
+                <IoMdCheckmark />
                 Confirm
               </Button>
             </Modal.Footer>

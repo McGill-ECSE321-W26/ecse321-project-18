@@ -24,7 +24,7 @@ export const Product = ({ id, name, price, image }: ProductProps) => {
         <Card.Header className="flex gap-1">
           <Card.Title className="text-lg font-bold">{name}</Card.Title>
           <Card.Description className="text-base text-black">
-            {"$" + price}
+            {"$" + price.toFixed(2)}
           </Card.Description>
         </Card.Header>
       </Card>

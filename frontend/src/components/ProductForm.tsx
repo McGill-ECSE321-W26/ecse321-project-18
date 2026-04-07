@@ -6,6 +6,7 @@ import {
   Label,
   TextField,
 } from "@heroui/react";
+import { FaUpload } from "react-icons/fa6";
 import type { RefObject } from "react";
 
 type ProductFormProps = {
@@ -31,14 +32,9 @@ export function ProductForm({
   onImageSelect,
   onSubmit,
 }: ProductFormProps) {
-  const handlePriceBlur = () => {
-    if (!price) return;
-    setPrice(Number(price).toFixed(2));
-  };
-
   return (
     <Form
-      className="flex w-full min-w-[18rem] max-w-[90vw] flex-col gap-4"
+      className="flex w-full flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault();
         void onSubmit();
@@ -46,8 +42,8 @@ export function ProductForm({
       id={formId}
     >
       <TextField isRequired name="name" value={name} onChange={setName}>
-        <Label>Name</Label>
-        <Input placeholder="Classic Hoodie" />
+        <Label className="text-base">Name</Label>
+        <Input className="text-base" placeholder="Classic Hoodie" />
         <FieldError />
       </TextField>
 
@@ -58,38 +54,42 @@ export function ProductForm({
         value={price}
         onChange={setPrice}
       >
-        <Label>Price</Label>
+        <Label className="text-base">Price</Label>
         <Input
-          placeholder="49.99"
+          className="text-base"
+          placeholder="Enter new price"
           min={0.01}
-          step="any"
-          onBlur={handlePriceBlur}
+          step={0.01}
         />
         <FieldError />
       </TextField>
 
-      <Label>Image</Label>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={onImageSelect}
-      />
-      <Button
-        type="button"
-        variant="secondary"
-        onPress={() => fileInputRef.current?.click()}
-      >
-        Choose Image
-      </Button>
-      {image ? (
-        <img
-          src={image}
-          alt="Selected preview"
-          className="mt-2 h-40 w-40 rounded object-cover"
+      <div className="flex flex-col gap-2">
+        <Label className="text-base">Image</Label>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onImageSelect}
         />
-      ) : null}
+        <Button
+          type="button"
+          variant="secondary"
+          className="text-base"
+          onPress={() => fileInputRef.current?.click()}
+        >
+          <FaUpload />
+          Choose image
+        </Button>
+        {image ? (
+          <img
+            src={image}
+            alt="Selected preview"
+            className="mt-2 h-48 rounded object-cover"
+          />
+        ) : null}
+      </div>
     </Form>
   );
 }
