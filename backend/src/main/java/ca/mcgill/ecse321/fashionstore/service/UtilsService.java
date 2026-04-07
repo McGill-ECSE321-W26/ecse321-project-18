@@ -55,11 +55,15 @@ public class UtilsService {
     private static final Date DELIVERY_DATE = Date.valueOf(LocalDate.now().plusDays(10));
 
     // Demo data
-    private Random random;
-    private static final String imageDir = "data";
-    private static final float minPrice = 50.0f;
-    private static final float maxPrice = 150.0f;
-    private static final List<String> customerNames =
+    private static Random random;
+    private static final String IMAGE_DIR = "data";
+    private static final int NUM_CUSTOMERS = 10;
+    private static final int NUM_EMPLOYEES = 10;
+    private static final int NUM_ORDERS = 3;
+    private static final int NUM_ORDER_ITEMS = 5;
+    private static final float MIN_PRICE = 50.0f;
+    private static final float MAX_PRICE = 150.0f;
+    private static final List<String> CUSTOMER_NAMES =
             List.of(
                     "James",
                     "Mary",
@@ -71,7 +75,7 @@ public class UtilsService {
                     "Linda",
                     "David",
                     "Elizabeth");
-    private static final List<String> customerAddresses =
+    private static final List<String> CUSTOMER_ADDRESSES =
             List.of(
                     "Smith",
                     "Johnson",
@@ -83,11 +87,11 @@ public class UtilsService {
                     "Davis",
                     "Rodriguez",
                     "Martinez");
-    private static final List<String> employeeNames =
+    private static final List<String> EMPLOYEE_NAMES =
             List.of(
                     "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas",
                     "Sarah", "Charles", "Karen");
-    private static final List<String> employeeAddresses =
+    private static final List<String> EMPLOYEE_ADDRESSES =
             List.of(
                     "Hernandez",
                     "Lopez",
@@ -99,9 +103,9 @@ public class UtilsService {
                     "Moore",
                     "Jackson",
                     "Martin");
-    private static final List<String> addressSuffixes =
+    private static final List<String> ADDRESS_SUFFIXES =
             List.of("Road", "Street", "Avenue", "Boulevard", "Drive", "Way");
-    private static final String password = "asdfasdf";
+    private static final String PASSWORD = "asdfasdf";
 
     /**
      * UtilsService constructor.
@@ -291,7 +295,7 @@ public class UtilsService {
         List<Owner> owners = ownerRepository.findAll();
         if (owners.isEmpty()) {
             Owner owner = new Owner();
-            owner.setEmail("admin@fashionstore.com");
+            owner.setEmail("admin@stilton.com");
             owner.setPassword("security");
             ownerRepository.save(owner);
         }
@@ -300,17 +304,18 @@ public class UtilsService {
         List<ClothingProduct> clothingProducts = new ArrayList<>();
         try {
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-            Resource[] directory = resolver.getResources(String.format("classpath:%s/*", imageDir));
+            Resource[] directory =
+                    resolver.getResources(String.format("classpath:%s/*", IMAGE_DIR));
             for (Resource file : directory) {
                 if (file.exists()) {
                     String name = getName(file.getFilename());
                     String b64 = imgToBase64(file);
                     ClothingProduct clothingProduct =
-                            createClothingProduct(name, randFloat(minPrice, maxPrice, 2), b64);
+                            createClothingProduct(name, randFloat(MIN_PRICE, MAX_PRICE, 2), b64);
                     for (Colour colour : Colour.values()) {
                         for (Size size : Size.values()) {
                             ClothingItem clothingItem =
-                                    createClothingItem(size, colour, random.nextInt(0, 100));
+                                    createClothingItem(size, colour, random.nextInt(100));
                             clothingProduct.addItem(clothingItem);
                         }
                     }
@@ -324,32 +329,37 @@ public class UtilsService {
         // generate customers and employees
         List<Customer> customers = new ArrayList<>();
         List<Employee> employees = new ArrayList<>();
-        for (int i = 0; i < customerNames.size(); i++) {
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < Integer.min(NUM_CUSTOMERS, CUSTOMER_NAMES.size()); i++) {
             // generate customer
             Customer customer =
                     createCustomer(
-                            String.format("%s@example.com", customerNames.get(i).toLowerCase()),
-                            password,
+                            String.format("%s@email.com", CUSTOMER_NAMES.get(i).toLowerCase()),
+                            PASSWORD,
                             String.format(
                                     "%d %s %s",
                                     random.nextInt(10, 1000),
-                                    customerAddresses.get(i),
-                                    addressSuffixes.get(random.nextInt(0, addressSuffixes.size()))),
-                            random.nextInt(0, 2000));
+                                    CUSTOMER_ADDRESSES.get(i),
+                                    ADDRESS_SUFFIXES.get(random.nextInt(ADDRESS_SUFFIXES.size()))),
+                            random.nextInt(2000));
             customers.add(customer);
-
+            orders.addAll(generateOrders(clothingProducts, customer, NUM_ORDERS));
+        }
+        for (int i = 0; i < Integer.min(NUM_EMPLOYEES, EMPLOYEE_NAMES.size()); i++) {
             // generate employee
             Employee employee =
                     createEmployee(
-                            String.format("%s@example.com", employeeNames.get(i).toLowerCase()),
-                            password,
+                            String.format("%s@stilton.com", EMPLOYEE_NAMES.get(i).toLowerCase()),
+                            PASSWORD,
                             String.format(
                                     "%d %s %s",
                                     random.nextInt(10, 1000),
-                                    employeeAddresses.get(i),
-                                    addressSuffixes.get(random.nextInt(0, addressSuffixes.size()))),
-                            random.nextInt(0, 2000));
+                                    EMPLOYEE_ADDRESSES.get(i),
+                                    ADDRESS_SUFFIXES.get(
+                                            random.nextInt(0, ADDRESS_SUFFIXES.size()))),
+                            random.nextInt(2000));
             employees.add(employee);
+            orders.addAll(generateOrders(clothingProducts, employee, NUM_ORDERS));
         }
 
         // save
@@ -358,6 +368,10 @@ public class UtilsService {
         clothingProductRepository.saveAll(clothingProducts);
         for (ClothingProduct clothingProduct : clothingProducts) {
             clothingItemRepository.saveAll(clothingProduct.getItems());
+        }
+        orderRepository.saveAll(orders);
+        for (Order order : orders) {
+            orderItemRepository.saveAll(order.getItems());
         }
     }
 
@@ -430,6 +444,35 @@ public class UtilsService {
         return orderRepository.save(order);
     }
 
+    private List<Order> generateOrders(
+            List<ClothingProduct> clothingProducts, Customer customer, int num) {
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            Order order =
+                    createOrder(
+                            State.PURCHASED,
+                            0,
+                            ORDER_DATE,
+                            Date.valueOf(LocalDate.now().plusDays(random.nextInt(5, 20))),
+                            customer.getAddress());
+            float price = 0;
+            for (int j = 0; j < NUM_ORDER_ITEMS; j++) {
+                ClothingProduct clothingProduct =
+                        clothingProducts.get(random.nextInt(clothingProducts.size()));
+                ClothingItem clothingItem =
+                        clothingProduct.getItem(random.nextInt(clothingProduct.getItems().size()));
+                int quantity = random.nextInt(1, 11);
+                OrderItem orderItem = createOrderItem(quantity, clothingProduct.getPrice());
+                price += clothingProduct.getPrice() * quantity;
+                orderItem.setClothingItem(clothingItem);
+                order.addItem(orderItem);
+            }
+            order.setPrice(roundFloat(price, 2));
+            customer.addPurchasedOrder(order);
+        }
+        return orders;
+    }
+
     private ShoppingCartItem createShoppingCartItem(int quantity) {
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
         shoppingCartItem.setQuantity(quantity);
@@ -458,12 +501,20 @@ public class UtilsService {
                 sb.append(c);
             }
         }
-        String name = sb.toString();
-        return name.trim();
+        String name = sb.toString().trim();
+        int extIndex = name.lastIndexOf('.');
+        if (extIndex > 0) {
+            name = name.substring(0, extIndex);
+        }
+        return name;
     }
 
-    private float randFloat(float min, float max, int round) {
+    private static float randFloat(float min, float max, int round) {
         float num = random.nextFloat(min, max);
+        return roundFloat(num, round);
+    }
+
+    private static float roundFloat(float num, int round) {
         BigDecimal bigDecimal = new BigDecimal(num);
         BigDecimal rounded = bigDecimal.setScale(round, RoundingMode.HALF_UP);
         return rounded.floatValue();

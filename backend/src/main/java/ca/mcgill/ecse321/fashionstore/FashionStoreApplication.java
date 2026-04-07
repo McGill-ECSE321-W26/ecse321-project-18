@@ -27,7 +27,7 @@ public class FashionStoreApplication {
             List<Owner> owners = ownerRepository.findAll();
             if (owners.isEmpty()) {
                 Owner owner = new Owner();
-                owner.setEmail("admin@fashionstore.com");
+                owner.setEmail("admin@stilton.com");
                 owner.setPassword("security");
                 ownerRepository.save(owner);
             }

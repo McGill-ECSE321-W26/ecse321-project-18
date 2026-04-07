@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   QueryClient,
   QueryClientProvider,
@@ -291,10 +291,37 @@ function Orders() {
   return (
     <div className="-mt-12 flex flex-col gap-4">
       <Title pagename="All Orders" />
+      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+        <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+          <ul className="hidden items-center gap-4 md:flex">
+            <li>
+              <Link to="." href="/admin/orders#available">
+                Available Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/admin/orders#assigned">
+                Assigned Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/admin/orders#completed">
+                Completed Orders
+              </Link>
+            </li>
+          </ul>
+        </header>
+      </nav>
 
-      {renderTable("Available Orders", availableOrders)}
-      {renderTable("Assigned Orders", assignedOrders)}
-      {renderTable("Completed Orders", completedOrders)}
+      <section id="available">
+        {renderTable("Available Orders", availableOrders)}
+      </section>
+      <section id="assigned">
+        {renderTable("Assigned Orders", assignedOrders)}
+      </section>
+      <section id="completed">
+        {renderTable("Completed Orders", completedOrders)}
+      </section>
     </div>
   );
 }
