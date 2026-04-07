@@ -11,14 +11,17 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-URI="http://localhost:8080/fashionstore/dev/test"
+BASE="http://localhost:8080/fashionstore"
 
 case "$1" in
     "gen")
-        curl -X POST "$URI"
+        curl -X POST "${BASE}/dev/test"
+        ;;
+    "demo")
+        curl -X POST "${BASE}/dev/demo"
         ;;
     "del")
-        curl -X DELETE "$URI"
+        curl -X DELETE "${BASE}/dev/test"
         ;;
     *)
         print_help

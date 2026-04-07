@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   QueryClient,
   QueryClientProvider,
@@ -40,12 +40,11 @@ function Orders() {
   const [selectedEmployeeByOrder, setSelectedEmployeeByOrder] = useState<
     Record<number, string>
   >({});
-  const [actionError, setActionError] = useState<string | null>(null);
 
   const {
     isLoading: isOrdersLoading,
     error: ordersError,
-    data: orders,
+    data: data,
     refetch: refetchOrders,
   } = useOrders();
 
@@ -71,8 +70,6 @@ function Orders() {
       });
     },
     onSuccess: async (_, variables) => {
-      setActionError(null);
-
       successToast(
         variables.state === OrderState.ASSIGNED
           ? "Employee assigned successfully."
@@ -81,21 +78,12 @@ function Orders() {
 
       await refetchOrders();
     },
-    onError: (err: any) => {
-      const backendErrors = err?.response?.data?.errors;
-
-      if (backendErrors && Array.isArray(backendErrors)) {
-        setActionError(backendErrors.join(", "));
-      } else {
-        setActionError("Something went wrong. Please try again.");
-      }
-    },
   });
 
   if (isOrdersLoading || isAccountsLoading) return <CustomSkeleton />;
   if (ordersError) return "An error has occurred: " + ordersError.message;
   if (accountsError) return "An error has occurred: " + accountsError.message;
-  if (accounts === undefined || orders === undefined) {
+  if (accounts === undefined || data === undefined) {
     return "An error has occurred: undefined values.";
   }
 
@@ -158,15 +146,30 @@ function Orders() {
     });
   };
 
-  return (
-    <div className="-mt-12 flex flex-col gap-4">
-      <Title pagename="All Orders" />
+  const orders = data.sort((a, b) => a.id - b.id);
 
-      {actionError && <p className="text-sm text-danger">{actionError}</p>}
+  const availableOrders = orders.filter(
+    (order: OrderResponse) => order.state === OrderState.PURCHASED,
+  );
+
+  const assignedOrders = orders.filter(
+    (order: OrderResponse) => order.state === OrderState.ASSIGNED,
+  );
+
+  const completedOrders = orders.filter(
+    (order: OrderResponse) =>
+      order.state === OrderState.PREPARED ||
+      order.state === OrderState.DELIVERED ||
+      order.state === OrderState.CANCELLED,
+  );
+
+  const renderTable = (title: string, orders: OrderResponse[]) => (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-semibold">{title}</h2>
 
       <Table className="table-fixed w-full">
         <Table.ScrollContainer>
-          <Table.Content aria-label="Orders table">
+          <Table.Content aria-label={title}>
             <Table.Header>
               <Table.Column isRowHeader>ID</Table.Column>
               <Table.Column>Status</Table.Column>
@@ -312,6 +315,43 @@ function Orders() {
           </Table.Content>
         </Table.ScrollContainer>
       </Table>
+    </div>
+  );
+
+  return (
+    <div className="-mt-12 flex flex-col gap-4">
+      <Title pagename="All Orders" />
+      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+        <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+          <ul className="hidden items-center gap-4 md:flex">
+            <li>
+              <Link to="." href="/admin/orders#available">
+                Available Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/admin/orders#assigned">
+                Assigned Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/admin/orders#completed">
+                Completed Orders
+              </Link>
+            </li>
+          </ul>
+        </header>
+      </nav>
+
+      <section id="available">
+        {renderTable("Available Orders", availableOrders)}
+      </section>
+      <section id="assigned">
+        {renderTable("Assigned Orders", assignedOrders)}
+      </section>
+      <section id="completed">
+        {renderTable("Completed Orders", completedOrders)}
+      </section>
     </div>
   );
 }

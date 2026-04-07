@@ -1,11 +1,17 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "@heroui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import CustomSkeleton from "#/components/CustomSkeleton";
-import { useAccounts } from "#/utils/helpers";
+import { successToast, useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
 import Title from "#/components/Title";
+import { deleteRequest } from "#/utils/httpClient";
 
 const queryClient = new QueryClient();
 
@@ -28,13 +34,29 @@ function Accounts() {
   const navigate = Route.useNavigate();
   const { isLoading, error, data } = useAccounts();
 
+  const queryClient = useQueryClient();
+
+  const handleView = async (id: number) => {
+    await navigate({ to: `/admin/accounts/${id}` });
+  };
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: (id: number) => deleteRequest<void>(`/account/${id}`),
+    onSuccess: () => {
+      successToast("Successfully deleted account.");
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteAccountMutation.mutateAsync(id);
+    } catch (error) {}
+  };
+
   if (isLoading) return <CustomSkeleton />;
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "An error has occurred: Server returned invalid data.";
-
-  const handlePress = async (id: number) => {
-    await navigate({ to: `/admin/accounts/${id}` });
-  };
 
   return (
     <>
@@ -70,7 +92,7 @@ function Accounts() {
                   <Table.Header>
                     <Table.Column isRowHeader>ID</Table.Column>
                     <Table.Column>Email</Table.Column>
-                    <Table.Column>Button</Table.Column>
+                    <Table.Column>View Profile</Table.Column>
                   </Table.Header>
                   <EmptyTable
                     data={data.owners}
@@ -79,7 +101,7 @@ function Accounts() {
                         <Table.Cell>{owner.id}</Table.Cell>
                         <Table.Cell>{owner.email}</Table.Cell>
                         <Table.Cell>
-                          <Button onPress={() => handlePress(owner.id)}>
+                          <Button onPress={() => handleView(owner.id)}>
                             <FaArrowUpRightFromSquare />
                             View profile
                           </Button>
@@ -105,7 +127,8 @@ function Accounts() {
                     <Table.Column>Address</Table.Column>
                     <Table.Column>Number of Purchased Orders</Table.Column>
                     <Table.Column>Loyalty Points</Table.Column>
-                    <Table.Column>Button</Table.Column>
+                    <Table.Column></Table.Column>
+                    <Table.Column></Table.Column>
                   </Table.Header>
                   <EmptyTable
                     data={data.customers}
@@ -119,9 +142,17 @@ function Accounts() {
                         </Table.Cell>
                         <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
-                          <Button onPress={() => handlePress(customer.id)}>
+                          <Button onPress={() => handleView(customer.id)}>
                             <FaArrowUpRightFromSquare />
                             View profile
+                          </Button>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Button
+                            onPress={() => handleDelete(customer.id)}
+                            className="bg-red-500"
+                          >
+                            Delete
                           </Button>
                         </Table.Cell>
                       </Table.Row>
@@ -146,7 +177,8 @@ function Accounts() {
                     <Table.Column>Loyalty Points</Table.Column>
                     <Table.Column>Number of Purchased Orders</Table.Column>
                     <Table.Column>Number of Assigned Orders</Table.Column>
-                    <Table.Column>Button</Table.Column>
+                    <Table.Column></Table.Column>
+                    <Table.Column></Table.Column>
                   </Table.Header>
                   <EmptyTable
                     data={data.employees}
@@ -155,17 +187,25 @@ function Accounts() {
                         <Table.Cell>{employee.id}</Table.Cell>
                         <Table.Cell>{employee.email}</Table.Cell>
                         <Table.Cell>{employee.address}</Table.Cell>
+                        <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           {employee.purchasedOrders.length}
                         </Table.Cell>
                         <Table.Cell>
                           {employee.assignedOrders.length}
                         </Table.Cell>
-                        <Table.Cell>{employee.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
-                          <Button onPress={() => handlePress(employee.id)}>
+                          <Button onPress={() => handleView(employee.id)}>
                             <FaArrowUpRightFromSquare />
                             View profile
+                          </Button>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Button
+                            onPress={() => handleDelete(employee.id)}
+                            className="bg-red-500"
+                          >
+                            Delete
                           </Button>
                         </Table.Cell>
                       </Table.Row>

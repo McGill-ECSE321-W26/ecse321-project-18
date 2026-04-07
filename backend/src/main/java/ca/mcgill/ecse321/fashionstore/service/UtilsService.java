@@ -1,5 +1,6 @@
 package ca.mcgill.ecse321.fashionstore.service;
 
+import ca.mcgill.ecse321.fashionstore.exception.FashionStoreException;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem.Colour;
 import ca.mcgill.ecse321.fashionstore.model.ClothingItem.Size;
@@ -9,6 +10,7 @@ import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Order;
 import ca.mcgill.ecse321.fashionstore.model.Order.State;
 import ca.mcgill.ecse321.fashionstore.model.OrderItem;
+import ca.mcgill.ecse321.fashionstore.model.Owner;
 import ca.mcgill.ecse321.fashionstore.model.ShoppingCartItem;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ClothingProductRepository;
@@ -16,12 +18,23 @@ import ca.mcgill.ecse321.fashionstore.repository.CustomerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.EmployeeRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderItemRepository;
 import ca.mcgill.ecse321.fashionstore.repository.OrderRepository;
+import ca.mcgill.ecse321.fashionstore.repository.OwnerRepository;
 import ca.mcgill.ecse321.fashionstore.repository.ShoppingCartItemRepository;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Date;
 import java.time.LocalDate;
-import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -36,9 +49,63 @@ public class UtilsService {
     private final EmployeeRepository employeeRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final OwnerRepository ownerRepository;
     private final ShoppingCartItemRepository shoppingCartItemRepository;
     private static final Date ORDER_DATE = Date.valueOf(LocalDate.now());
     private static final Date DELIVERY_DATE = Date.valueOf(LocalDate.now().plusDays(10));
+
+    // Demo data
+    private static Random random;
+    private static final String IMAGE_DIR = "data";
+    private static final int NUM_CUSTOMERS = 10;
+    private static final int NUM_EMPLOYEES = 10;
+    private static final int NUM_ORDERS = 3;
+    private static final int NUM_ORDER_ITEMS = 5;
+    private static final float MIN_PRICE = 50.0f;
+    private static final float MAX_PRICE = 150.0f;
+    private static final List<String> CUSTOMER_NAMES =
+            List.of(
+                    "James",
+                    "Mary",
+                    "Robert",
+                    "Patricia",
+                    "John",
+                    "Jennifer",
+                    "Michael",
+                    "Linda",
+                    "David",
+                    "Elizabeth");
+    private static final List<String> CUSTOMER_ADDRESSES =
+            List.of(
+                    "Smith",
+                    "Johnson",
+                    "Williams",
+                    "Brown",
+                    "Jones",
+                    "Garcia",
+                    "Miller",
+                    "Davis",
+                    "Rodriguez",
+                    "Martinez");
+    private static final List<String> EMPLOYEE_NAMES =
+            List.of(
+                    "William", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas",
+                    "Sarah", "Charles", "Karen");
+    private static final List<String> EMPLOYEE_ADDRESSES =
+            List.of(
+                    "Hernandez",
+                    "Lopez",
+                    "Gonzalez",
+                    "Wilson",
+                    "Anderson",
+                    "Thomas",
+                    "Taylor",
+                    "Moore",
+                    "Jackson",
+                    "Martin");
+    private static final List<String> ADDRESS_SUFFIXES =
+            List.of("Road", "Street", "Avenue", "Boulevard", "Drive", "Way");
+    private static final String PASSWORD = "asdfasdf";
 
     /**
      * UtilsService constructor.
@@ -49,11 +116,11 @@ public class UtilsService {
      * @param employeeRepository EmployeeRepository required to access the database.
      * @param orderItemRepository OrderItemRepository required to access the database.
      * @param orderRepository OrderRepository required to access the database.
+     * @param ownerRepository OwnerRepository required to access the database.
      * @param shoppingCartItemRepository ShoppingCartItemRepository required to access the database.
      * @author Cyrus Fung
      */
     @Autowired
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public UtilsService(
             ClothingItemRepository clothingItemRepository,
             ClothingProductRepository clothingProductRepository,
@@ -61,6 +128,7 @@ public class UtilsService {
             EmployeeRepository employeeRepository,
             OrderItemRepository orderItemRepository,
             OrderRepository orderRepository,
+            OwnerRepository ownerRepository,
             ShoppingCartItemRepository shoppingCartItemRepository) {
         this.clothingItemRepository = clothingItemRepository;
         this.clothingProductRepository = clothingProductRepository;
@@ -68,7 +136,9 @@ public class UtilsService {
         this.employeeRepository = employeeRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderRepository = orderRepository;
+        this.ownerRepository = ownerRepository;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
+        random = new Random();
     }
 
     /**
@@ -76,8 +146,15 @@ public class UtilsService {
      *
      * @author Cyrus Fung
      */
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:VariableDeclarationUsageDistance"})
     public void generateData() {
+        List<Owner> owners = ownerRepository.findAll();
+        if (owners.isEmpty()) {
+            Owner owner = new Owner();
+            owner.setEmail("admin@fashionstore.com");
+            owner.setPassword("security");
+            ownerRepository.save(owner);
+        }
+
         Customer customer0 = createCustomer("ada@language.com", "19801980", "0 Language Avenue", 0);
         Customer customer1 =
                 createCustomer("basic@language.com", "19641964", "1 Language Avenue", 100);
@@ -177,43 +254,129 @@ public class UtilsService {
         shoppingCartItem5.setClothingItem(clothingItem4);
         shoppingCartItem5.setCustomer(employee2);
 
-        customerRepository.save(customer0);
-        customerRepository.save(customer1);
-        customerRepository.save(customer2);
-        employeeRepository.save(employee0);
-        employeeRepository.save(employee1);
-        employeeRepository.save(employee2);
-        clothingProductRepository.save(clothingProduct0);
-        clothingProductRepository.save(clothingProduct1);
-        clothingProductRepository.save(clothingProduct2);
-        clothingItemRepository.save(clothingItem0);
-        clothingItemRepository.save(clothingItem1);
-        clothingItemRepository.save(clothingItem2);
-        clothingItemRepository.save(clothingItem3);
-        clothingItemRepository.save(clothingItem4);
-        clothingItemRepository.save(clothingItem5);
-        orderRepository.save(order0);
-        orderRepository.save(order1);
-        orderRepository.save(order2);
-        orderRepository.save(order3);
-        orderRepository.save(order4);
-        orderItemRepository.save(orderItem0);
-        orderItemRepository.save(orderItem1);
-        orderItemRepository.save(orderItem2);
-        orderItemRepository.save(orderItem3);
-        orderItemRepository.save(orderItem4);
-        orderItemRepository.save(orderItem5);
-        orderItemRepository.save(orderItem6);
-        shoppingCartItemRepository.save(shoppingCartItem0);
-        shoppingCartItemRepository.save(shoppingCartItem1);
-        shoppingCartItemRepository.save(shoppingCartItem2);
-        shoppingCartItemRepository.save(shoppingCartItem3);
-        shoppingCartItemRepository.save(shoppingCartItem4);
-        shoppingCartItemRepository.save(shoppingCartItem5);
+        customerRepository.saveAll(List.of(customer0, customer1, customer2));
+        employeeRepository.saveAll(List.of(employee0, employee1, employee2));
+        clothingProductRepository.saveAll(
+                List.of(clothingProduct0, clothingProduct1, clothingProduct2));
+        clothingItemRepository.saveAll(
+                List.of(
+                        clothingItem0,
+                        clothingItem1,
+                        clothingItem2,
+                        clothingItem3,
+                        clothingItem4,
+                        clothingItem5));
+        orderRepository.saveAll(List.of(order0, order1, order2, order3, order4));
+        orderItemRepository.saveAll(
+                List.of(
+                        orderItem0,
+                        orderItem1,
+                        orderItem2,
+                        orderItem3,
+                        orderItem4,
+                        orderItem5,
+                        orderItem6));
+        shoppingCartItemRepository.saveAll(
+                List.of(
+                        shoppingCartItem0,
+                        shoppingCartItem1,
+                        shoppingCartItem2,
+                        shoppingCartItem3,
+                        shoppingCartItem4,
+                        shoppingCartItem5));
     }
 
     /**
-     * Delete all data from database
+     * Generate demo data.
+     *
+     * @author Cyrus Fung
+     */
+    public void generateDemoData() {
+        List<Owner> owners = ownerRepository.findAll();
+        if (owners.isEmpty()) {
+            Owner owner = new Owner();
+            owner.setEmail("admin@stilton.com");
+            owner.setPassword("security");
+            ownerRepository.save(owner);
+        }
+
+        // generate clothing products and items
+        List<ClothingProduct> clothingProducts = new ArrayList<>();
+        try {
+            ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+            Resource[] directory =
+                    resolver.getResources(String.format("classpath:%s/*", IMAGE_DIR));
+            for (Resource file : directory) {
+                if (file.exists()) {
+                    String name = getName(file.getFilename());
+                    String b64 = imgToBase64(file);
+                    ClothingProduct clothingProduct =
+                            createClothingProduct(name, randFloat(MIN_PRICE, MAX_PRICE, 2), b64);
+                    for (Colour colour : Colour.values()) {
+                        for (Size size : Size.values()) {
+                            ClothingItem clothingItem =
+                                    createClothingItem(size, colour, random.nextInt(100));
+                            clothingProduct.addItem(clothingItem);
+                        }
+                    }
+                    clothingProducts.add(clothingProduct);
+                }
+            }
+        } catch (IOException e) {
+            throw new FashionStoreException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+        // generate customers and employees
+        List<Customer> customers = new ArrayList<>();
+        List<Employee> employees = new ArrayList<>();
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < Integer.min(NUM_CUSTOMERS, CUSTOMER_NAMES.size()); i++) {
+            // generate customer
+            Customer customer =
+                    createCustomer(
+                            String.format("%s@email.com", CUSTOMER_NAMES.get(i).toLowerCase()),
+                            PASSWORD,
+                            String.format(
+                                    "%d %s %s",
+                                    random.nextInt(10, 1000),
+                                    CUSTOMER_ADDRESSES.get(i),
+                                    ADDRESS_SUFFIXES.get(random.nextInt(ADDRESS_SUFFIXES.size()))),
+                            random.nextInt(2000));
+            customers.add(customer);
+            orders.addAll(generateOrders(clothingProducts, customer, NUM_ORDERS));
+        }
+        for (int i = 0; i < Integer.min(NUM_EMPLOYEES, EMPLOYEE_NAMES.size()); i++) {
+            // generate employee
+            Employee employee =
+                    createEmployee(
+                            String.format("%s@stilton.com", EMPLOYEE_NAMES.get(i).toLowerCase()),
+                            PASSWORD,
+                            String.format(
+                                    "%d %s %s",
+                                    random.nextInt(10, 1000),
+                                    EMPLOYEE_ADDRESSES.get(i),
+                                    ADDRESS_SUFFIXES.get(
+                                            random.nextInt(0, ADDRESS_SUFFIXES.size()))),
+                            random.nextInt(2000));
+            employees.add(employee);
+            orders.addAll(generateOrders(clothingProducts, employee, NUM_ORDERS));
+        }
+
+        // save
+        customerRepository.saveAll(customers);
+        employeeRepository.saveAll(employees);
+        clothingProductRepository.saveAll(clothingProducts);
+        for (ClothingProduct clothingProduct : clothingProducts) {
+            clothingItemRepository.saveAll(clothingProduct.getItems());
+        }
+        orderRepository.saveAll(orders);
+        for (Order order : orders) {
+            orderItemRepository.saveAll(order.getItems());
+        }
+    }
+
+    /**
+     * Delete all data from database. Does not delete Owner.
      *
      * @author Cyrus Fung
      */
@@ -281,9 +444,79 @@ public class UtilsService {
         return orderRepository.save(order);
     }
 
+    private List<Order> generateOrders(
+            List<ClothingProduct> clothingProducts, Customer customer, int num) {
+        List<Order> orders = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            Order order =
+                    createOrder(
+                            State.PURCHASED,
+                            0,
+                            ORDER_DATE,
+                            Date.valueOf(LocalDate.now().plusDays(random.nextInt(5, 20))),
+                            customer.getAddress());
+            float price = 0;
+            for (int j = 0; j < NUM_ORDER_ITEMS; j++) {
+                ClothingProduct clothingProduct =
+                        clothingProducts.get(random.nextInt(clothingProducts.size()));
+                ClothingItem clothingItem =
+                        clothingProduct.getItem(random.nextInt(clothingProduct.getItems().size()));
+                int quantity = random.nextInt(1, 11);
+                OrderItem orderItem = createOrderItem(quantity, clothingProduct.getPrice());
+                price += clothingProduct.getPrice() * quantity;
+                orderItem.setClothingItem(clothingItem);
+                order.addItem(orderItem);
+            }
+            order.setPrice(roundFloat(price, 2));
+            customer.addPurchasedOrder(order);
+        }
+        return orders;
+    }
+
     private ShoppingCartItem createShoppingCartItem(int quantity) {
         ShoppingCartItem shoppingCartItem = new ShoppingCartItem();
         shoppingCartItem.setQuantity(quantity);
         return shoppingCartItemRepository.save(shoppingCartItem);
+    }
+
+    private String imgToBase64(Resource file) throws IOException {
+        byte[] fileContents = file.getInputStream().readAllBytes();
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(fileContents);
+    }
+
+    private String getName(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        StringBuilder sb = new StringBuilder();
+        boolean nextUpper = true;
+        for (char c : input.toLowerCase().toCharArray()) {
+            if (c == '_') {
+                sb.append(' ');
+                nextUpper = true;
+            } else if (nextUpper) {
+                sb.append(Character.toUpperCase(c));
+                nextUpper = false;
+            } else {
+                sb.append(c);
+            }
+        }
+        String name = sb.toString().trim();
+        int extIndex = name.lastIndexOf('.');
+        if (extIndex > 0) {
+            name = name.substring(0, extIndex);
+        }
+        return name;
+    }
+
+    private static float randFloat(float min, float max, int round) {
+        float num = random.nextFloat(min, max);
+        return roundFloat(num, round);
+    }
+
+    private static float roundFloat(float num, int round) {
+        BigDecimal bigDecimal = new BigDecimal(num);
+        BigDecimal rounded = bigDecimal.setScale(round, RoundingMode.HALF_UP);
+        return rounded.floatValue();
     }
 }

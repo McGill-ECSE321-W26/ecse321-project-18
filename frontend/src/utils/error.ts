@@ -38,9 +38,7 @@ export const handleErrors = (error: any, isDisplayed: boolean) => {
     }
     throw new AggregateError(errors);
   } else if (error.request) {
-    throw new Error(
-      "Error: The request was made but no response was received.",
-    );
+    throw new Error("The request was made but no response was received.");
   }
   throw new Error(error.message || "Something went wrong!");
 };

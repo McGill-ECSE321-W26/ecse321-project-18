@@ -7,7 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ColorSwatch } from "@heroui/react";
 import { useState } from "react";
 import type { ClothingColour, ClothingProductResponse } from "#/types/api";
-import { AccountType, ClothingColourHexes } from "#/types/api";
+import { AccountType, ClothingColourHexes, ClothingSize } from "#/types/api";
 import CustomSkeleton from "#/components/CustomSkeleton";
 import { getRequest } from "#/utils/httpClient";
 import { useAuth } from "#/auth";
@@ -54,13 +54,14 @@ function Product() {
   const CLOTHING_COLOURS = Object.fromEntries(
     Object.entries(ClothingColourHexes),
   ); // get colours as a key-value map: key = colour name, value = colour hex
+  const CLOTHING_SIZES = Object.values(ClothingSize);
   const { productId }: { productId: number } = Route.useParams();
   const initialProductData = Route.useLoaderData();
 
   // Navigation and user tools/hooks
   const auth = useAuth();
 
-  const initialColour = initialProductData?.clothingItems[0].colour || null;
+  const initialColour = initialProductData?.clothingItems[0]?.colour ?? null;
   const [selectedColour, setSelectedColour] = useState<ClothingColour | null>(
     initialColour,
   );
@@ -78,13 +79,17 @@ function Product() {
   // group clothing items by colour
   const product = data as ClothingProductResponse;
   const itemsByColour = Object.groupBy(
-    product.clothingItems,
+    product.clothingItems.sort(
+      (a, b) => CLOTHING_SIZES.indexOf(a.size) - CLOTHING_SIZES.indexOf(b.size),
+    ),
     ({ colour }) => colour,
   );
 
   // set initial/default selected clothing colour if none chosen by user (e.g. on initial page load)
   if (!selectedColour) {
-    setSelectedColour(Object.keys(itemsByColour)[0] as ClothingColour);
+    if (Object.keys(itemsByColour).length !== 0) {
+      setSelectedColour(Object.keys(itemsByColour)[0] as ClothingColour);
+    }
   }
 
   return (
@@ -102,25 +107,31 @@ function Product() {
                 {product.name}
               </h2>
 
-              {Object.entries(itemsByColour).map(([colour]) => {
-                const colourHex = CLOTHING_COLOURS[colour.toUpperCase()];
+              {Object.keys(itemsByColour).length === 0 ? (
+                <div>No items found for this product.</div>
+              ) : (
+                Object.entries(itemsByColour).map(([colour]) => {
+                  const colourHex = CLOTHING_COLOURS[colour.toUpperCase()];
 
-                return (
-                  <div
-                    key={colour}
-                    className={
-                      (selectedColour === colour
-                        ? "font-bold border-2 border-blue-900 "
-                        : "") +
-                      "flex items-center gap-2 p-4 bg-white shadow-sm shadow-gray-400 rounded-3xl hover:cursor-pointer hover:shadow-blue-400 hover:bg-blue-50 transition-all"
-                    }
-                    onClick={() => setSelectedColour(colour as ClothingColour)}
-                  >
-                    <ColorSwatch color={colourHex} size="xs" />
-                    <p>{colour}</p>
-                  </div>
-                );
-              })}
+                  return (
+                    <div
+                      key={colour}
+                      className={
+                        (selectedColour === colour
+                          ? "font-bold border-2 border-blue-900 "
+                          : "") +
+                        "flex items-center gap-2 p-4 bg-white shadow-sm shadow-gray-400 rounded-3xl hover:cursor-pointer hover:shadow-blue-400 hover:bg-blue-50 transition-all"
+                      }
+                      onClick={() =>
+                        setSelectedColour(colour as ClothingColour)
+                      }
+                    >
+                      <ColorSwatch color={colourHex} size="xs" />
+                      <p>{colour}</p>
+                    </div>
+                  );
+                })
+              )}
             </div>
             <div className="hidden xl:block">
               <AddItemToCart
