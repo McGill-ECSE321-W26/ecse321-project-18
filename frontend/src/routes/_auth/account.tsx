@@ -18,6 +18,7 @@ import {
 
 import { FaClockRotateLeft } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
+import { FaRegTrashAlt } from "react-icons/fa";
 import type {
   CustomerResponse,
   EmployeeResponse,
@@ -155,9 +156,7 @@ function Account() {
           requestBody,
           false,
         );
-      }
-
-      if (isCustomer) {
+      } else if (isCustomer || isEmployee) {
         const requestBody = {
           email: accountInfo.email,
           password,
@@ -167,20 +166,6 @@ function Account() {
 
         return putRequest<CustomerResponse>(
           `/account/customer/${user.id}`,
-          requestBody,
-        );
-      }
-
-      if (user.accountType === AccountType.EMPLOYEE) {
-        const requestBody = {
-          email: accountInfo.email,
-          password,
-          address: currentAddress,
-          numOfLoyaltyPoints: currentLoyaltyPoints,
-        };
-
-        return putRequest<EmployeeResponse>(
-          `/account/employee/${user.id}`,
           requestBody,
         );
       }
@@ -264,17 +249,17 @@ function Account() {
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>
-          <p className="text-sm text-default-500">Email</p>
-          <p className="font-medium">{accountInfo.email}</p>
+          <p className="text-sm font-bold">Email</p>
+          <p>{accountInfo.email}</p>
         </div>
         <div>
-          <p className="text-sm text-default-500">Account Type</p>
-          <p className="font-medium">{user.accountType}</p>
+          <p className="text-sm font-bold">Account Type</p>
+          <p>{user.accountType}</p>
         </div>
         {!isOwner && (
           <div>
-            <p className="text-sm text-default-500">Address</p>
-            <p className="font-medium">
+            <p className="text-sm font-bold">Address</p>
+            <p>
               {"address" in accountInfo && accountInfo.address
                 ? accountInfo.address
                 : "No address found"}
@@ -285,7 +270,7 @@ function Account() {
 
       <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
         <div>
-          <p className="text-xl font-semibold mb-2">Change password</p>
+          <p className="text-xl font-semibold mb-1">Change password</p>
           <p className="text-sm">Enter a new password for your account.</p>
         </div>
 
@@ -325,7 +310,7 @@ function Account() {
             }
           />
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-2">
             <Button type="submit" isDisabled={updatePasswordMutation.isPending}>
               {updatePasswordMutation.isPending ? (
                 <Spinner size="sm" color="current" />
@@ -352,11 +337,11 @@ function Account() {
         </Form>
       </div>
 
-      {isCustomer && (
+      {(isCustomer || isEmployee) && (
         <>
           <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
             <div>
-              <p className="text-xl font-semibold">Change Address</p>
+              <p className="text-xl font-semibold mb-1">Change address</p>
               <p className="text-sm text-default-500">
                 Enter a new address for your account.
               </p>
@@ -367,18 +352,23 @@ function Account() {
                 isRequired
                 name="address"
                 type="text"
-                onChange={(value) => setAddress(value)}
+                onChange={setAddress}
               >
-                <Label>New Address</Label>
+                <Label>New address</Label>
                 <Input placeholder="Enter your new address" value={address} />
               </TextField>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-2">
                 <Button
                   type="submit"
                   isDisabled={updateAddressMutation.isPending}
                 >
-                  Save Address
+                  {updateAddressMutation.isPending ? (
+                    <Spinner size="sm" color="current" />
+                  ) : (
+                    <FaClockRotateLeft />
+                  )}
+                  Save address
                 </Button>
                 <Button
                   type="button"
@@ -395,11 +385,9 @@ function Account() {
             </Form>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-xl border border-red-200 p-6">
+          <div className="flex flex-col gap-4 rounded-xl border border-red-400 p-6 text-red-600">
             <div>
-              <p className="text-xl font-semibold text-red-600">
-                Delete Account
-              </p>
+              <p className="text-xl font-semibold mb-1">Delete account</p>
               <p className="text-sm text-default-500">
                 This action is permanent and cannot be undone.
               </p>
@@ -415,14 +403,20 @@ function Account() {
 
             {confirmingDelete ? (
               <div className="flex flex-col gap-2">
-                <p className="text-sm font-medium">
-                  Are you sure? This cannot be undone.
+                <p className="text-base font-bold">
+                  Are you sure? Account deletion cannot be undone.
                 </p>
                 <div className="flex gap-2">
                   <Button
                     onPress={handleDeleteAccount}
                     isDisabled={deleteAccountMutation.isPending}
+                    variant="danger"
                   >
+                    {deleteAccountMutation.isPending ? (
+                      <Spinner size="sm" color="current" />
+                    ) : (
+                      <FaRegTrashAlt />
+                    )}
                     Yes, delete my account
                   </Button>
                   <Button
@@ -436,8 +430,12 @@ function Account() {
                 </div>
               </div>
             ) : (
-              <Button onPress={() => setConfirmingDelete(true)}>
-                Delete Account
+              <Button
+                onPress={() => setConfirmingDelete(true)}
+                variant="danger"
+              >
+                <FaRegTrashAlt />
+                Delete account
               </Button>
             )}
           </div>

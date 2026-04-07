@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { useAccounts } from "#/utils/helpers";
 import EmptyTable from "#/components/EmptyTable";
 import Title from "#/components/Title";
@@ -28,7 +28,7 @@ function Accounts() {
   const navigate = Route.useNavigate();
   const { isLoading, error, data } = useAccounts();
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "An error has occurred: Server returned invalid data.";
 

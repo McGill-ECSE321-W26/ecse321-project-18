@@ -3,9 +3,10 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Button, EmptyState, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 import { GoInbox } from "react-icons/go";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import type { OrderResponse } from "#/types/api";
 import { useAuth } from "#/auth";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { AccountType } from "#/types/api";
 import { useCustomerOrders } from "#/utils/helpers";
 import { OrderItems } from "#/components/OrderItems";
@@ -47,7 +48,7 @@ function Orders() {
 
   const { isLoading, error, data } = useCustomerOrders(auth.user.id);
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "An error has occurred: Server returned invalid data.";
 
@@ -93,8 +94,21 @@ function Orders() {
                         <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
                         <Table.Cell>{order.deliveryAddress}</Table.Cell>
                         <Table.Cell>
-                          <Button onPress={() => toggleRow(order.id)}>
-                            {isExpanded ? "Hide" : "Show"}
+                          <Button
+                            onPress={() => toggleRow(order.id)}
+                            variant="secondary"
+                          >
+                            {isExpanded ? (
+                              <>
+                                <IoMdEyeOff />
+                                Hide
+                              </>
+                            ) : (
+                              <>
+                                <IoMdEye />
+                                Expand
+                              </>
+                            )}
                           </Button>
                         </Table.Cell>
                       </Table.Row>

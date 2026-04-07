@@ -10,7 +10,7 @@ import { Fragment, useState } from "react";
 import { GoInbox } from "react-icons/go";
 import { IoMdClose, IoMdEye, IoMdEyeOff, IoMdPersonAdd } from "react-icons/io";
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { OrderItems } from "#/components/OrderItems";
 import { OrderState } from "#/types/api";
 import { successToast, useAccounts, useOrders } from "#/utils/helpers";
@@ -92,7 +92,7 @@ function Orders() {
     },
   });
 
-  if (isOrdersLoading || isAccountsLoading) return <Skeleton />;
+  if (isOrdersLoading || isAccountsLoading) return <CustomSkeleton />;
   if (ordersError) return "An error has occurred: " + ordersError.message;
   if (accountsError) return "An error has occurred: " + accountsError.message;
   if (accounts === undefined || orders === undefined) {
@@ -283,7 +283,7 @@ function Orders() {
                           ) : (
                             <>
                               <IoMdEye />
-                              Show
+                              Expand
                             </>
                           )}
                         </Button>

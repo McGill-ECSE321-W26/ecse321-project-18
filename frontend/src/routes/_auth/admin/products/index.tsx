@@ -13,7 +13,7 @@ import {
   useCreateClothingProduct,
   useDeleteClothingProduct,
 } from "#/utils/helpers";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { ProductForm } from "#/components/ProductForm";
 import Title from "#/components/Title";
 
@@ -96,7 +96,7 @@ function AdminProducts() {
     setImage(dataUrl);
   };
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error) return "Error: " + error.message;
   if (!data) {
     return (
@@ -113,7 +113,7 @@ function AdminProducts() {
         <FaPlus />
         Add product
       </Button>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
         {data.map(({ id, name, image }) => {
           return (
             <Card key={id} className="shadow-sm shadow-gray-400">

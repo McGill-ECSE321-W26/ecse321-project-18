@@ -8,7 +8,7 @@ import type {
   OwnerResponse,
 } from "#/types/api";
 import { AccountType } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { useAccounts } from "#/utils/helpers";
 import Title from "#/components/Title";
 
@@ -36,7 +36,7 @@ function ManageAccount() {
   const id = Number(accountId);
   const { isLoading, error, account } = useAccount(id);
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
 
   if (error) {
     return (

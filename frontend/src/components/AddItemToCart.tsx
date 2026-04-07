@@ -134,6 +134,7 @@ export default function AddItemToCart({
                   className="w-full max-w-64 flex flex-row items-center gap-3"
                   defaultValue={1}
                   minValue={1}
+                  step={1}
                   name="quantity"
                   maxValue={selectedNumInStock}
                   onChange={setQuantity}

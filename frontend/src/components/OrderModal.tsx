@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
+import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import type { UseNavigateResult } from "@tanstack/react-router";
 import type { DateValue } from "@internationalized/date";
 import type {
@@ -139,7 +140,8 @@ export const OrderModal = ({
         onPress={() => setIsSubmitting(true)}
         className="w-full min-w-0"
       >
-        Proceed
+        <FaRegArrowAltCircleRight />
+        Checkout
       </Button>
       <Modal.Backdrop isDismissable={false} isKeyboardDismissDisabled>
         <Modal.Container size="lg">

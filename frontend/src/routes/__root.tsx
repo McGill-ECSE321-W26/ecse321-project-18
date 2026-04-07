@@ -16,6 +16,7 @@ import { useAuth } from "#/auth";
 
 import "../styles.css";
 import NotFoundPage from "#/components/NotFoundPage";
+import { successToast } from "#/utils/helpers";
 
 interface FashionStoreContext {
   auth: AuthContext;
@@ -45,6 +46,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
     const handleLogout = () => {
       auth.logout().then(() => {
         router.invalidate().finally(() => {
+          successToast("Logged out successfully.");
           navigate({ to: "/" });
         });
       });
