@@ -51,18 +51,30 @@ public class UtilsService {
     private final OrderRepository orderRepository;
     private final OwnerRepository ownerRepository;
     private final ShoppingCartItemRepository shoppingCartItemRepository;
-    private static final Date ORDER_DATE = Date.valueOf(LocalDate.now());
+
+    // Test data
     private static final Date DELIVERY_DATE = Date.valueOf(LocalDate.now().plusDays(10));
 
     // Demo data
     private static Random random;
     private static final String IMAGE_DIR = "data";
+
     private static final int NUM_CUSTOMERS = 10;
     private static final int NUM_EMPLOYEES = 10;
-    private static final int NUM_ORDERS = 3;
-    private static final int NUM_ORDER_ITEMS = 5;
-    private static final float MIN_PRICE = 50.0f;
-    private static final float MAX_PRICE = 150.0f;
+
+    private static final int NUM_ORDERS = 3; // num of orders per customer
+    private static final int NUM_ORDER_ITEMS = 5; // num of order items per order
+
+    private static final float MIN_PRODUCT_PRICE = 50.0f;
+    private static final float MAX_PRODUCT_PRICE = 150.0f;
+
+    // min number of specific order item ordered
+    private static final int MIN_ORDER_ITEM_QUANTITY = 1;
+
+    // max number of specific order item ordered
+    private static final int MAX_ORDER_ITEM_QUANTITY = 3;
+
+    private static final Date ORDER_DATE = Date.valueOf(LocalDate.now()); // also used for test data
     private static final List<String> CUSTOMER_NAMES =
             List.of(
                     "James",
@@ -292,6 +304,7 @@ public class UtilsService {
      * @author Cyrus Fung
      */
     public void generateDemoData() {
+        // Generate owner if not found
         List<Owner> owners = ownerRepository.findAll();
         if (owners.isEmpty()) {
             Owner owner = new Owner();
@@ -300,38 +313,41 @@ public class UtilsService {
             ownerRepository.save(owner);
         }
 
-        // generate clothing products and items
+        // Generate clothing products and items from images
         List<ClothingProduct> clothingProducts = new ArrayList<>();
         try {
             ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             Resource[] directory =
                     resolver.getResources(String.format("classpath:%s/*", IMAGE_DIR));
             for (Resource file : directory) {
-                if (file.exists()) {
-                    String name = getName(file.getFilename());
-                    String b64 = imgToBase64(file);
-                    ClothingProduct clothingProduct =
-                            createClothingProduct(name, randFloat(MIN_PRICE, MAX_PRICE, 2), b64);
-                    for (Colour colour : Colour.values()) {
-                        for (Size size : Size.values()) {
-                            ClothingItem clothingItem =
-                                    createClothingItem(size, colour, random.nextInt(100));
-                            clothingProduct.addItem(clothingItem);
-                        }
-                    }
-                    clothingProducts.add(clothingProduct);
+                if (!file.exists()) {
+                    continue;
                 }
+                String name = getName(file.getFilename());
+                String b64 = imgToBase64(file);
+                ClothingProduct clothingProduct =
+                        createClothingProduct(
+                                name, randFloat(MIN_PRODUCT_PRICE, MAX_PRODUCT_PRICE, 2), b64);
+                // TODO only pick select amount of colour * size
+                for (Colour colour : Colour.values()) {
+                    for (Size size : Size.values()) {
+                        int stock = random.nextInt(100); // TODO ensure a few 0 stocks
+                        ClothingItem clothingItem = createClothingItem(size, colour, stock);
+                        clothingProduct.addItem(clothingItem);
+                    }
+                }
+                clothingProducts.add(clothingProduct);
             }
         } catch (IOException e) {
             throw new FashionStoreException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
-        // generate customers and employees
-        List<Customer> customers = new ArrayList<>();
-        List<Employee> employees = new ArrayList<>();
+        // Generate orders for each customer
         List<Order> orders = new ArrayList<>();
+
+        // Generate customers
+        List<Customer> customers = new ArrayList<>();
         for (int i = 0; i < Integer.min(NUM_CUSTOMERS, CUSTOMER_NAMES.size()); i++) {
-            // generate customer
             Customer customer =
                     createCustomer(
                             String.format("%s@email.com", CUSTOMER_NAMES.get(i).toLowerCase()),
@@ -345,8 +361,10 @@ public class UtilsService {
             customers.add(customer);
             orders.addAll(generateOrders(clothingProducts, customer, NUM_ORDERS));
         }
+
+        // Generate employees
+        List<Employee> employees = new ArrayList<>();
         for (int i = 0; i < Integer.min(NUM_EMPLOYEES, EMPLOYEE_NAMES.size()); i++) {
-            // generate employee
             Employee employee =
                     createEmployee(
                             String.format("%s@stilton.com", EMPLOYEE_NAMES.get(i).toLowerCase()),
@@ -461,7 +479,7 @@ public class UtilsService {
                         clothingProducts.get(random.nextInt(clothingProducts.size()));
                 ClothingItem clothingItem =
                         clothingProduct.getItem(random.nextInt(clothingProduct.getItems().size()));
-                int quantity = random.nextInt(1, 11);
+                int quantity = random.nextInt(MIN_ORDER_ITEM_QUANTITY, MAX_ORDER_ITEM_QUANTITY);
                 OrderItem orderItem = createOrderItem(quantity, clothingProduct.getPrice());
                 price += clothingProduct.getPrice() * quantity;
                 orderItem.setClothingItem(clothingItem);
