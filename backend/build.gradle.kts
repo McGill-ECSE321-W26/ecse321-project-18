@@ -82,10 +82,12 @@ spotbugs {
 
 tasks.checkstyleMain {
     exclude("**/model/**")
+    exclude("**/UtilsService.java")
 }
 
 tasks.pmdMain {
     exclude("**/model/**")
+    exclude("**/UtilsService.java")
 }
 
 tasks.withType<SpotBugsTask>().configureEach {

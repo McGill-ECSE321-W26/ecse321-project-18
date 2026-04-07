@@ -215,9 +215,7 @@ function Cart() {
                             {/* Image */}
                             <div className="h-20 w-20 overflow-hidden rounded-xl">
                               <img
-                                src={
-                                  product.image || defaultImg
-                                } /* TODO add default image? */
+                                src={product.image || defaultImg}
                                 alt={product.name}
                                 className="h-full w-full object-cover"
                                 loading="lazy"

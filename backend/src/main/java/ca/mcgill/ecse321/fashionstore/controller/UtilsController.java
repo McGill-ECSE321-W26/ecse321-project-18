@@ -43,6 +43,17 @@ public class UtilsController {
     }
 
     /**
+     * Create demo entries in database.
+     *
+     * @author Cyrus Fung
+     */
+    @PostMapping("/fashionstore/dev/demo")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createDemoData() {
+        utilsService.generateDemoData();
+    }
+
+    /**
      * Delete all entries in database.
      *
      * @author Cyrus Fung

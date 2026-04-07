@@ -341,7 +341,7 @@ function Account() {
         </Form>
       </div>
 
-      {isCustomer && (
+      {(isEmployee || isCustomer) && (
         <>
           <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
             <div>
