@@ -2,7 +2,7 @@ import { IoIosLeaf } from "react-icons/io";
 import { FaGift, FaHome, FaMoneyBill } from "react-icons/fa";
 import { FaRecycle } from "react-icons/fa6";
 
-import { Button, Description } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { BsArrowRight } from "react-icons/bs";
 import { useNavigate } from "@tanstack/react-router";
 import HomePageCard from "#/components/HomePageCard";
@@ -34,7 +34,7 @@ export default function HomePage() {
             variant="tertiary"
             onPress={() => navigate({ to: "/products" })}
           >
-            Check our produts
+            Shop now
             <BsArrowRight />
           </Button>
         </div>
