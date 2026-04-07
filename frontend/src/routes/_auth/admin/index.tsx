@@ -216,7 +216,7 @@ function AdminDashboard() {
                       <Table.Cell>{order.state}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
-                      <Table.Cell>{order.price}</Table.Cell>
+                      <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
                     </Table.Row>
                   )}
                 />
@@ -288,7 +288,7 @@ function AdminDashboard() {
                       <Table.Cell>{order.id}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
-                      <Table.Cell>{order.price}</Table.Cell>
+                      <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
                     </Table.Row>
                   )}
                 />

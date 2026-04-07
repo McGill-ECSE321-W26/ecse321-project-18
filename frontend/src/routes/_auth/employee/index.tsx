@@ -165,7 +165,7 @@ function EmployeeOrders() {
                         <Table.Cell>{order.orderDate.toString()}</Table.Cell>
                         <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
                         <Table.Cell>{order.deliveryAddress}</Table.Cell>
-                        <Table.Cell>{order.price}</Table.Cell>
+                        <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
 
                         <Table.Cell>
                           <div className="flex gap-2">
