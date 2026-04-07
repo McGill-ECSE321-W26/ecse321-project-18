@@ -70,7 +70,7 @@ export default function HomePage() {
         ></HomePageCard>
         <HomePageCard
           title="Money Back Guarantee"
-          description="We do not want you pitching money on something that might not fit you or suit your style. Stilton's store offers 67 days money back guarantee, no questions asked, as long as the product returns intact. Use this policy to flex our clothes, if you want."
+          description="We do not want you pitching money on something that might not fit you or suit your style. Stilton's store offers 30 days money back guarantee, no questions asked, as long as the product returns intact. Use this policy to flex our clothes, if you want."
           logo={FaMoneyBill}
         ></HomePageCard>
       </div>
