@@ -2,7 +2,7 @@ import { IoIosLeaf } from "react-icons/io";
 import { FaGift, FaHome, FaMoneyBill } from "react-icons/fa";
 import { FaRecycle } from "react-icons/fa6";
 
-import { Button, Description } from "@heroui/react";
+import { Button, Description, Separator } from "@heroui/react";
 import { BsArrowRight } from "react-icons/bs";
 import { useNavigate } from "@tanstack/react-router";
 import HomePageCard from "#/components/HomePageCard";
@@ -15,19 +15,18 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="relative w-[120vw]">
-        <img
-          className="z-[-1] absolute -top-14 -left-10 w-screen brightness-[0.35]"
-          src="/images/homepage.jpg"
-        ></img>
-      </div>
+      <h1 className="hidden">Stilton's Store</h1>
 
-      <div className="px-20 mt-20">
-        <h1 className="hidden">Stilton's Store</h1>
-        <div className="flex flex-col justify-center gap-5 lg:gap-7">
+      <div
+        className="bg-[url('/images/homepage.jpg')] -top-14
+        bg-cover w-[99vw] aspect-939/279 bg-slate-600 bg-blend-multiply
+      -left-6 right-0 relative overflow-x-hidden flex items-center"
+      >
+        <div className="pl-30">
           <p className="text-5xl text-white font-bold">Timeless pieces.</p>
           <p className="text-xl pt-5 mb-5 text-white">
-            Casual and elegant, for those who want to stand out.<br></br>
+            Casual and elegant clothing, for those who want to stand out.
+            <br></br>
             Here are Stilton's latest works.
           </p>
           <Button
@@ -38,53 +37,78 @@ export default function HomePage() {
             <BsArrowRight />
           </Button>
         </div>
+      </div>
 
-        <h2 className="title mt-45">Who we are</h2>
-
-        <div className="flex justify-center">
-          <HomePageCard
-            title="Our founder"
-            description={founderDescription}
-          ></HomePageCard>
-          <HomePageCard
-            title="Our Team"
-            description="Our team consists of 7 dedicated workers, with the same vision as Stilton and hoping to persist his ideas in the world."
-          ></HomePageCard>
+      <div
+        className="bg-[url('/images/factory.jpeg')] -top-14
+        bg-cover w-[99vw] aspect-2000/900 bg-slate-700 bg-blend-multiply
+      -left-6 right-0 relative overflow-x-hidden flex items-center justify-around"
+      >
+        <div className="w-[30%]">
+          <p className="text-white text-xl">
+            G. M. Stilton was born in 1976 and lived his whole life in New York
+            City. As a kid raised in a modest family, Stilton knew first hand
+            what durable clothes meant. He sold clothes he found to a thrift
+            store to fund his college fashion degree, where he was regarded as
+            one of the most unique and creative designers of the school, able to
+            transform cheap fabric into fashion statement pieces.<br></br>
+            <br></br>
+            We are currently located in 6 countries, but we ship worldwide. Our
+            hard-working team at Stilton's hope that every piece you buy will be
+            memorable.
+          </p>
         </div>
 
-        <h2 className="title">Sustainability</h2>
+        <h2 className="font-bold text-white title">Who we are</h2>
+      </div>
 
-        <div className="flex justify-center">
-          <HomePageCard
-            title="Green"
-            description="We are proud to use recycled materials whenever possible."
-            logo={FaRecycle}
-          ></HomePageCard>
-          <HomePageCard
-            title="Local"
-            description="As opposed to our competitors, we do not outsource our labour. All employees at Stilton's Store are in country and unionized. This is essential to Stilton's philosophy."
-            logo={FaHome}
-          ></HomePageCard>
-          <HomePageCard
-            title="Low Carbon Equivalent"
-            description="The total CO2 equivalent of one of our piece of clothing in its lifecycle is the lowest on the market. We are optimizing energy usage."
-            logo={IoIosLeaf}
-          ></HomePageCard>
-        </div>
+      <div
+        className="bg-[url('/images/sustainability.jpg')] -top-14
+        bg-cover w-[99vw] aspect-2000/900 bg-olive-800 bg-blend-multiply
+      -left-6 right-0 relative overflow-x-hidden flex items-center justify-around"
+      >
+        <h2 className="font-bold text-white title">Sustainability</h2>
+        <div className="w-[40%] h-[70%] flex items-center">
+          <Separator className="h-50%" orientation="vertical" />
+          <div className="pl-20 text-white">
+            <div className="mb-5 flex">
+              <div className="flex items-center pr-10">
+                <FaRecycle size={50} />
+              </div>
+              <div>
+                <p className="text-3xl font-bold">Green</p>
+                <p className="text-2xl">
+                  We are proud to use recycled materials whenever possible.
+                </p>
+              </div>
+            </div>
 
-        <h2 className="title">Customer Satistfaction</h2>
+            <div className="mb-5 flex">
+              <div className="flex items-center pr-10">
+                <FaHome size={50} />
+              </div>
+              <div>
+                <p className="text-3xl font-bold">Local</p>
+                <p className="text-2xl">
+                  We do not outsource our labour. Everything is local.
+                </p>
+              </div>
+            </div>
 
-        <div className="flex justify-center">
-          <HomePageCard
-            title="Rewards Program"
-            description="Our loyalty programs gives discounts to our recurring customers. Stilton values both quality and loyalty!"
-            logo={FaGift}
-          ></HomePageCard>
-          <HomePageCard
-            title="Money Back Guarantee"
-            description="We do not want you pitching money on something that might not fit you or suit your style. Stilton's store offers 30 days money back guarantee, no questions asked, as long as the product returns intact. Use this policy to flex our clothes, if you want."
-            logo={FaMoneyBill}
-          ></HomePageCard>
+            <div className="mb-5 flex">
+              <div className="flex items-center pr-10">
+                <IoIosLeaf size={50} />
+              </div>
+              <div>
+                <p className="text-3xl font-bold">Low footprint</p>
+                <p className="text-2xl">
+                  The total CO2 equivalent of one of our piece of clothing in
+                  its lifecycle is the lowest on the market. We optimize energy
+                  usage.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
