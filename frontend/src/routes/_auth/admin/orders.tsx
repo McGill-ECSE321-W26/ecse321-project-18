@@ -4,7 +4,7 @@ import {
   QueryClientProvider,
   useMutation,
 } from "@tanstack/react-query";
-import { Button, EmptyState, Table } from "@heroui/react";
+import { Button, EmptyState, ListBox, Select, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
 import { GoInbox } from "react-icons/go";
@@ -209,36 +209,50 @@ function Orders() {
                       </Table.Cell>
 
                       <Table.Cell>
-                        <select
-                          className="w-full rounded-md border border-default-300 bg-background px-2 py-1 text-sm"
+                        <Select
+                          placeholder="Select an employee"
                           value={selectedEmployeeId ?? ""}
-                          onChange={(e) =>
-                            setSelectedEmployeeByOrder((prev) => ({
-                              ...prev,
-                              [order.id]: e.target.value,
-                            }))
+                          aria-label="Employee selector"
+                          isDisabled={order.state === OrderState.DELIVERED}
+                          onChange={(value) =>
+                            setSelectedEmployeeByOrder(
+                              (prev) =>
+                                ({
+                                  ...prev,
+                                  [order.id]: value,
+                                }) as Record<number, string>,
+                            )
                           }
                         >
-                          <option value="" disabled>
-                            Select an employee...
-                          </option>
-                          {employees.length === 0 ? (
-                            <option value="" disabled>
-                              No employees available
-                            </option>
-                          ) : (
-                            employees
-                              .filter(
-                                (employee: EmployeeResponse) =>
-                                  employee.id !== order.customerId,
-                              )
-                              .map((employee: EmployeeResponse) => (
-                                <option key={employee.id} value={employee.id}>
-                                  {employee.email}
-                                </option>
-                              ))
-                          )}
-                        </select>
+                          <Select.Trigger className="bg-gray-50">
+                            <Select.Value />
+                            <Select.Indicator />
+                          </Select.Trigger>
+                          <Select.Popover>
+                            <ListBox className="w-full">
+                              {employees.length === 0 ? (
+                                <ListBox.Item textValue="" isDisabled>
+                                  No employees available
+                                </ListBox.Item>
+                              ) : (
+                                employees
+                                  .filter(
+                                    (employee: EmployeeResponse) =>
+                                      employee.id !== order.customerId,
+                                  )
+                                  .map((employee: EmployeeResponse) => (
+                                    <ListBox.Item
+                                      key={employee.id}
+                                      id={employee.id}
+                                      textValue={employee.id.toString()}
+                                    >
+                                      {employee.email}
+                                    </ListBox.Item>
+                                  ))
+                              )}
+                            </ListBox>
+                          </Select.Popover>
+                        </Select>
                       </Table.Cell>
 
                       <Table.Cell>
