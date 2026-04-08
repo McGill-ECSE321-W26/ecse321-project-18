@@ -18,7 +18,8 @@ export default function NotFoundPage() {
 
         <div className="text-center">
           <p className="mt-15 text-gray-700">
-            We can't seem to find the page you were looking for.<br></br>
+            We can't seem to find the page you were looking for.
+            <br />
             If this is not expected, please contact the admin.
           </p>
         </div>

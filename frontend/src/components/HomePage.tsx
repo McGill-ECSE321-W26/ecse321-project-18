@@ -22,7 +22,7 @@ export default function HomePage() {
           <p className="text-5xl text-white font-bold">Timeless pieces.</p>
           <p className="text-xl pt-5 mb-5 text-white">
             Casual and elegant clothing, for those who want to stand out.
-            <br></br>
+            <br />
             Here are Stilton's latest works.
           </p>
           <Button
@@ -48,11 +48,12 @@ export default function HomePage() {
             what durable clothes meant. He sold clothes he found to a thrift
             store to fund his college fashion degree, where he was regarded as
             one of the most unique and creative designers of the school, able to
-            transform cheap fabric into fashion statement pieces.<br></br>
-            <br></br>
+            transform cheap fabric into fashion statement pieces.
+            <br />
+            <br />
             We are currently located in 6 countries, but we ship worldwide. Our
-            hard-working team at Stilton's hope that every piece you buy will be
-            memorable.
+            hard-working team at Stilton's hopes that every piece you buy will
+            be memorable.
           </p>
         </div>
 

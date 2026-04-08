@@ -44,8 +44,8 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
     const location = useLocation();
 
     // homepage override
-    let padding = "pb-8 pt-14";
-    if (location.pathname == "/") {
+    let padding = " pb-8 pt-14";
+    if (location.pathname === "/") {
       padding = "";
     }
 
