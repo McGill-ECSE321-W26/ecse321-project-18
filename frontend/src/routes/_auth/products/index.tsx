@@ -13,7 +13,7 @@ import {
 
 import { useState } from "react";
 import { ClothingColour, ClothingSize } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { useMatchingClothingProducts } from "#/utils/helpers";
 import { Product } from "#/components/Product";
 
@@ -70,7 +70,7 @@ function Products() {
     setIsSubmitting(false);
   };
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
 
   if (error) return "An error has occurred: " + error.message;
 
@@ -100,7 +100,7 @@ function Products() {
           onChange={setSizeFilters}
         >
           <Label className="text-base">Filter by clothing size</Label>
-          <div className="grid grid-cols-4 gap-x-1 lg:grid-cols-5">
+          <div className="grid grid-cols-4 gap-x-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {CLOTHING_SIZES.map((size) => {
               return (
                 // enums are encoded in uppercase on the backend, so requestparams need the enums in uppercase
@@ -123,7 +123,7 @@ function Products() {
           onChange={setColourFilters}
         >
           <Label className="text-base">Filter by clothing colour</Label>
-          <div className="grid grid-cols-2 gap-x-1 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-1 xl:grid-cols-3 2xl:grid-cols-4">
             {CLOTHING_COLOURS.map((colour) => {
               return (
                 // enums are encoded in uppercase on the backend, so requestparams need the enums in uppercase
@@ -163,7 +163,7 @@ function Products() {
       </Form>
       {/* display products (matching search and filters, if applicable) */}
       {data && data.length > 0 ? (
-        <div className="grid gap-3 auto-rows-[1fr] sm:gap-5 md:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid gap-3 auto-rows-[1fr] sm:gap-5 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {data.map(({ name, price, image, id }) => {
             return (
               <Product

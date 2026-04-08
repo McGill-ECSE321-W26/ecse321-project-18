@@ -1,15 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import {
   QueryClient,
   QueryClientProvider,
   useMutation,
 } from "@tanstack/react-query";
-import { Button, EmptyState, Table } from "@heroui/react";
+import { Button, EmptyState, ListBox, Select, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
 import { GoInbox } from "react-icons/go";
+import { IoMdClose, IoMdEye, IoMdEyeOff, IoMdPersonAdd } from "react-icons/io";
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { OrderItems } from "#/components/OrderItems";
 import { OrderState } from "#/types/api";
 import { successToast, useAccounts, useOrders } from "#/utils/helpers";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/_auth/admin/orders")({
   head: () => ({
     meta: [
       {
-        title: "Orders | Stilton's Store",
+        title: "Manage orders | Stilton's Store",
       },
     ],
   }),
@@ -39,12 +40,11 @@ function Orders() {
   const [selectedEmployeeByOrder, setSelectedEmployeeByOrder] = useState<
     Record<number, string>
   >({});
-  const [actionError, setActionError] = useState<string | null>(null);
 
   const {
     isLoading: isOrdersLoading,
     error: ordersError,
-    data: orders,
+    data: data,
     refetch: refetchOrders,
   } = useOrders();
 
@@ -70,8 +70,6 @@ function Orders() {
       });
     },
     onSuccess: async (_, variables) => {
-      setActionError(null);
-
       successToast(
         variables.state === OrderState.ASSIGNED
           ? "Employee assigned successfully."
@@ -80,21 +78,12 @@ function Orders() {
 
       await refetchOrders();
     },
-    onError: (err: any) => {
-      const backendErrors = err?.response?.data?.errors;
-
-      if (backendErrors && Array.isArray(backendErrors)) {
-        setActionError(backendErrors.join(", "));
-      } else {
-        setActionError("Something went wrong. Please try again.");
-      }
-    },
   });
 
-  if (isOrdersLoading || isAccountsLoading) return <Skeleton />;
+  if (isOrdersLoading || isAccountsLoading) return <CustomSkeleton />;
   if (ordersError) return "An error has occurred: " + ordersError.message;
   if (accountsError) return "An error has occurred: " + accountsError.message;
-  if (accounts === undefined || orders === undefined) {
+  if (accounts === undefined || data === undefined) {
     return "An error has occurred: undefined values.";
   }
 
@@ -136,7 +125,7 @@ function Orders() {
     const employeeId = getSelectedEmployeeId(order);
 
     if (employeeId == null) {
-      displayError("No employee can assigned.");
+      displayError("Must select an employee to assign.");
       return;
     }
 
@@ -157,15 +146,30 @@ function Orders() {
     });
   };
 
-  return (
-    <div className="-mt-12 flex flex-col gap-4">
-      <Title pagename="All Orders" />
+  const orders = data.sort((a, b) => a.id - b.id);
 
-      {actionError && <p className="text-sm text-danger">{actionError}</p>}
+  const availableOrders = orders.filter(
+    (order: OrderResponse) => order.state === OrderState.PURCHASED,
+  );
+
+  const assignedOrders = orders.filter(
+    (order: OrderResponse) => order.state === OrderState.ASSIGNED,
+  );
+
+  const completedOrders = orders.filter(
+    (order: OrderResponse) =>
+      order.state === OrderState.PREPARED ||
+      order.state === OrderState.DELIVERED ||
+      order.state === OrderState.CANCELLED,
+  );
+
+  const renderTable = (title: string, orders: OrderResponse[]) => (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-semibold">{title}</h2>
 
       <Table className="table-fixed w-full">
         <Table.ScrollContainer>
-          <Table.Content aria-label="Orders table">
+          <Table.Content aria-label={title}>
             <Table.Header>
               <Table.Column isRowHeader>ID</Table.Column>
               <Table.Column>Status</Table.Column>
@@ -198,7 +202,7 @@ function Orders() {
                       <Table.Cell>{order.id}</Table.Cell>
                       <Table.Cell>{order.state}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
-                      <Table.Cell>${order.price}</Table.Cell>
+                      <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
                       <Table.Cell>{order.orderDate.toString()}</Table.Cell>
                       <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
                       <Table.Cell>{order.deliveryAddress}</Table.Cell>
@@ -208,36 +212,50 @@ function Orders() {
                       </Table.Cell>
 
                       <Table.Cell>
-                        <select
-                          className="w-full rounded-md border border-default-300 bg-background px-2 py-1 text-sm"
+                        <Select
+                          placeholder="Select an employee"
                           value={selectedEmployeeId ?? ""}
-                          onChange={(e) =>
-                            setSelectedEmployeeByOrder((prev) => ({
-                              ...prev,
-                              [order.id]: e.target.value,
-                            }))
+                          aria-label="Employee selector"
+                          isDisabled={order.state !== OrderState.PURCHASED}
+                          onChange={(value) =>
+                            setSelectedEmployeeByOrder(
+                              (prev) =>
+                                ({
+                                  ...prev,
+                                  [order.id]: value,
+                                }) as Record<number, string>,
+                            )
                           }
                         >
-                          <option value="" disabled>
-                            Select an employee...
-                          </option>
-                          {employees.length === 0 ? (
-                            <option value="" disabled>
-                              No employees available
-                            </option>
-                          ) : (
-                            employees
-                              .filter(
-                                (employee: EmployeeResponse) =>
-                                  employee.id !== order.customerId,
-                              )
-                              .map((employee: EmployeeResponse) => (
-                                <option key={employee.id} value={employee.id}>
-                                  {employee.email}
-                                </option>
-                              ))
-                          )}
-                        </select>
+                          <Select.Trigger className="bg-gray-50">
+                            <Select.Value />
+                            <Select.Indicator />
+                          </Select.Trigger>
+                          <Select.Popover>
+                            <ListBox className="w-full">
+                              {employees.length === 0 ? (
+                                <ListBox.Item textValue="" isDisabled>
+                                  No employees available
+                                </ListBox.Item>
+                              ) : (
+                                employees
+                                  .filter(
+                                    (employee: EmployeeResponse) =>
+                                      employee.id !== order.customerId,
+                                  )
+                                  .map((employee: EmployeeResponse) => (
+                                    <ListBox.Item
+                                      key={employee.id}
+                                      id={employee.id}
+                                      textValue={employee.id.toString()}
+                                    >
+                                      {employee.email}
+                                    </ListBox.Item>
+                                  ))
+                              )}
+                            </ListBox>
+                          </Select.Popover>
+                        </Select>
                       </Table.Cell>
 
                       <Table.Cell>
@@ -250,6 +268,7 @@ function Orders() {
                               employees.length === 0
                             }
                           >
+                            <IoMdPersonAdd />
                             Assign
                           </Button>
 
@@ -262,14 +281,28 @@ function Orders() {
                               order.state === OrderState.CANCELLED
                             }
                           >
+                            <IoMdClose />
                             Cancel
                           </Button>
                         </div>
                       </Table.Cell>
 
                       <Table.Cell>
-                        <Button onPress={() => toggleRow(order.id)}>
-                          {isExpanded ? "Hide" : "Show"}
+                        <Button
+                          variant="secondary"
+                          onPress={() => toggleRow(order.id)}
+                        >
+                          {isExpanded ? (
+                            <>
+                              <IoMdEyeOff />
+                              Hide
+                            </>
+                          ) : (
+                            <>
+                              <IoMdEye />
+                              Expand
+                            </>
+                          )}
                         </Button>
                       </Table.Cell>
                     </Table.Row>
@@ -282,6 +315,43 @@ function Orders() {
           </Table.Content>
         </Table.ScrollContainer>
       </Table>
+    </div>
+  );
+
+  return (
+    <div className="-mt-12 flex flex-col gap-4">
+      <Title pagename="All Orders" />
+      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+        <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+          <ul className="hidden items-center gap-4 md:flex">
+            <li>
+              <Link to="." href="/admin/orders#available">
+                Available Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/admin/orders#assigned">
+                Assigned Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/admin/orders#completed">
+                Completed Orders
+              </Link>
+            </li>
+          </ul>
+        </header>
+      </nav>
+
+      <section id="available">
+        {renderTable("Available Orders", availableOrders)}
+      </section>
+      <section id="assigned">
+        {renderTable("Assigned Orders", assignedOrders)}
+      </section>
+      <section id="completed">
+        {renderTable("Completed Orders", completedOrders)}
+      </section>
     </div>
   );
 }

@@ -6,8 +6,6 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
 import { Toast } from "@heroui/react";
 import type { AuthContext } from "#/auth";
 import Footer from "#/components/Footer";
@@ -16,6 +14,7 @@ import { useAuth } from "#/auth";
 
 import "../styles.css";
 import NotFoundPage from "#/components/NotFoundPage";
+import { successToast } from "#/utils/helpers";
 
 interface FashionStoreContext {
   auth: AuthContext;
@@ -45,6 +44,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
     const handleLogout = () => {
       auth.logout().then(() => {
         router.invalidate().finally(() => {
+          successToast("Logged out successfully.");
           navigate({ to: "/" });
         });
       });
@@ -54,24 +54,12 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
         <HeadContent />
         <Toast.Provider className="whitespace-pre-wrap" />
         <TopNav account={auth.user?.accountType} logout={handleLogout} />
-        <div className="min-h-screen flex flex-col">
+        <div className="flex flex-col">
           <main className="px-6 pb-8 pt-14 flex-1">
             <Outlet />
           </main>
           <Footer />
         </div>
-
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "TanStack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
       </>
     );
   },

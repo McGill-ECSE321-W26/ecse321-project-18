@@ -1,6 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { AccountType } from "#/types/api";
 import { redirectForAccountType } from "#/utils/authorization";
+import NotFoundPage from "#/components/NotFoundPage";
 
 export const Route = createFileRoute("/_auth/admin")({
   beforeLoad: ({ context }) => {
@@ -12,4 +13,5 @@ export const Route = createFileRoute("/_auth/admin")({
       });
     }
   },
+  notFoundComponent: NotFoundPage,
 });

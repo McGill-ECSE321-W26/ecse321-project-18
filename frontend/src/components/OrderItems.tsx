@@ -25,10 +25,10 @@ export const OrderItems = ({ order, colNum }: OrderItemsProps) => {
                   return (
                     <Table.Row key={item.id}>
                       <Table.Cell>{item.productName}</Table.Cell>
-                      <Table.Cell>{item.clothingItem.colour}</Table.Cell>
                       <Table.Cell>{item.clothingItem.size}</Table.Cell>
+                      <Table.Cell>{item.clothingItem.colour}</Table.Cell>
                       <Table.Cell>{item.quantity}</Table.Cell>
-                      <Table.Cell>${item.purchasePrice}</Table.Cell>
+                      <Table.Cell>${item.purchasePrice.toFixed(2)}</Table.Cell>
                     </Table.Row>
                   );
                 })}

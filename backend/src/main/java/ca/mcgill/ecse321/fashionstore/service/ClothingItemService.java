@@ -76,18 +76,16 @@ public class ClothingItemService {
             ClothingItemRequestDto clothingItemRequestDto,
             int productId) {
         ClothingItem clothingItem = newClothingItem;
-        if (clothingItemOptional.isEmpty()) {
-            clothingItem.setSize(clothingItemRequestDto.size());
-            clothingItem.setColour(clothingItemRequestDto.colour());
-            clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
-            ClothingProduct clothingProduct =
-                    Utils.findClothingProductById(this.clothingProductRepository, productId);
-            clothingItem.setClothingProduct(clothingProduct);
-        } else {
-            clothingItem = clothingItemOptional.get();
-            clothingItem.setNumInStock(
-                    clothingItem.getNumInStock() + clothingItemRequestDto.numInStock());
+        if (clothingItemOptional.isPresent()) {
+            throw new FashionStoreException(
+                    HttpStatus.BAD_REQUEST, "Cannot create duplicate items.");
         }
+        clothingItem.setSize(clothingItemRequestDto.size());
+        clothingItem.setColour(clothingItemRequestDto.colour());
+        clothingItem.setNumInStock(clothingItemRequestDto.numInStock());
+        ClothingProduct clothingProduct =
+                Utils.findClothingProductById(this.clothingProductRepository, productId);
+        clothingItem.setClothingProduct(clothingProduct);
         return clothingItem;
     }
 

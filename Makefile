@@ -26,6 +26,9 @@ stop:
 gen:
 	bash ./dev/test.sh gen
 
+demo:
+	bash ./dev/test.sh demo
+
 del:
 	bash ./dev/test.sh del
 

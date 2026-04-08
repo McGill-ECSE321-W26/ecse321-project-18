@@ -3,14 +3,16 @@ import {
   QueryClientProvider,
   useMutation,
 } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Button, EmptyState, Table } from "@heroui/react";
+import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { Button, EmptyState, Spinner, Table } from "@heroui/react";
 import { Fragment, useState } from "react";
 
 import { GoInbox } from "react-icons/go";
+import { IoMdEye, IoMdEyeOff, IoMdPersonAdd } from "react-icons/io";
+import { MdAssignmentTurnedIn } from "react-icons/md";
 import type { OrderResponse } from "#/types/api";
 import { useAuth } from "#/auth";
-import Skeleton from "#/components/Skeleton";
+import CustomSkeleton from "#/components/CustomSkeleton";
 import { OrderItems } from "#/components/OrderItems";
 import { AccountType, OrderState } from "#/types/api";
 import { successToast, useOrders } from "#/utils/helpers";
@@ -34,7 +36,7 @@ export const Route = createFileRoute("/_auth/employee/")({
   head: () => ({
     meta: [
       {
-        title: "Manage Orders | Stilton's Store",
+        title: "Manage orders | Stilton's Store",
       },
     ],
   }),
@@ -48,7 +50,6 @@ export const Route = createFileRoute("/_auth/employee/")({
 function EmployeeOrders() {
   const auth = useAuth();
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
-  const [actionError, setActionError] = useState<string | null>(null);
 
   if (auth.user == null) {
     return "An error has occurred: User is not logged in";
@@ -70,8 +71,6 @@ function EmployeeOrders() {
       });
     },
     onSuccess: async (_, variables) => {
-      setActionError(null);
-
       successToast(
         variables.state === OrderState.ASSIGNED
           ? "Order assigned to you."
@@ -80,18 +79,9 @@ function EmployeeOrders() {
 
       await refetch();
     },
-    onError: (err: any) => {
-      const backendErrors = err?.response?.data?.errors;
-
-      if (backendErrors && Array.isArray(backendErrors)) {
-        setActionError(backendErrors.join(", "));
-      } else {
-        setActionError("Something went wrong. Please try again.");
-      }
-    },
   });
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <CustomSkeleton />;
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "An error has occurred: Server returned invalid data.";
 
@@ -113,121 +103,166 @@ function EmployeeOrders() {
       order.employeeId === auth.user!.id && order.state === OrderState.ASSIGNED,
   );
 
-  const completedOrders = data.filter(
+  const preparedOrders = data.filter(
     (order: OrderResponse) =>
-      order.employeeId === auth.user!.id && order.state === OrderState.PREPARED,
+      order.employeeId === auth.user!.id &&
+      (order.state === OrderState.PREPARED ||
+        order.state === OrderState.DELIVERED),
   );
 
   const renderTable = (
     title: string,
     orders: OrderResponse[],
-    mode: "available" | "mine" | "completed",
-  ) => {
-    return (
-      <div className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">{title}</h2>
+    mode: "available" | "mine" | "prepared",
+  ) => (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-xl font-semibold">{title}</h2>
 
-        <Table className="table-fixed w-full">
-          <Table.ScrollContainer>
-            <Table.Content aria-label={title}>
-              <Table.Header>
-                <Table.Column isRowHeader>ID</Table.Column>
-                <Table.Column>Status</Table.Column>
-                <Table.Column>Customer email</Table.Column>
-                <Table.Column>Order date</Table.Column>
-                <Table.Column>Delivery date</Table.Column>
-                <Table.Column>Delivery address</Table.Column>
-                <Table.Column>Total price</Table.Column>
-                <Table.Column>Actions</Table.Column>
-                <Table.Column>Item details</Table.Column>
-              </Table.Header>
+      <Table className="table-fixed w-full">
+        <Table.ScrollContainer>
+          <Table.Content aria-label={title}>
+            <Table.Header>
+              <Table.Column isRowHeader>ID</Table.Column>
+              <Table.Column>Status</Table.Column>
+              <Table.Column>Customer email</Table.Column>
+              <Table.Column>Order date</Table.Column>
+              <Table.Column>Delivery date</Table.Column>
+              <Table.Column>Delivery address</Table.Column>
+              <Table.Column>Total price</Table.Column>
+              <Table.Column>Actions</Table.Column>
+              <Table.Column>Item details</Table.Column>
+            </Table.Header>
 
-              {/* TODO: Did not integrate with EmptyTable component */}
-              <Table.Body
-                renderEmptyState={() => (
-                  <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                    <GoInbox className="size-6 text-muted" />
-                    <span className="text-sm text-muted">No orders found</span>
-                  </EmptyState>
-                )}
-              >
-                {orders.map((order: OrderResponse) => {
-                  const isExpanded = expandedRows.includes(order.id);
+            <Table.Body
+              renderEmptyState={() => (
+                <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
+                  <GoInbox className="size-6 text-muted" />
+                  <span className="text-sm text-muted">No orders found</span>
+                </EmptyState>
+              )}
+            >
+              {orders.map((order: OrderResponse) => {
+                const isExpanded = expandedRows.includes(order.id);
 
-                  return (
-                    <Fragment key={order.id}>
-                      <Table.Row>
-                        <Table.Cell>{order.id}</Table.Cell>
-                        <Table.Cell>{order.state}</Table.Cell>
-                        <Table.Cell>{order.customerEmail}</Table.Cell>
-                        <Table.Cell>{order.orderDate.toString()}</Table.Cell>
-                        <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
-                        <Table.Cell>{order.deliveryAddress}</Table.Cell>
-                        <Table.Cell>{order.price}</Table.Cell>
+                return (
+                  <Fragment key={order.id}>
+                    <Table.Row>
+                      <Table.Cell>{order.id}</Table.Cell>
+                      <Table.Cell>{order.state}</Table.Cell>
+                      <Table.Cell>{order.customerEmail}</Table.Cell>
+                      <Table.Cell>{order.orderDate.toString()}</Table.Cell>
+                      <Table.Cell>{order.deliveryDate.toString()}</Table.Cell>
+                      <Table.Cell>{order.deliveryAddress}</Table.Cell>
+                      <Table.Cell>${order.price.toFixed(2)}</Table.Cell>
 
-                        <Table.Cell>
-                          <div className="flex gap-2">
-                            {mode === "available" && (
+                      <Table.Cell>
+                        <div className="flex gap-2">
+                          {mode === "available" && (
+                            <Button
+                              onPress={() =>
+                                updateStatusMutation.mutate({
+                                  orderId: order.id,
+                                  state: OrderState.ASSIGNED,
+                                })
+                              }
+                              isDisabled={updateStatusMutation.isPending}
+                            >
+                              {updateStatusMutation.isPending ? (
+                                <Spinner size="sm" color="current" />
+                              ) : (
+                                <IoMdPersonAdd />
+                              )}
+                              Self-assign
+                            </Button>
+                          )}
+
+                          {mode === "mine" &&
+                            order.state === OrderState.ASSIGNED && (
                               <Button
                                 onPress={() =>
                                   updateStatusMutation.mutate({
                                     orderId: order.id,
-                                    state: OrderState.ASSIGNED,
+                                    state: OrderState.PREPARED,
                                   })
                                 }
                                 isDisabled={updateStatusMutation.isPending}
                               >
-                                Self-assign
+                                {updateStatusMutation.isPending ? (
+                                  <Spinner size="sm" color="current" />
+                                ) : (
+                                  <MdAssignmentTurnedIn />
+                                )}
+                                Mark prepared
                               </Button>
                             )}
+                        </div>
+                      </Table.Cell>
 
-                            {mode === "mine" &&
-                              order.state === OrderState.ASSIGNED && (
-                                <Button
-                                  onPress={() =>
-                                    updateStatusMutation.mutate({
-                                      orderId: order.id,
-                                      state: OrderState.PREPARED,
-                                    })
-                                  }
-                                  isDisabled={updateStatusMutation.isPending}
-                                >
-                                  Mark prepared
-                                </Button>
-                              )}
-                          </div>
-                        </Table.Cell>
+                      <Table.Cell>
+                        <Button
+                          onPress={() => toggleRow(order.id)}
+                          variant="secondary"
+                        >
+                          {isExpanded ? (
+                            <>
+                              <IoMdEyeOff />
+                              Hide
+                            </>
+                          ) : (
+                            <>
+                              <IoMdEye />
+                              Expand
+                            </>
+                          )}
+                        </Button>
+                      </Table.Cell>
+                    </Table.Row>
 
-                        <Table.Cell>
-                          <Button onPress={() => toggleRow(order.id)}>
-                            {isExpanded ? "Hide" : "Show"}
-                          </Button>
-                        </Table.Cell>
-                      </Table.Row>
-
-                      {isExpanded && <OrderItems order={order} colNum={9} />}
-                    </Fragment>
-                  );
-                })}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-        </Table>
-      </div>
-    );
-  };
+                    {isExpanded && <OrderItems order={order} colNum={9} />}
+                  </Fragment>
+                );
+              })}
+            </Table.Body>
+          </Table.Content>
+        </Table.ScrollContainer>
+      </Table>
+    </div>
+  );
 
   return (
     <div className="-mt-12 flex flex-col gap-4">
-      <div>
-        <Title pagename="Manage Orders" />
-      </div>
+      <Title pagename="Manage Orders" />
+      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+        <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+          <ul className="hidden items-center gap-4 md:flex">
+            <li>
+              <Link to="." href="/employee#available">
+                Available Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/employee#assigned">
+                My Assigned Orders
+              </Link>
+            </li>
+            <li>
+              <Link to="." href="/employee#prepared">
+                My Prepared Orders
+              </Link>
+            </li>
+          </ul>
+        </header>
+      </nav>
 
-      {actionError && <p className="text-sm text-danger">{actionError}</p>}
-
-      {renderTable("Available Orders", availableOrders, "available")}
-      {renderTable("My Assigned Orders", myOrders, "mine")}
-      {renderTable("My Completed Orders", completedOrders, "completed")}
+      <section id="available">
+        {renderTable("Available Orders", availableOrders, "available")}
+      </section>
+      <section id="assigned">
+        {renderTable("My Assigned Orders", myOrders, "mine")}
+      </section>
+      <section id="prepared">
+        {renderTable("My Prepared Orders", preparedOrders, "prepared")}
+      </section>
     </div>
   );
 }

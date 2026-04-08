@@ -7,6 +7,8 @@ import {
   TextField,
 } from "@heroui/react";
 import { useState } from "react";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FaClockRotateLeft } from "react-icons/fa6";
 import type { ClothingItemResponse } from "#/types/api";
 import {
   successToast,
@@ -70,11 +72,8 @@ export const EditClothingItem = ({
         </TextField>
 
         <div className="flex gap-3 mt-auto">
-          <Button
-            size="sm"
-            className="bg-blue-600 text-white hover:bg-blue-700 flex-1"
-            type="submit"
-          >
+          <Button size="sm" className="flex-1" type="submit">
+            <FaClockRotateLeft />
             Update
           </Button>
 
@@ -82,8 +81,10 @@ export const EditClothingItem = ({
             size="sm"
             isDisabled={deleteItemMutation.isPending}
             onPress={() => handleDeleteItem(id)}
-            className="bg-red-600 text-white hover:bg-red-700 flex-1"
+            className="flex-1"
+            variant="danger"
           >
+            <FaRegTrashAlt />
             Delete
           </Button>
         </div>

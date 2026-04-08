@@ -82,7 +82,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
             </svg>
           </button>
           <Link to="/">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <img src="/stiltonslogo.png" alt="logo" width={50} />
               <p className="font-bold">Stilton's Store</p>
             </div>
@@ -146,7 +146,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
         </div>
       </header>
       {isMenuOpen && (
-        <div className="border-t border-separator md:hidden">
+        <div className="border-t border-separator md:hidden text-center">
           <ul className="flex flex-col gap-2 p-4">
             {account ? (
               <>
@@ -154,7 +154,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
                   <Link
                     to="/products"
                     activeOptions={{ exact: true, includeSearch: false }}
-                    className="[&.active]:font-bold block py-2"
+                    className="[&.active]:font-bold block"
                   >
                     Shop
                   </Link>
@@ -172,7 +172,12 @@ export default function TopNav({ account, logout }: TopNavProps) {
                 ))}
               </>
             ) : null}
-            <li className="mt-4 flex flex-col gap-2 border-t border-separator pt-4">
+            <li
+              className={
+                (account && "border-t border-separator mt-4 pt-4 ") +
+                "flex flex-col gap-2"
+              }
+            >
               {account ? (
                 <>
                   <Link
@@ -182,7 +187,11 @@ export default function TopNav({ account, logout }: TopNavProps) {
                   >
                     My Account
                   </Link>
-                  <Button className="w-full" onClick={logout}>
+                  <Button
+                    className="w-full text-base"
+                    onClick={logout}
+                    size="sm"
+                  >
                     Log out
                   </Button>
                 </>
@@ -200,7 +209,9 @@ export default function TopNav({ account, logout }: TopNavProps) {
                     activeOptions={{ exact: true, includeSearch: false }}
                     className="w-full"
                   >
-                    <Button className="w-full">Sign Up</Button>
+                    <Button className="w-full text-base" size="sm">
+                      Sign Up
+                    </Button>
                   </Link>
                 </>
               )}

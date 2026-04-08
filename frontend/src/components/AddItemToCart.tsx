@@ -2,6 +2,7 @@ import { Button, Card, Label, NumberField, toast } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { FaCartPlus } from "react-icons/fa6";
 import type {
   ClothingColour,
   ClothingItemResponse,
@@ -95,7 +96,7 @@ export default function AddItemToCart({
     <>
       <Card>
         <h3 className="text-xl">
-          <strong>Price:</strong> ${price}
+          <strong>Price:</strong> ${price.toFixed(2)}
         </h3>
         <h3 className="text-xl">
           <strong>Size:</strong> {selectedSize || "no size selected."}
@@ -134,6 +135,7 @@ export default function AddItemToCart({
                   className="w-full max-w-64 flex flex-row items-center gap-3"
                   defaultValue={1}
                   minValue={1}
+                  step={1}
                   name="quantity"
                   maxValue={selectedNumInStock}
                   onChange={setQuantity}
@@ -162,7 +164,8 @@ export default function AddItemToCart({
         isDisabled={selectedNumInStock <= 0 || isManager}
         className="mt-5 w-full text-base"
       >
-        {isManager ? <p>Cannot add as manager</p> : <p>Add to cart</p>}
+        <FaCartPlus />
+        {isManager ? "Cannot add as manager" : "Add to cart"}
       </Button>
     </>
   );

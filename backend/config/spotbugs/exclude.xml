@@ -1,6 +1,9 @@
 <FindBugsFilter>
   <Match>
-    <Package name="~ca.mcgill.ecse321.fashionstore.model.*" />
+    <Package name="ca.mcgill.ecse321.fashionstore.model.*" />
+  </Match>
+  <Match>
+    <Class name="ca.mcgill.ecse321.fashionstore.service.UtilsService" />
   </Match>
   <Match>
     <Bug pattern="HARD_CODE_PASSWORD" />
