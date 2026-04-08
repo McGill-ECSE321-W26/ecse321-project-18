@@ -15,8 +15,8 @@ export default function HomePage() {
 
       <div
         className="bg-[url('/images/homepage.jpg')] -top-14
-        bg-cover w-[99vw] aspect-939/279 bg-slate-600 bg-blend-multiply
-      -left-6 right-0 relative overflow-x-hidden flex items-center"
+        bg-cover w-auto h-[60vh] xl:w-[99vw] xl:h-auto aspect-939/279 bg-slate-600 bg-blend-multiply
+      -left-20 xl:-left-6 right-0 relative overflow-x-hidden flex items-center"
       >
         <div className="pl-30">
           <p className="text-5xl text-white font-bold">Timeless pieces.</p>
@@ -37,8 +37,9 @@ export default function HomePage() {
 
       <div
         className="bg-[url('/images/factory.jpeg')] -top-14
-        bg-cover w-[99vw] aspect-2000/900 bg-slate-700 bg-blend-multiply
-      -left-6 right-0 relative overflow-x-hidden flex items-center justify-around"
+        bg-cover h-[70vh] xl:w-[99vw] xl:h-auto aspect-2000/900 bg-slate-700 bg-blend-multiply
+        relative flex-col-reverse pl-16 justify-center flex -left-6 right-0 overflow-x-hidden
+        xl:flex-row xl:items-center xl:justify-around"
       >
         <div className="w-[30%]">
           <p className="text-white text-xl">
@@ -55,25 +56,33 @@ export default function HomePage() {
           </p>
         </div>
 
-        <h2 className="font-bold text-white title">Who we are</h2>
+        <h2 className="font-bold text-white text-5xl pb-10 xl:title">
+          Who we are
+        </h2>
       </div>
 
       <div
         className="bg-[url('/images/sustainability.jpg')] -top-14
-        bg-cover w-[99vw] aspect-2000/900 bg-olive-800 bg-blend-multiply
-      -left-6 right-0 relative overflow-x-hidden flex items-center justify-around"
+        bg-cover h-[70vh] xl:w-[99vw] xl:h-auto aspect-2000/900 bg-olive-800 bg-blend-multiply
+        -left-6 right-0 relative pl-16 overflow-x-hidden flex justify-center flex-col
+        xl:items-center xl:justify-around xl:flex-row"
       >
-        <h2 className="font-bold text-white title">Sustainability</h2>
-        <div className="w-[40%] h-[70%] flex items-center">
-          <Separator className="h-50%" orientation="vertical" />
-          <div className="pl-20 text-white">
+        <h2 className="font-bold text-white text-5xl pb-10 xl:title">
+          Sustainability
+        </h2>
+        <div className="w-[40%] xl:h-[70%] flex items-center">
+          <Separator
+            className="h-50% invisible xl:visible"
+            orientation="vertical"
+          />
+          <div className="xl:pl-20 text-white">
             <div className="mb-5 flex">
               <div className="flex items-center pr-10">
                 <FaRecycle size={50} />
               </div>
               <div>
                 <p className="text-3xl font-bold">Green</p>
-                <p className="text-2xl">
+                <p className="text-xl">
                   We are proud to use recycled materials whenever possible.
                 </p>
               </div>
@@ -85,7 +94,7 @@ export default function HomePage() {
               </div>
               <div>
                 <p className="text-3xl font-bold">Local</p>
-                <p className="text-2xl">
+                <p className="text-xl">
                   We do not outsource our labour. Everything is local.
                 </p>
               </div>
@@ -97,7 +106,7 @@ export default function HomePage() {
               </div>
               <div>
                 <p className="text-3xl font-bold">Low footprint</p>
-                <p className="text-2xl">
+                <p className="text-xl">
                   The total CO2 equivalent of one of our piece of clothing in
                   its lifecycle is the lowest on the market. We optimize energy
                   usage.
