@@ -6,8 +6,6 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
 import { Toast } from "@heroui/react";
 import type { AuthContext } from "#/auth";
 import Footer from "#/components/Footer";
