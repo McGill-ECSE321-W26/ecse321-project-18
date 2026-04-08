@@ -26,7 +26,9 @@ import java.math.RoundingMode;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,13 +59,15 @@ public class UtilsService {
 
     // Demo data
     private static Random random;
+    private static int SEED = 1130;
     private static final String IMAGE_DIR = "data";
 
     private static final int NUM_CUSTOMERS = 10;
     private static final int NUM_EMPLOYEES = 10;
 
     private static final int NUM_ORDERS = 3; // num of orders per customer
-    private static final int NUM_ORDER_ITEMS = 5; // num of order items per order
+    private static final int MAX_NUM_ORDER_ITEMS = 6; // num of order items per order
+    private static final int MIN_NUM_ORDER_ITEMS = 1;
 
     private static final float MIN_PRODUCT_PRICE = 50.0f;
     private static final float MAX_PRODUCT_PRICE = 150.0f;
@@ -150,7 +154,7 @@ public class UtilsService {
         this.orderRepository = orderRepository;
         this.ownerRepository = ownerRepository;
         this.shoppingCartItemRepository = shoppingCartItemRepository;
-        random = new Random();
+        random = new Random(SEED); // set seed so we know what happens for demo
     }
 
     /**
@@ -328,10 +332,23 @@ public class UtilsService {
                 ClothingProduct clothingProduct =
                         createClothingProduct(
                                 name, randFloat(MIN_PRODUCT_PRICE, MAX_PRODUCT_PRICE, 2), b64);
-                // TODO only pick select amount of colour * size
-                for (Colour colour : Colour.values()) {
-                    for (Size size : Size.values()) {
-                        int stock = random.nextInt(100); // TODO ensure a few 0 stocks
+                // only pick select amount of colour * size
+                List<Colour> colours = new ArrayList<>(Arrays.stream(Colour.values()).toList());
+                Collections.shuffle(colours);
+                int colourLength = colours.size();
+                colourLength = random.nextInt(3, colourLength - 1);
+                for (int i = 0; i < colourLength; i++) {
+                    Colour colour = colours.get(i);
+                    List<Size> sizes = new ArrayList<>(Arrays.stream(Size.values()).toList());
+                    Collections.shuffle(sizes);
+                    int sizeLength = sizes.size();
+                    sizeLength = random.nextInt(3, sizeLength + 1);
+                    for (int j = 0; j < sizeLength; j++) {
+                        Size size = sizes.get(j);
+                        int stock = 0; // ensure at least 1 size is 0 stocks
+                        if (j != 0) {
+                            stock = random.nextInt(100);
+                        }
                         ClothingItem clothingItem = createClothingItem(size, colour, stock);
                         clothingProduct.addItem(clothingItem);
                     }
@@ -474,7 +491,8 @@ public class UtilsService {
                             Date.valueOf(LocalDate.now().plusDays(random.nextInt(5, 20))),
                             customer.getAddress());
             float price = 0;
-            for (int j = 0; j < NUM_ORDER_ITEMS; j++) {
+            int num_order_items = random.nextInt(MIN_NUM_ORDER_ITEMS, MAX_NUM_ORDER_ITEMS);
+            for (int j = 0; j < num_order_items; j++) {
                 ClothingProduct clothingProduct =
                         clothingProducts.get(random.nextInt(clothingProducts.size()));
                 ClothingItem clothingItem =
