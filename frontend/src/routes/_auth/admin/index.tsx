@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Button, Table } from "@heroui/react";
 
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import type { EmployeeResponse, OrderResponse } from "#/types/api";
 import CustomSkeleton from "#/components/CustomSkeleton";
 import { OrderState } from "#/types/api";
@@ -171,15 +172,21 @@ function AdminDashboard() {
 
       <div className="flex flex-wrap gap-3 justify-center">
         <Button onPress={() => navigate({ to: "/admin/orders" })}>
+          <FaArrowUpRightFromSquare />
           Manage orders
         </Button>
         <Button onPress={() => navigate({ to: "/admin/accounts" })}>
+          <FaArrowUpRightFromSquare />
           Manage accounts
         </Button>
         <Button onPress={() => navigate({ to: "/admin/products" })}>
+          <FaArrowUpRightFromSquare />
           Manage products
         </Button>
-        <Button onPress={() => navigate({ to: "/products" })}>View shop</Button>
+        <Button onPress={() => navigate({ to: "/products" })}>
+          <FaArrowUpRightFromSquare />
+          View shop
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -192,7 +199,8 @@ function AdminDashboard() {
               variant="secondary"
               onPress={() => navigate({ to: "/admin/orders" })}
             >
-              View all
+              <FaArrowUpRightFromSquare />
+              Manage orders
             </Button>
           </div>
 
@@ -226,8 +234,17 @@ function AdminDashboard() {
         </div>
 
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold">Employee workload</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold">Employee workload</h3>
+            </div>
+            <Button
+              variant="secondary"
+              onPress={() => navigate({ to: "/admin/orders" })}
+            >
+              <FaArrowUpRightFromSquare />
+              Manage orders
+            </Button>
           </div>
 
           <Table className="table-fixed w-full">
@@ -260,8 +277,17 @@ function AdminDashboard() {
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold">Unassigned orders</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold">Unassigned orders</h3>
+            </div>
+            <Button
+              variant="secondary"
+              onPress={() => navigate({ to: "/admin/orders" })}
+            >
+              <FaArrowUpRightFromSquare />
+              Manage orders
+            </Button>
           </div>
 
           <Table className="table-fixed w-full">
@@ -298,8 +324,17 @@ function AdminDashboard() {
         </div>
 
         <div className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold">Low stock items</h2>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-semibold">Low stock items</h3>
+            </div>
+            <Button
+              variant="secondary"
+              onPress={() => navigate({ to: "/admin/products" })}
+            >
+              <FaArrowUpRightFromSquare />
+              Manage products
+            </Button>
           </div>
 
           <Table className="table-fixed w-full">

@@ -210,7 +210,7 @@ public class OrderService {
      * @author Flavie Qin
      */
     private void modifyStatusOrder(Order order, Date today) {
-        if (order.getState() == State.PREPARED && order.getDeliveryDate().after(today)) {
+        if (order.getState() == State.PREPARED && !today.before(order.getDeliveryDate())) {
             // orders that were prepared in time are now delivered
             order.setState(State.DELIVERED);
         } else if ((order.getState() == State.PURCHASED || order.getState() == State.ASSIGNED)

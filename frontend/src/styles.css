@@ -41,4 +41,20 @@ main {
   .toast {
     align-items: center;
   }
+
+  .toast__content {
+    flex-direction: column;
+  }
+
+  @media screen and (max-width: 768px) {
+    .toast__content {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toast__description {
+      display: none;
+    }
+  }
 }

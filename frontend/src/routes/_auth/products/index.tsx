@@ -100,7 +100,7 @@ function Products() {
           onChange={setSizeFilters}
         >
           <Label className="text-base">Filter by clothing size</Label>
-          <div className="grid grid-cols-4 gap-x-1 lg:grid-cols-5">
+          <div className="grid grid-cols-4 gap-x-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {CLOTHING_SIZES.map((size) => {
               return (
                 // enums are encoded in uppercase on the backend, so requestparams need the enums in uppercase
@@ -123,7 +123,7 @@ function Products() {
           onChange={setColourFilters}
         >
           <Label className="text-base">Filter by clothing colour</Label>
-          <div className="grid grid-cols-2 gap-x-1 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-1 xl:grid-cols-3 2xl:grid-cols-4">
             {CLOTHING_COLOURS.map((colour) => {
               return (
                 // enums are encoded in uppercase on the backend, so requestparams need the enums in uppercase
