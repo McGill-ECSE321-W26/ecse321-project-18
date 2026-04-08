@@ -14,7 +14,7 @@ export default function HomePage() {
       <h1 className="hidden">Stilton's Store</h1>
 
       <div
-        className="bg-[url('/images/homepage.jpg')] -top-14
+        className="bg-[url('/images/homepage.jpg')]
         bg-cover w-auto h-[60vh] xl:w-[99vw] xl:h-auto aspect-939/279 bg-slate-600 bg-blend-multiply
       -left-20 xl:-left-6 right-0 relative overflow-x-hidden flex items-center"
       >
@@ -36,7 +36,7 @@ export default function HomePage() {
       </div>
 
       <div
-        className="bg-[url('/images/factory.jpeg')] -top-14
+        className="bg-[url('/images/factory.jpeg')]
         bg-cover h-[70vh] xl:w-[99vw] xl:h-auto aspect-2000/900 bg-slate-700 bg-blend-multiply
         relative flex-col-reverse pl-16 justify-center flex -left-6 right-0 overflow-x-hidden
         xl:flex-row xl:items-center xl:justify-around"
@@ -62,7 +62,7 @@ export default function HomePage() {
       </div>
 
       <div
-        className="bg-[url('/images/sustainability.jpg')] -top-14
+        className="bg-[url('/images/sustainability.jpg')]
         bg-cover h-[70vh] xl:w-[99vw] xl:h-auto aspect-2000/900 bg-olive-800 bg-blend-multiply
         -left-6 right-0 relative pl-16 overflow-x-hidden flex justify-center flex-col
         xl:items-center xl:justify-around xl:flex-row"

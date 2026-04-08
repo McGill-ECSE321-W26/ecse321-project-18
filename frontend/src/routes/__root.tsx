@@ -2,6 +2,7 @@ import {
   HeadContent,
   Outlet,
   createRootRouteWithContext,
+  useLocation,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
@@ -40,6 +41,13 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
     const router = useRouter();
     const auth = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // homepage override
+    let padding = "pb-8 pt-14";
+    if (location.pathname == "/") {
+      padding = "";
+    }
 
     const handleLogout = () => {
       auth.logout().then(() => {
@@ -55,7 +63,7 @@ export const Route = createRootRouteWithContext<FashionStoreContext>()({
         <Toast.Provider className="whitespace-pre-wrap" />
         <TopNav account={auth.user?.accountType} logout={handleLogout} />
         <div className="flex flex-col">
-          <main className="px-6 pb-8 pt-14 flex-1">
+          <main className={"px-6 flex-1" + padding}>
             <Outlet />
           </main>
           <Footer />
