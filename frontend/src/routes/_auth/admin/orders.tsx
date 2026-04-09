@@ -163,31 +163,67 @@ function Orders() {
       order.state === OrderState.CANCELLED,
   );
 
-  const renderTable = (title: string, orders: OrderResponse[]) => (
+  const renderTable = (
+    title: string,
+    orders: OrderResponse[],
+    type: string,
+  ) => (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-semibold">{title}</h2>
+      <h2 className={"text-xl font-semibold"}>{title}</h2>
 
       <Table className="table-fixed w-full">
         <Table.ScrollContainer>
           <Table.Content aria-label={title}>
-            <Table.Header>
-              <Table.Column isRowHeader>ID</Table.Column>
-              <Table.Column>Status</Table.Column>
-              <Table.Column>Customer email</Table.Column>
-              <Table.Column>Total price</Table.Column>
-              <Table.Column>Order date</Table.Column>
-              <Table.Column>Delivery date</Table.Column>
-              <Table.Column>Delivery address</Table.Column>
-              <Table.Column>Assigned employee</Table.Column>
-              <Table.Column>Choose employee</Table.Column>
-              <Table.Column>Actions</Table.Column>
-              <Table.Column>Item details</Table.Column>
+            <Table.Header
+              style={{
+                backgroundColor: `var(--table-column-${type})`,
+                color: `var(--table-text-${type})`,
+              }}
+            >
+              <Table.Column
+                isRowHeader
+                style={{ color: `var(--table-text-${type})` }}
+              >
+                ID
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Status
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Customer email
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Total price
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Order date
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Delivery date
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Delivery address
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Assigned employee
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Choose employee
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Actions
+              </Table.Column>
+              <Table.Column style={{ color: `var(--table-text-${type})` }}>
+                Item details
+              </Table.Column>
             </Table.Header>
 
             <Table.Body
               renderEmptyState={() => (
-                <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                  <GoInbox className="size-6 text-muted" />
+                <EmptyState
+                  className={`flex bg-[var(--table-row-${type})] h-full w-full flex-col items-center justify-center gap-4 text-center`}
+                >
+                  <GoInbox className="size-6 text-muted " />
                   <span className="text-sm text-muted">No orders found</span>
                 </EmptyState>
               )}
@@ -198,7 +234,11 @@ function Orders() {
 
                 return (
                   <Fragment key={order.id}>
-                    <Table.Row>
+                    <Table.Row
+                      style={{
+                        backgroundColor: `var(--column-row${type})]`,
+                      }}
+                    >
                       <Table.Cell>{order.id}</Table.Cell>
                       <Table.Cell>{order.state}</Table.Cell>
                       <Table.Cell>{order.customerEmail}</Table.Cell>
@@ -320,8 +360,13 @@ function Orders() {
 
   return (
     <div className="-mt-12 flex flex-col gap-4">
-      <Title pagename="All Orders" />
-      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+      <div className="-mx-6 bg-[var(--color-header-2)]">
+        <Title
+          pagename="All orders"
+          className="text-[var(--color-header-text-2)]"
+        />
+      </div>
+      <nav className="sticky top-0 z-40 !bg-[var(--color-header-2)] w-full border-b border-separator bg-background/70 backdrop-blur-lg">
         <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
           <ul className="hidden items-center gap-4 md:flex">
             <li>
@@ -344,13 +389,13 @@ function Orders() {
       </nav>
 
       <section id="available">
-        {renderTable("Available Orders", availableOrders)}
+        {renderTable("Available Orders", availableOrders, "1")}
       </section>
       <section id="assigned">
-        {renderTable("Assigned Orders", assignedOrders)}
+        {renderTable("Assigned Orders", assignedOrders, "2")}
       </section>
       <section id="completed">
-        {renderTable("Completed Orders", completedOrders)}
+        {renderTable("Completed Orders", completedOrders, "3")}
       </section>
     </div>
   );

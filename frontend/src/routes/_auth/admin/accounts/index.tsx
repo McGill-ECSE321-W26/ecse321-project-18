@@ -61,9 +61,18 @@ function Accounts() {
   return (
     <>
       <div className="-mt-12">
-        <Title pagename="Stilton's Store's Accounts" />
-        <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
-          <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
+        <div className="-mx-6 -mt-14 bg-[var(--color-header-2)]">
+          <Title
+            pagename={
+              <>
+                <span className="italic">Stilton</span>'s Store's Accounts
+              </>
+            }
+            className="text-[var(--color-header-text-2)]"
+          />
+        </div>
+        <nav className="w-screen -mx-6 sticky !bg-[var(--color-header-2)] top-0 z-40 border-b border-separator bg-background/70 backdrop-blur-lg">
+          <header className="font-serif mx-auto flex h-16 max-w-5xl items-center justify-center text-[var(--color-header-text-2)] px-6">
             <ul className="hidden items-center gap-4 md:flex">
               <li>
                 <Link to="." href="/admin/accounts#owners">
@@ -150,7 +159,7 @@ function Accounts() {
                         <Table.Cell>
                           <Button
                             onPress={() => handleDelete(customer.id)}
-                            className="bg-red-500"
+                            variant="danger"
                           >
                             Delete
                           </Button>
@@ -203,7 +212,7 @@ function Accounts() {
                         <Table.Cell>
                           <Button
                             onPress={() => handleDelete(employee.id)}
-                            className="bg-red-500"
+                            variant="danger"
                           >
                             Delete
                           </Button>

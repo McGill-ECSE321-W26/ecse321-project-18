@@ -115,41 +115,57 @@ function AdminDashboard() {
       label: "Total orders",
       value: totalOrders,
       helper: "Orders submitted",
+      bg: "1",
+      text: "white",
     },
     {
       label: "Unassigned orders",
       value: unassignedOrders,
       helper: "Purchased and waiting",
+      bg: "2",
+      text: "black",
     },
     {
       label: "Assigned orders",
       value: assignedOrders,
       helper: "Assigned and being prepared",
+      bg: "3",
+      text: "black",
     },
     {
       label: "Prepared orders",
       value: preparedOrders,
       helper: "Ready in workflow",
+      bg: "4",
+      text: "black",
     },
     {
       label: "Customers",
       value: totalCustomers,
       helper: "Registered customers",
+      bg: "1a",
+      text: "white",
     },
     {
       label: "Employees",
       value: totalEmployees,
       helper: "Available employees",
+      bg: "2a",
+      text: "black",
     },
     {
       label: "Products",
       value: totalProducts,
       helper: "Products in the catalog",
+      bg: "3a",
+      text: "black",
     },
     {
       label: "Cancelled orders",
       value: cancelledOrders,
       helper: "Cancelled",
+      bg: "4a",
+      text: "black",
     },
   ];
 
@@ -161,7 +177,13 @@ function AdminDashboard() {
         {summaryCards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-default-200 bg-content1 p-5 shadow-sm"
+            className={
+              "rounded-2xl border-default-200 bg-content1 p-5 shadow-sm"
+            }
+            style={{
+              backgroundColor: `var(--card-${card.bg})`,
+              color: `${card.text}`,
+            }}
           >
             <p className="text-sm text-default-500">{card.label}</p>
             <p className="mt-2 text-3xl font-semibold">{card.value}</p>

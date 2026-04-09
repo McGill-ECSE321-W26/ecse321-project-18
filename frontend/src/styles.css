@@ -2,6 +2,72 @@
 @import "@heroui/styles";
 @plugin "@tailwindcss/typography";
 
+:root {
+  --blue-slate: #696d7d;
+  --blue-slate-2: #00bcd4;
+  --blue-teal: #6f9283;
+  --blue-teal-2: #8ba79b;
+  --teal: #8d9f87;
+  --teal-2: #a9b6a4;
+  --dry-sage: #cdc6a5;
+  --dry-sage-2: #dbd5bd;
+  --cream: #f0dcca;
+  --cream-2: #f6eadf;
+  --white: #fafafa;
+  --black: #050505;
+  --red: #c5674e;
+
+  --color-bg: #ede8e1;
+  --color-header-text-2: var(--white);
+  --color-text-1: var(--white);
+  --color-text-2: var(--black);
+  --color-button-1: var(--blue-teal);
+  --hover-button-1: #608072;
+  --color-button-2: var(--dry-sage);
+  --hover-button-2: #b8ac7a;
+  --color-header: var(--blue-slate);
+  --color-header-2: #7a7e90;
+  --color-delete: var(--red);
+
+  --table-column-1: var(--blue-teal);
+  --table-row-1: var(--blue-teal-2);
+  --table-text-1: var(--white);
+  --table-column-2: var(--teal);
+  --table-row-2: var(--teal-2);
+  --table-text-2: var(--black);
+  --table-column-3: var(--cream);
+  --table-row-3: var(--cream-2);
+  --table-text-3: var(--black);
+
+  /* cards */
+  --card-1: var(--blue-teal);
+  --card-2: var(--teal);
+  --card-3: var(--dry-sage);
+  --card-4: var(--cream);
+  --card-1a: var(--blue-teal-2);
+  --card-2a: var(--teal-2);
+  --card-3a: var(--dry-sage-2);
+  --card-4a: var(--cream-2);
+}
+
+:root,
+.light,
+[data-theme="light"] {
+  --background: var(--color-bg);
+  --foreground: var(--black);
+
+  --surface: var(--white);
+  --surface-foreground: var(--black);
+
+  --default: var(--color-button-1);
+  --default-foreground: var(--color-text-1);
+
+  --border: var(--teal);
+  --separator: var(--teal);
+  --focus: var(--blue-teal);
+  --link: var(--blue-slate);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -19,7 +85,10 @@ select,
 textarea {
   font-family: sans-serif;
 }
-
+nav {
+  background-color: var(--color-header);
+  color: var(--color-text-1);
+}
 body {
   background-color: #fafafa;
   margin: 0;
@@ -56,5 +125,24 @@ main {
     .toast__description {
       display: none;
     }
+  }
+
+  .button--primary {
+    background-color: var(--color-button-1);
+    color: var(--color-text-1);
+  }
+  .button--primary:hover {
+    background-color: var(--hover-button-1);
+  }
+  .button--secondary {
+    background-color: var(--color-button-2);
+    color: var(--color-text-2);
+  }
+  .button--secondary:hover {
+    background-color: var(--hover-button-2);
+  }
+  .button--danger {
+    background-color: var(--color-delete);
+    color: var(--color-text-1);
   }
 }

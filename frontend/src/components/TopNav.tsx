@@ -48,8 +48,8 @@ export default function TopNav({ account, logout }: TopNavProps) {
   const navLinks = getNavLinks(account);
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
-      <header className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+    <nav className="sticky top-0 z-40 w-full border-separator bg-background/70 backdrop-blur-lg">
+      <header className="mx-auto font-serif flex h-16 max-w-5xl items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <button
             className="md:hidden hover:cursor-pointer"
@@ -84,7 +84,9 @@ export default function TopNav({ account, logout }: TopNavProps) {
           <Link to="/">
             <div className="flex items-center gap-2">
               <img src="/stiltonslogo.png" alt="logo" width={50} />
-              <p className="font-bold">Stilton's Store</p>
+              <p className="font-medium text-xl">
+                <span className="italic">Stilton</span>'s Store
+              </p>
             </div>
           </Link>
         </div>
@@ -124,7 +126,14 @@ export default function TopNav({ account, logout }: TopNavProps) {
               >
                 My Account
               </Link>
-              <Button onClick={logout}>Log out</Button>
+              <Button
+                className={
+                  "bg-[var(--color-header-text-2)] text-[var(--color-header)] !font-serif"
+                }
+                onClick={logout}
+              >
+                Log out
+              </Button>
             </>
           ) : (
             <>
