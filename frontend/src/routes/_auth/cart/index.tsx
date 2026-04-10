@@ -1,4 +1,4 @@
-import { Button, Card, Form, NumberField } from "@heroui/react";
+import { Button, Card, Description, Form, NumberField } from "@heroui/react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -265,6 +265,9 @@ function Cart() {
                                 }
                                 aria-label="Item quantity"
                               >
+                                <Description className="mb-1">
+                                  Stock left: {cartItem.clothingItem.numInStock}
+                                </Description>
                                 <NumberField.Group>
                                   <NumberField.DecrementButton />
                                   <NumberField.Input
