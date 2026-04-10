@@ -7,7 +7,7 @@ export default function Title({
 }) {
   return (
     <h2
-      className={"font-serif flex text-2xl font-bold items-center justify-center pt-4".concat(
+      className={"flex text-2xl font-bold items-center justify-center pt-4".concat(
         " ",
         className,
       )}

@@ -49,7 +49,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
 
   return (
     <nav className="sticky top-0 z-40 w-full border-separator bg-background/70 backdrop-blur-lg">
-      <header className="mx-auto font-serif flex h-16 max-w-5xl items-center justify-between px-6">
+      <header className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <button
             className="md:hidden hover:cursor-pointer"
@@ -127,9 +127,7 @@ export default function TopNav({ account, logout }: TopNavProps) {
                 My Account
               </Link>
               <Button
-                className={
-                  "bg-[var(--color-header-text-2)] text-[var(--color-header)] !font-serif"
-                }
+                className={"bg-(--color-header-text-2) text-(--color-header)"}
                 onClick={logout}
               >
                 Log out

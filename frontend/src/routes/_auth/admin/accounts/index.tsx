@@ -61,18 +61,18 @@ function Accounts() {
   return (
     <>
       <div className="-mt-12">
-        <div className="-mx-6 -mt-14 bg-[var(--color-header-2)]">
+        <div className="-mx-6 -mt-14 bg-(--color-header-2)">
           <Title
             pagename={
               <>
                 <span className="italic">Stilton</span>'s Store's Accounts
               </>
             }
-            className="text-[var(--color-header-text-2)]"
+            className="text-(--color-header-text-2)"
           />
         </div>
-        <nav className="w-screen -mx-6 sticky !bg-[var(--color-header-2)] top-0 z-40 border-b border-separator bg-background/70 backdrop-blur-lg">
-          <header className="font-serif mx-auto flex h-16 max-w-5xl items-center justify-center text-[var(--color-header-text-2)] px-6">
+        <nav className="w-screen -mx-6 sticky !bg-(--color-header-2) top-0 z-40 border-b border-separator bg-background/70 backdrop-blur-lg">
+          <header className="font-serif mx-auto flex h-16 max-w-5xl items-center justify-center text-(--color-header-text-2) px-6">
             <ul className="hidden items-center gap-4 md:flex">
               <li>
                 <Link to="." href="/admin/accounts#owners">
@@ -95,7 +95,7 @@ function Accounts() {
         <div className="flex flex-col gap-12 py-8">
           <section id="owners">
             <h2 className="text-2xl font-bold mb-4">Owners</h2>
-            <Table>
+            <Table className="table-variant-1">
               <Table.ScrollContainer>
                 <Table.Content aria-label="Owner table">
                   <Table.Header>
@@ -127,7 +127,7 @@ function Accounts() {
             <h2 className="text-2xl font-bold mb-4">
               <a href="#customers">Customers</a>
             </h2>
-            <Table>
+            <Table className="table-variant-2">
               <Table.ScrollContainer>
                 <Table.Content aria-label="Customer table">
                   <Table.Header>
@@ -176,7 +176,7 @@ function Accounts() {
             <h2 className="text-2xl font-bold mb-4">
               <a href="#employees">Employees</a>
             </h2>
-            <Table>
+            <Table className="table-variant-3">
               <Table.ScrollContainer>
                 <Table.Content aria-label="Employee table">
                   <Table.Header>

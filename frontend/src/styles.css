@@ -7,36 +7,47 @@
   --blue-slate-2: #00bcd4;
   --blue-teal: #6f9283;
   --blue-teal-2: #8ba79b;
+  --blue-teal-light: #cad7d2;
   --teal: #8d9f87;
   --teal-2: #a9b6a4;
+  --teal-dark: #212420;
   --dry-sage: #cdc6a5;
   --dry-sage-2: #dbd5bd;
   --cream: #f0dcca;
   --cream-2: #f6eadf;
+  --cream-dark: #494642;
   --white: #fafafa;
   --black: #050505;
   --red: #c5674e;
+  --light-teal: #c7cfc4;
 
   --color-bg: #ede8e1;
   --color-header-text-2: var(--white);
   --color-text-1: var(--white);
   --color-text-2: var(--black);
+  --color-text-3: var(--black);
   --color-button-1: var(--blue-teal);
   --hover-button-1: #608072;
   --color-button-2: var(--dry-sage);
   --hover-button-2: #b8ac7a;
+  --color-button-3: var(--teal);
+  --hover-button-3: var(--teal-2);
   --color-header: var(--blue-slate);
   --color-header-2: #7a7e90;
   --color-delete: var(--red);
+  --color-delete-2: #b15c46;
 
   --table-column-1: var(--blue-teal);
   --table-row-1: var(--blue-teal-2);
+  --table-separator-1: var(--blue-teal-light);
   --table-text-1: var(--white);
   --table-column-2: var(--teal);
   --table-row-2: var(--teal-2);
+  --table-separator-2: var(--teal-dark);
   --table-text-2: var(--black);
   --table-column-3: var(--cream);
   --table-row-3: var(--cream-2);
+  --table-separator-3: var(--cream-dark);
   --table-text-3: var(--black);
 
   /* cards */
@@ -78,20 +89,14 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
-html,
-button,
-input,
-select,
-textarea {
-  font-family: sans-serif;
-}
 nav {
   background-color: var(--color-header);
   color: var(--color-text-1);
 }
 body {
-  background-color: #fafafa;
+  background-color: #faf4ee;
   margin: 0;
+  @apply font-serif;
 }
 
 main {
@@ -107,6 +112,90 @@ main {
 
 /* overriding some HeroUI styles */
 @layer components {
+  /* tables */
+  .table-root.table-variant-1 {
+    background-color: var(--table-column-1);
+  }
+  .table-root.table-variant-1 .table__header,
+  .table-root.table-variant-1 .table__header .table__column {
+    color: var(--table-text-1);
+    background-color: var(--table-column-1);
+  }
+  .table-root.table-variant-1 .table__header .table__column::after {
+    background-color: var(--table-separator-1);
+  }
+  .table-root.table-variant-1 .table-empty-1 {
+    color: var(--table-separator-1);
+  }
+
+  .table-root.table-variant-2 {
+    background-color: var(--table-column-2);
+  }
+  .table-root.table-variant-2 .table__header,
+  .table-root.table-variant-2 .table__header .table__column {
+    color: var(--table-text-2);
+    background-color: var(--table-column-2);
+  }
+  .table-root.table-variant-2 .table__header .table__column::after {
+    background-color: var(--table-separator-2);
+  }
+  .table-root.table-variant-2 .table-empty-2 {
+    color: var(--table-separator-2);
+  }
+
+  .table-root.table-variant-3 {
+    background-color: var(--table-column-3);
+  }
+  .table-root.table-variant-3 .table__header,
+  .table-root.table-variant-3 .table__header .table__column {
+    color: var(--table-text-3);
+    background-color: var(--table-column-3);
+  }
+  .table-root.table-variant-3 .table__header .table__column::after {
+    background-color: var(--table-separator-3);
+  }
+  .table-root.table-variant-3 .table-empty-3 {
+    color: var(--table-separator-3);
+  }
+
+  /* buttons */
+  .button--primary {
+    background-color: var(--color-button-1);
+    color: var(--color-text-1);
+  }
+  .button--primary:hover {
+    background-color: var(--hover-button-1);
+  }
+
+  .button--secondary {
+    background-color: var(--color-button-2);
+    color: var(--color-text-2);
+  }
+  .button--secondary:hover {
+    background-color: var(--hover-button-2);
+  }
+
+  .button--tertiary {
+    background-color: var(--color-button-2);
+    color: var(--color-text-3);
+  }
+  .button--tertiary:hover {
+    background-color: var(--hover-button-2);
+  }
+
+  .button--danger {
+    background-color: var(--color-delete);
+    color: var(--color-text-1);
+  }
+  .button--danger:hover {
+    background-color: var(--color-delete-2);
+  }
+
+  .close-button--default {
+    color: var(--color-text-1);
+  }
+
+  /* toast */
   .toast {
     align-items: center;
   }
@@ -125,24 +214,5 @@ main {
     .toast__description {
       display: none;
     }
-  }
-
-  .button--primary {
-    background-color: var(--color-button-1);
-    color: var(--color-text-1);
-  }
-  .button--primary:hover {
-    background-color: var(--hover-button-1);
-  }
-  .button--secondary {
-    background-color: var(--color-button-2);
-    color: var(--color-text-2);
-  }
-  .button--secondary:hover {
-    background-color: var(--hover-button-2);
-  }
-  .button--danger {
-    background-color: var(--color-delete);
-    color: var(--color-text-1);
   }
 }
