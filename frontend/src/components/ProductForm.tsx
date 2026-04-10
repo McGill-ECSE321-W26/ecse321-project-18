@@ -86,7 +86,7 @@ export function ProductForm({
           <img
             src={image}
             alt="Selected preview"
-            className="mt-2 h-48 rounded object-cover"
+            className="mt-2 rounded object-cover"
           />
         ) : null}
       </div>

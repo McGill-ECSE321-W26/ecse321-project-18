@@ -4,13 +4,14 @@ import type { OrderItemResponse, OrderResponse } from "#/types/api";
 interface OrderItemsProps {
   order: OrderResponse;
   colNum: number;
+  tableType?: string;
 }
 
-export const OrderItems = ({ order, colNum }: OrderItemsProps) => {
+export const OrderItems = ({ order, colNum, tableType }: OrderItemsProps) => {
   return (
     <Table.Row>
       <Table.Cell colSpan={colNum}>
-        <Table variant="secondary">
+        <Table variant="secondary" className={`table-variant-${tableType}`}>
           <Table.ScrollContainer>
             <Table.Content aria-label="Orders table">
               <Table.Header>
