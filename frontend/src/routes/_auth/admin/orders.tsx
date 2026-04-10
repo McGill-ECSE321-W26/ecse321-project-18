@@ -359,14 +359,14 @@ function Orders() {
   );
 
   return (
-    <div className="-mt-12 flex flex-col gap-4">
+    <div className="-mt-14 flex flex-col gap-4">
       <div className="-mx-6 bg-[var(--color-header-2)]">
         <Title
           pagename="All orders"
           className="text-[var(--color-header-text-2)]"
         />
       </div>
-      <nav className="sticky top-0 z-40 !bg-[var(--color-header-2)] w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+      <nav className="-mx-6 -mt-4 w-screen sticky top-0 z-40 !bg-[var(--color-header-2)] w-full border-b border-separator bg-background/70 backdrop-blur-lg">
         <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
           <ul className="hidden items-center gap-4 md:flex">
             <li>
