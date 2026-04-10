@@ -12,8 +12,10 @@
   --teal: #8d9f87;
   --teal-2: #a9b6a4;
   --teal-dark: #212420;
+  --dry-sage-1: #eae5d7;
   --dry-sage: #cdc6a5;
   --dry-sage-2: #dbd5bd;
+  --dry-sage-dark: #a08b54;
   --cream: #f0dcca;
   --cream-2: #f6eadf;
   --cream-dark: #494642;
@@ -50,6 +52,10 @@
   --table-row-3: var(--cream-2);
   --table-separator-3: var(--cream-dark);
   --table-text-3: var(--black);
+  --table-column-4: var(--dry-sage);
+  --table-row-4: var(--dry-sage-2);
+  --table-separator-4: var(--dry-sage-dark);
+  --table-text-4: var(--black);
 
   /* cards */
   --card-1: var(--blue-teal);
@@ -58,18 +64,21 @@
   --card-4: var(--cream);
   --card-1a: var(--blue-teal-2);
   --card-2a: var(--teal-2);
+  --card-3a: var(--dry-sage-2);
+  --card-3b: var(--dry-sage-1);
+  --card-4a: var(--cream-2);
   --2a-text-bg: var(--blue-teal);
   --2a-text-placeholder: var(--blue-teal-light);
   --2a-text-hover: var(--blue-teal-light);
   --2a-text: var(--white);
-  --card-3a: var(--dry-sage-2);
   --3a-text-bg: var(--dry-sage);
   --3a-text-placeholder: var(--blue-teal-light);
   --3a-text-hover: var(--blue-teal-light);
   --3a-text: var(--white);
-  --card-4a: var(--cream-2);
+  --product-card-1: var(--light-teal);
 
   /* inputs */
+  --form-bg: var(--dry-sage-1);
   --search-bar-bg: var(--blue-teal-2);
   --search-bar-text: var(--white);
   --input-bg: var(--blue-teal-2);
@@ -78,7 +87,9 @@
   --input-placeholder: var(--blue-teal-light);
   --checkbox: var(--blue-teal);
   --checkbox-hover: var(--blue-teal-2);
-  --form-bg: var(--dry-sage-2);
+  --numberfield-2: var(--dry-sage-1);
+  --numberfield-hover-2: var(--dry-sage);
+  --numberfield-text-2: var(--black);
 }
 
 :root,
@@ -90,12 +101,12 @@
   --surface: var(--white);
   --surface-foreground: var(--black);
 
-  --default: var(--color-button-1);
+  --default: var(--dry-sage-2);
   --default-foreground: var(--color-text-1);
 
   --border: var(--blue-slate-2);
   --separator: var(--teal);
-  --focus: var(--blue-teal);
+  --focus: transparent;
   --link: var(--blue-slate);
 }
 
@@ -156,6 +167,17 @@ main {
     background-color: var(--input-bg);
   }
 
+  /* cart */
+  .number-field--secondary .number-field__group {
+    background-color: var(--numberfield-2);
+    color: var(--numberfield-text-2);
+  }
+
+  /* cards */
+  .card.card-3 {
+    background-color: var(--card-3b);
+  }
+
   /* tables */
   .table-root.table-variant-1 {
     background-color: var(--table-column-1);
@@ -171,23 +193,9 @@ main {
   .table-root.table-variant-1 .table-empty-1 {
     color: var(--table-separator-1);
   }
-
+  /*test*/
   .table-root.table-variant-1 .table__row.expanded-row-1 {
     background-color: var(--table-row-1);
-  }
-  .table-root.table-variant-1a {
-    background-color: var(--table-column-1);
-  }
-  .table-root.table-variant-1a .table__header,
-  .table-root.table-variant-1a .table__header .table__column {
-    color: var(--table-text-1);
-    background-color: var(--table-column-1);
-  }
-  .table-root.table-variant-1a .table__header .table__column::after {
-    background-color: var(--table-separator-1);
-  }
-  .table-root.table-variant-1a .table-empty-1 {
-    color: var(--table-separator-1);
   }
 
   .table-root.table-variant-2 {
@@ -218,6 +226,21 @@ main {
   }
   .table-root.table-variant-3 .table-empty-3 {
     color: var(--table-separator-3);
+  }
+
+  .table-root.table-variant-4 {
+    background-color: var(--table-column-4);
+  }
+  .table-root.table-variant-4 .table__header,
+  .table-root.table-variant-4 .table__header .table__column {
+    color: var(--table-text-4);
+    background-color: var(--table-column-4);
+  }
+  .table-root.table-variant-4 .table__header .table__column::after {
+    background-color: var(--table-separator-4);
+  }
+  .table-root.table-variant-4 .table-empty-4 {
+    color: var(--table-separator-4);
   }
 
   /* buttons */

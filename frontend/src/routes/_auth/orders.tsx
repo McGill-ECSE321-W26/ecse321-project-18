@@ -62,7 +62,7 @@ function Orders() {
     <>
       <div className="-mt-12 flex flex-col gap-4">
         <Title pagename="My Order History" />
-        <Table className="table-fixed w-full">
+        <Table className="table-fixed w-full table-variant-4">
           <Table.ScrollContainer>
             <Table.Content aria-label="Orders table">
               <Table.Header>

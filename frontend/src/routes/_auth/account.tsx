@@ -366,7 +366,7 @@ function Account() {
                 <Input
                   placeholder="Enter your new address"
                   value={address}
-                  className="text-[var(--2a-text)] hover:bg-[var(--2a-text-hover)] placeholder:text-[var(--2a-text-placeholder)] bg-[var(--2a-text-bg)]"
+                  className="text-[var(--2a-text)] !hover:bg-[var(--2a-text-hover)] placeholder:text-[var(--2a-text-placeholder)] bg-[var(--2a-text-bg)]"
                 />
               </TextField>
 

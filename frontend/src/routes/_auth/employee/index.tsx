@@ -114,11 +114,12 @@ function EmployeeOrders() {
     title: string,
     orders: OrderResponse[],
     mode: "available" | "mine" | "prepared",
+    type: string,
   ) => (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-semibold">{title}</h2>
 
-      <Table className="table-fixed w-full">
+      <Table className={`table-fixed w-full table-variant-${type}`}>
         <Table.ScrollContainer>
           <Table.Content aria-label={title}>
             <Table.Header>
@@ -260,13 +261,13 @@ function EmployeeOrders() {
       </nav>
 
       <section id="available">
-        {renderTable("Available Orders", availableOrders, "available")}
+        {renderTable("Available Orders", availableOrders, "available", "3")}
       </section>
       <section id="assigned">
-        {renderTable("My Assigned Orders", myOrders, "mine")}
+        {renderTable("My Assigned Orders", myOrders, "mine", "4")}
       </section>
       <section id="prepared">
-        {renderTable("My Prepared Orders", preparedOrders, "prepared")}
+        {renderTable("My Prepared Orders", preparedOrders, "prepared", "2")}
       </section>
     </div>
   );

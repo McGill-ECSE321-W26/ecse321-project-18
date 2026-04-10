@@ -15,7 +15,7 @@ export const Product = ({ id, name, price, image }: ProductProps) => {
       to="/products/$productId"
       params={{ productId: id.toString() }}
     >
-      <Card className="shadow-sm shadow-gray-400 hover:shadow-blue-400 hover:bg-blue-50 transition-all">
+      <Card className="shadow-sm shadow-gray-400 hover:shadow-md transition-all">
         <img
           className="rounded-md h-50 object-cover"
           src={image || "/stiltonslogo.png"}

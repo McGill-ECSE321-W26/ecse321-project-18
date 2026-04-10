@@ -222,10 +222,7 @@ function Cart() {
                     );
 
                     return (
-                      <Card
-                        key={cartItem.id}
-                        className="border-black border shadow-none"
-                      >
+                      <Card key={cartItem.id}>
                         {product && cartItem.quantity != 0 ? (
                           <div className="grid grid-cols-[80px_1fr_130px] items-center gap-4 p-3">
                             {/* Image */}
@@ -254,7 +251,7 @@ function Cart() {
                             <div className="flex flex-col items-center justify-between h-full">
                               {/* Quantity buttons */}
                               <NumberField
-                                variant="secondary"
+                                variant={"secondary"}
                                 name="quantity"
                                 defaultValue={cartItem.quantity}
                                 minValue={1}
@@ -302,7 +299,7 @@ function Cart() {
                   },
                 )
               ) : (
-                <Card className="border-black border shadow-none text-center justify-center font-bold">
+                <Card className="text-center justify-center font-bold">
                   Your cart is currently empty.
                 </Card>
               )}
@@ -310,7 +307,7 @@ function Cart() {
 
             {/* Right menu */}
             <div className="col-span-1 relative">
-              <Card className="grid border border-black md:fixed md:w-[stretch] md:mr-6">
+              <Card className="grid md:fixed md:w-[stretch] md:mr-6 card-3">
                 <div className="grid content-start gap-2 md:text-lg">
                   <p>
                     <strong>Cart subtotal:</strong> $

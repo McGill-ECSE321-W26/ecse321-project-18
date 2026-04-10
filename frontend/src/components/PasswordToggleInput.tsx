@@ -38,7 +38,7 @@ export const PasswordToggleInput = ({
       validate={validateFn}
     >
       <Label>{label || "Password"}</Label>
-      <InputGroup className="hover:bg-[var(--3a-text-hover)] placeholder:text-[var(--3a-text-placeholder)] bg-[var(--3a-text-bg)]">
+      <InputGroup className="placeholder:text-[var(--3a-text-placeholder)] bg-[var(--3a-text-bg)]">
         <InputGroup.Input
           className="w-full placeholder:text-[var(--input-palceholder)] "
           placeholder={placeholder || "Enter your password"}
