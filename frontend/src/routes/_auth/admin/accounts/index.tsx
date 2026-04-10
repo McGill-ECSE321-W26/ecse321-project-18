@@ -72,7 +72,7 @@ function Accounts() {
           />
         </div>
         <nav className="w-screen -mx-6 sticky !bg-(--color-header-2) top-0 z-40 border-b border-separator bg-background/70 backdrop-blur-lg">
-          <header className="font-serif mx-auto flex h-16 max-w-5xl items-center justify-center text-(--color-header-text-2) px-6">
+          <header className="mx-auto flex h-16 max-w-5xl items-center justify-center text-(--color-header-text-2) px-6">
             <ul className="hidden items-center gap-4 md:flex">
               <li>
                 <Link to="." href="/admin/accounts#owners">

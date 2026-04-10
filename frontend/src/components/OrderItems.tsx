@@ -9,9 +9,9 @@ interface OrderItemsProps {
 
 export const OrderItems = ({ order, colNum, tableType }: OrderItemsProps) => {
   return (
-    <Table.Row>
+    <Table.Row className={`expanded-row-${tableType}`}>
       <Table.Cell colSpan={colNum}>
-        <Table variant="secondary" className={`table-variant-${tableType}`}>
+        <Table className={`table-variant-${tableType}a`}>
           <Table.ScrollContainer>
             <Table.Content aria-label="Orders table">
               <Table.Header>

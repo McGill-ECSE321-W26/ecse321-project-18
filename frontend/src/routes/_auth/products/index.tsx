@@ -77,20 +77,32 @@ function Products() {
   return (
     <div className="grid md:grid-cols-[1fr_3fr] gap-5">
       <Form
-        className="flex flex-col px-2 gap-3 sm:gap-5"
+        className="flex flex-col rounded-xl px-4 gap-3 sm:gap-5"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
         }}
         onReset={handleReset}
+        style={{
+          backgroundColor: "var(--form-bg)",
+        }}
       >
         {/* product search and filters */}
         <SearchField name="search" value={searchName} onChange={setSearchName}>
-          <Label className="text-base">Search products</Label>
-          <SearchField.Group>
-            <SearchField.SearchIcon />
+          <Label className="text-base mt-3">Search products</Label>
+          <SearchField.Group
+            style={{
+              backgroundColor: "var(--search-bar-bg)",
+              color: "var(--search-bar-text)",
+            }}
+          >
+            <SearchField.SearchIcon
+              style={{ color: "var(--search-bar-text)" }}
+            />
             <SearchField.Input placeholder="Enter a product name..." />
-            <SearchField.ClearButton />
+            <SearchField.ClearButton
+              style={{ color: "var(--search-bar-text)" }}
+            />
           </SearchField.Group>
         </SearchField>
         <hr />
@@ -153,8 +165,8 @@ function Products() {
           )}
         </Button>
         <Button
-          variant="tertiary"
-          className="w-full"
+          variant="danger"
+          className="w-full mb-4"
           type="reset"
           isDisabled={isSubmitting || data === undefined}
         >

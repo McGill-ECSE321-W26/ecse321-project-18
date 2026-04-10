@@ -66,7 +66,7 @@ function ManageAccount() {
     <div className="-mt-12 mx-auto max-w-2xl flex flex-col gap-4">
       <Title pagename={`Account ID ${id}`} />
 
-      <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+      <div className="flex flex-col gap-4 rounded-xl p-6 bg-[var(--card-4a)] text-[var(--card-text-4a)]">
         <h3 className="text-xl font-bold">Profile</h3>
 
         <div className="flex flex-col gap-2 text-base">
@@ -87,7 +87,7 @@ function ManageAccount() {
 
       {account.accountType === AccountType.CUSTOMER ||
       account.accountType === AccountType.EMPLOYEE ? (
-        <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+        <div className="flex flex-col gap-4 rounded-xl p-6 bg-[var(--card-3a)] text-[var(--card-text-3a)]">
           <h3 className="text-xl font-bold">Customer details</h3>
 
           <div className="text-base flex flex-col gap-2">
@@ -112,7 +112,7 @@ function ManageAccount() {
       ) : null}
 
       {account.accountType === AccountType.EMPLOYEE ? (
-        <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+        <div className="flex flex-col gap-4 rounded-xl p-6 bg-[var(--card-2a)] text-[var(--card-text-2a)]">
           <h3 className="text-xl font-bold">Employee details</h3>
           <div className="text-base flex flex-col gap-2">
             <p className="text-sm">

@@ -38,9 +38,9 @@ export const PasswordToggleInput = ({
       validate={validateFn}
     >
       <Label>{label || "Password"}</Label>
-      <InputGroup>
+      <InputGroup className="hover:bg-[var(--3a-text-hover)] placeholder:text-[var(--3a-text-placeholder)] bg-[var(--3a-text-bg)]">
         <InputGroup.Input
-          className="w-full"
+          className="w-full placeholder:text-[var(--input-palceholder)] "
           placeholder={placeholder || "Enter your password"}
         />
         <InputGroup.Suffix className="pr-0">
@@ -50,6 +50,7 @@ export const PasswordToggleInput = ({
             size="sm"
             variant="ghost"
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            className={"text-[var(--3a-text)] hover:bg-[var(--3a-text-bg)]"}
           >
             {isPasswordVisible ? <IoMdEye /> : <IoMdEyeOff />}
           </Button>

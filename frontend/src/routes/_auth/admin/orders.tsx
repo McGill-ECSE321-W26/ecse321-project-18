@@ -334,7 +334,7 @@ function Orders() {
           className="text-[var(--color-header-text-2)]"
         />
       </div>
-      <nav className="-mx-6 -mt-4 w-screen sticky top-0 z-40 !bg-[var(--color-header-2)] w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+      <nav className="-mt-4 -mx-6 w-screen sticky top-0 z-40 !bg-[var(--color-header-2)] border-b border-separator bg-background/70 backdrop-blur-lg">
         <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
           <ul className="hidden items-center gap-4 md:flex">
             <li>

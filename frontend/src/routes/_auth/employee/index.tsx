@@ -231,8 +231,13 @@ function EmployeeOrders() {
 
   return (
     <div className="-mt-12 flex flex-col gap-4">
-      <Title pagename="Manage Orders" />
-      <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+      <div className="-mx-6 -mt-2 pb-4 bg-(--color-header-2)">
+        <Title
+          pagename="Manage Orders"
+          className="text-(--color-header-text-2)"
+        />
+      </div>
+      <nav className="w-screen -mt-4 -mx-6 sticky top-0 z-40 w-full !bg-(--color-header-2) bg-background/70 backdrop-blur-lg">
         <header className="mx-auto flex h-16 max-w-5xl items-center justify-center px-6">
           <ul className="hidden items-center gap-4 md:flex">
             <li>

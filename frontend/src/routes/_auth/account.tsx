@@ -247,7 +247,10 @@ function Account() {
     <div className="-mt-12 mx-auto max-w-2xl flex flex-col gap-4">
       <Title pagename="My Account" />
 
-      <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+      <div
+        className="flex flex-col gap-4 rounded-xl p-6"
+        style={{ backgroundColor: "var(--card-4a)" }}
+      >
         <div>
           <p className="text-sm font-bold">Email</p>
           <p>{accountInfo.email}</p>
@@ -268,7 +271,12 @@ function Account() {
         )}
       </div>
 
-      <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+      <div
+        className="flex flex-col gap-4 rounded-xl p-6"
+        style={{
+          backgroundColor: "var(--card-3a)",
+        }}
+      >
         <div>
           <p className="text-xl font-semibold mb-1">Change password</p>
           <p className="text-sm">Enter a new password for your account.</p>
@@ -321,7 +329,7 @@ function Account() {
             </Button>
             <Button
               type="button"
-              variant="secondary"
+              variant="danger"
               isDisabled={updatePasswordMutation.isPending}
               onPress={() => {
                 setPassword("");
@@ -339,7 +347,7 @@ function Account() {
 
       {(isCustomer || isEmployee) && (
         <>
-          <div className="flex flex-col gap-4 rounded-xl border border-default-200 p-6">
+          <div className="flex flex-col gap-4 rounded-xl p-6 bg-[var(--card-2a)]">
             <div>
               <p className="text-xl font-semibold mb-1">Change address</p>
               <p className="text-sm text-default-500">
@@ -355,12 +363,17 @@ function Account() {
                 onChange={setAddress}
               >
                 <Label>New address</Label>
-                <Input placeholder="Enter your new address" value={address} />
+                <Input
+                  placeholder="Enter your new address"
+                  value={address}
+                  className="text-[var(--2a-text)] hover:bg-[var(--2a-text-hover)] placeholder:text-[var(--2a-text-placeholder)] bg-[var(--2a-text-bg)]"
+                />
               </TextField>
 
               <div className="flex gap-2 mt-2">
                 <Button
                   type="submit"
+                  variant="secondary"
                   isDisabled={updateAddressMutation.isPending}
                 >
                   {updateAddressMutation.isPending ? (
@@ -372,7 +385,7 @@ function Account() {
                 </Button>
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="danger"
                   isDisabled={updateAddressMutation.isPending}
                   onPress={() => {
                     setAddress(currentAddress);
