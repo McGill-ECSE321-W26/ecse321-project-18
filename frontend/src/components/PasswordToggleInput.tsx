@@ -14,6 +14,7 @@ type PasswordToggleInputProps = {
   password: string;
   handleChange: (value: string) => void;
   validateFn?: (value: string) => string | null;
+  type?: string | null;
 };
 
 /* input component that allows the user to toggle password visibility */
@@ -23,6 +24,7 @@ export const PasswordToggleInput = ({
   password,
   handleChange,
   validateFn,
+  type,
 }: PasswordToggleInputProps) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
@@ -38,9 +40,9 @@ export const PasswordToggleInput = ({
       validate={validateFn}
     >
       <Label>{label || "Password"}</Label>
-      <InputGroup className="placeholder:text-[var(--3a-text-placeholder)] bg-[var(--3a-text-bg)]">
+      <InputGroup className={type || "text-1"}>
         <InputGroup.Input
-          className="w-full placeholder:text-[var(--input-palceholder)] "
+          className="w-full"
           placeholder={placeholder || "Enter your password"}
         />
         <InputGroup.Suffix className="pr-0">
@@ -48,9 +50,8 @@ export const PasswordToggleInput = ({
             isIconOnly
             aria-label={isPasswordVisible ? "Hide password" : "Show password"}
             size="sm"
-            variant="ghost"
+            className={type || "ghost"}
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-            className={"text-[var(--3a-text)] hover:bg-[var(--3a-text-bg)]"}
           >
             {isPasswordVisible ? <IoMdEye /> : <IoMdEyeOff />}
           </Button>

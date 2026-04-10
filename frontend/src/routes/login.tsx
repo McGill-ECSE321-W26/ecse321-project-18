@@ -11,6 +11,7 @@ import {
   FieldError,
   Form,
   Input,
+  InputGroup,
   Label,
   TextField,
 } from "@heroui/react";
@@ -124,8 +125,10 @@ function Login() {
             onChange={setEmail}
           >
             <Label>Email</Label>
+            {/* <InputGroup className="text-1">*/}
             <Input placeholder="hi@example.com" />
             <FieldError />
+            {/* </InputGroup>*/}
           </TextField>
           <PasswordToggleInput password={password} handleChange={setPassword} />
 

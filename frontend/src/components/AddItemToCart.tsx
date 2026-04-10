@@ -112,9 +112,9 @@ export default function AddItemToCart({
                     key={size}
                     className={
                       (selectedSize === size
-                        ? "font-bold border-2 border-blue-900 "
+                        ? "font-bold border-2 border-[var(--color-button-1)] "
                         : "") +
-                      "text-center p-4 bg-white shadow-sm shadow-gray-400 rounded-3xl hover:cursor-pointer hover:shadow-blue-400 hover:bg-blue-50 transition-all"
+                      "text-center p-4 bg-white shadow-sm shadow-gray-400 rounded-3xl hover:cursor-pointer hover:shadow-md hover:bg-blue-50 transition-all"
                     }
                     onClick={() => {
                       setSelectedSize(size);

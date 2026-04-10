@@ -136,9 +136,11 @@ function EmployeeOrders() {
 
             <Table.Body
               renderEmptyState={() => (
-                <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                  <GoInbox className="size-6 text-muted" />
-                  <span className="text-sm text-muted">No orders found</span>
+                <EmptyState
+                  className={`table-empty-${type} flex h-full w-full flex-col items-center justify-center gap-4 text-center`}
+                >
+                  <GoInbox className="size-6" />
+                  <span className="text-sm">No orders found</span>
                 </EmptyState>
               )}
             >
@@ -261,7 +263,7 @@ function EmployeeOrders() {
       </nav>
 
       <section id="available">
-        {renderTable("Available Orders", availableOrders, "available", "3")}
+        {renderTable("Available Orders", availableOrders, "available", "4 ")}
       </section>
       <section id="assigned">
         {renderTable("My Assigned Orders", myOrders, "mine", "4")}

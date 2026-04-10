@@ -76,9 +76,9 @@ function Orders() {
               </Table.Header>
               <Table.Body // this renders if the table contents are empty
                 renderEmptyState={() => (
-                  <EmptyState className="flex h-full w-full flex-col items-center justify-center gap-4 text-center">
-                    <GoInbox className="size-6 text-muted" />
-                    <span className="text-sm text-muted">No orders found</span>
+                  <EmptyState className="flex table-empty-4 h-full w-full flex-col items-center justify-center gap-4 text-center">
+                    <GoInbox className="size-6 " />
+                    <span className="text-sm ">No orders found</span>
                   </EmptyState>
                 )}
               >

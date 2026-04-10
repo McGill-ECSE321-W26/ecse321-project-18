@@ -306,6 +306,7 @@ function Account() {
             placeholder="Enter your new password"
             password={password}
             handleChange={setPassword}
+            type={"change-password"}
           />
 
           <PasswordToggleInput
@@ -316,6 +317,7 @@ function Account() {
             validateFn={(value) =>
               value === password ? null : "Passwords do not match."
             }
+            type={"change-password"}
           />
 
           <div className="flex gap-2 mt-2">

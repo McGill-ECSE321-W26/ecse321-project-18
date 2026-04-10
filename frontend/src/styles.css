@@ -11,7 +11,7 @@
   --blue-teal-light: #cad7d2;
   --teal: #8d9f87;
   --teal-2: #a9b6a4;
-  --teal-dark: #212420;
+  --teal-dark: #60715b;
   --dry-sage-1: #eae5d7;
   --dry-sage: #cdc6a5;
   --dry-sage-2: #dbd5bd;
@@ -67,14 +67,14 @@
   --card-3a: var(--dry-sage-2);
   --card-3b: var(--dry-sage-1);
   --card-4a: var(--cream-2);
-  --2a-text-bg: var(--blue-teal);
-  --2a-text-placeholder: var(--blue-teal-light);
-  --2a-text-hover: var(--blue-teal-light);
-  --2a-text: var(--white);
-  --3a-text-bg: var(--dry-sage);
-  --3a-text-placeholder: var(--blue-teal-light);
-  --3a-text-hover: var(--blue-teal-light);
-  --3a-text: var(--white);
+  --2a-text-bg: var(--white);
+  --2a-text-placeholder: var(--blue-slate-2);
+  --2a-text-hover: var(--white);
+  --2a-text: var(--blue-teal-light);
+  --3a-text-bg: var(--white);
+  --3a-text-placeholder: var(--blue-slate-2);
+  --3a-text-hover: var(--white);
+  --3a-text: var(--black);
   --product-card-1: var(--light-teal);
 
   /* inputs */
@@ -153,18 +153,26 @@ main {
       background-color: var(--checkbox-hover);
     }
   }
-  .input-group {
-    color: var(--input-text);
-    background-color: var(--input-bg);
+
+  .input.text-1 {
+    background-color: var(--3a-text-bg);
+    color: var(--3a-text);
+    @apply placeholder:text-[var(--3a-text-placeholder)];
   }
-  .input:hover {
-    background-color: var(--input-hover);
+  .input.text-1:focus {
+    background-color: var(--3a-text-hover);
   }
-  .input:focus {
-    background-color: var(--input-hover);
+  .input.text-1:hover {
+    background-color: var(--3a-text-hover) !important;
   }
-  .input {
-    background-color: var(--input-bg);
+  .input-group.text-1 {
+    @apply focus-within:bg-[var(--3a-text-hover)] hover:bg-[var(--3a-text-hover)] placeholder:text-[var(--3a-text-placeholder)] bg-[var(--3a-text-bg)];
+  }
+  .input-group.text-1 .input-group__input {
+    @apply placeholder:text-[var(--3a-text-placeholder)];
+  }
+  .input-group.text-1 .input-group__button {
+    @apply text-[var(--3a-text)] hover:bg-[var(--3a-text-bg)];
   }
 
   /* cart */
@@ -274,6 +282,23 @@ main {
   }
   .button--danger:hover {
     background-color: var(--color-delete-2);
+  }
+
+  .button.ghost {
+    color: var(--2a-text-placeholder);
+    background-color: var(--2a-text-bg);
+  }
+  .button.ghost:hover {
+    background-color: var(--2a-text-placeholder);
+    color: var(--2a-text-hover);
+  }
+  .button.change-password {
+    background-color: var(--3a-text-bg);
+    color: var(--3a-text-placeholder);
+  }
+  .button.change-password:hover {
+    background-color: var(--form-bg);
+    color: var(--3a-text-hover);
   }
 
   .close-button--default {
