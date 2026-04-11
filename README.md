@@ -83,6 +83,11 @@ There are several ways to get the backend running. **The default backend port is
 2. To start a production server, run the following command (make sure you're in the `frontend` directory): `npm run start`
 3. Go to `localhost:3000` in your browser to see the web page!
 
+Note that the backend automatically creates a **manager account with the following credentials**, which you may use to login (customer and employee accounts [can be created on the Register page](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki/User-guide#non-authenticated-routes)):
+
+- Email: `admin@stilton.com`
+- Password: `security`
+
 ---
 
 ## Team introduction
