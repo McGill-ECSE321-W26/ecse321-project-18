@@ -125,8 +125,8 @@ function Accounts() {
                     <Table.Column isRowHeader>ID</Table.Column>
                     <Table.Column>Email</Table.Column>
                     <Table.Column>Address</Table.Column>
-                    <Table.Column>Number of Purchased Orders</Table.Column>
                     <Table.Column>Loyalty Points</Table.Column>
+                    <Table.Column>Number of Purchased Orders</Table.Column>
                     <Table.Column></Table.Column>
                     <Table.Column></Table.Column>
                   </Table.Header>
@@ -137,10 +137,10 @@ function Accounts() {
                         <Table.Cell>{customer.id}</Table.Cell>
                         <Table.Cell>{customer.email}</Table.Cell>
                         <Table.Cell>{customer.address}</Table.Cell>
+                        <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           {customer.purchasedOrders.length}
                         </Table.Cell>
-                        <Table.Cell>{customer.numOfLoyaltyPoints}</Table.Cell>
                         <Table.Cell>
                           <Button onPress={() => handleView(customer.id)}>
                             <FaArrowUpRightFromSquare />
