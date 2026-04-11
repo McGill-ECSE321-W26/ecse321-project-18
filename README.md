@@ -5,13 +5,13 @@ Welcome to Team 18's fashion store project for ECSE 321 at McGill University! In
 ## Table of contents
 
 - [Project overview](#project-overview)
-- [Team introduction](#team-introduction)
 - [Quickstart](#quickstart)
   - [Database setup](#database-setup)
   - [Run the backend](#run-the-backend)
     - [Method 1](#method-1)
     - [Method 2](#method-2)
   - [Run the frontend](#run-the-frontend)
+- [Team introduction](#team-introduction)
 - [Progress timeline](#progress-timeline)
   - [Deliverable 1](#deliverable-1)
   - [Deliverable 2](#deliverable-2)
@@ -21,7 +21,7 @@ Welcome to Team 18's fashion store project for ECSE 321 at McGill University! In
 
 ## Project overview
 
-This group project, associated with ECSE 321 (Introduction to Software Engineering) at McGill University, consists of developing an online platform for a local fashion store that allows for ordering and delivering clothes.
+This group project, associated with ECSE 321 (Introduction to Software Engineering) at McGill University, consists of developing an online platform for a local fashion store that allows for ordering and delivering clothes. [Learn more about our team in "Team introduction"!](#team-introduction)
 
 The system being developed supports multiple user roles, including customers, employees, and one manager, each with role-specific access:
 
@@ -32,24 +32,6 @@ The system being developed supports multiple user roles, including customers, em
 The web application has a React frontend, a Spring Boot backend (Java), and a PostgreSQL database.
 
 **For more information about the platform and/or the development process, please see ["Progress timeline"](#progress-timeline) below, and [consult the wiki](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki).**
-
----
-
-## Team introduction
-
-The team members of our group all share a similar background, as Marianopolis College graduates and current Software Engineering students at McGill University. We also collaborated together last semester on the development a cheese manager application, and have come together once again to develop another masterpiece :D
-
-Each team member and their role are presented in the table below.
-
-| Name         | GitHub username | Role               | Responsibilities                                                                                                                                                                                                                                                                                                                                     |
-| ------------ | --------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cyrus Fung   | cfung89         | Software lead      | Implement and manage the source code version control and build systems. **In consultation with the project manager:** specify task breakdown for software in consultation with the project manager, ensure software requirements are met. **In consultation with the documentation lead:** define the documentation structures to be used.           |
-| Qiuyu Huang  | redacted24      | Testing lead       | Supervise implementation of testing at all levels (unit, integration, and so on). **In consultation with the project manager:** define testing strategies, ensure testing requirements are met. **In consultation with the documentation lead:** define the testing document formats to be used.                                                     |
-| Flavie Qin   | flavieq88       | Project manager    | Allocate main responsibilities for each task in each deliverable, resolve disputes and make primary decisions based on discussions, ensure the completion and submission of deliverables on time, ensure all requirements are well met, oversee management of the GitHub project board. Consult with the software, testing, and documentation leads. |
-| Kenneth Wang | KennethWang6    | Software developer | Work under the software lead to conceptualize frontend and backend components that meet requirements, assist the software lead in task definition and scheduling, implement the software, document the software work done.                                                                                                                           |
-| Carolyn Wu   | cw118           | Documentation lead | Track all documentation in the system, allocate documentation tasks to team members in consultation with the project manager, specify and implement format for all documents, manage the project wiki, manage GitHub issues and milestones in consultation with the project manager.                                                                 |
-| Jennifer You | jenni4u         | Software developer | Work under the software lead to conceptualize frontend and backend components that meet requirements, assist the software lead in task definition and scheduling, implement the software, document the software work done.                                                                                                                           |
-| Aurore Zhang | ororio0         | Software developer | Work under the software lead to conceptualize frontend and backend components that meet requirements, assist the software lead in task definition and scheduling, implement the software, document the software work done.                                                                                                                           |
 
 ---
 
@@ -100,6 +82,24 @@ There are several ways to get the backend running. **The default backend port is
 1. If you haven't already, go into the `frontend` directory and install all `npm` dependencies: `cd frontend && npm install`
 2. To start a production server, run the following command (make sure you're in the `frontend` directory): `npm run start`
 3. Go to `localhost:3000` in your browser to see the web page!
+
+---
+
+## Team introduction
+
+The team members of our group all share a similar background, as Marianopolis College graduates and current Software Engineering students at McGill University. We also collaborated together last semester on the development a cheese manager application, and have come together once again to develop another masterpiece :D
+
+Each team member and their role are presented in the table below.
+
+| Name         | GitHub username | Role               | Responsibilities                                                                                                                                                                                                                                                                                                                                     |
+| ------------ | --------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cyrus Fung   | cfung89         | Software lead      | Implement and manage the source code version control and build systems. **In consultation with the project manager:** specify task breakdown for software in consultation with the project manager, ensure software requirements are met. **In consultation with the documentation lead:** define the documentation structures to be used.           |
+| Qiuyu Huang  | redacted24      | Testing lead       | Supervise implementation of testing at all levels (unit, integration, and so on). **In consultation with the project manager:** define testing strategies, ensure testing requirements are met. **In consultation with the documentation lead:** define the testing document formats to be used.                                                     |
+| Flavie Qin   | flavieq88       | Project manager    | Allocate main responsibilities for each task in each deliverable, resolve disputes and make primary decisions based on discussions, ensure the completion and submission of deliverables on time, ensure all requirements are well met, oversee management of the GitHub project board. Consult with the software, testing, and documentation leads. |
+| Kenneth Wang | KennethWang6    | Software developer | Work under the software lead to conceptualize frontend and backend components that meet requirements, assist the software lead in task definition and scheduling, implement the software, document the software work done.                                                                                                                           |
+| Carolyn Wu   | cw118           | Documentation lead | Track all documentation in the system, allocate documentation tasks to team members in consultation with the project manager, specify and implement format for all documents, manage the project wiki, manage GitHub issues and milestones in consultation with the project manager.                                                                 |
+| Jennifer You | jenni4u         | Software developer | Work under the software lead to conceptualize frontend and backend components that meet requirements, assist the software lead in task definition and scheduling, implement the software, document the software work done.                                                                                                                           |
+| Aurore Zhang | ororio0         | Software developer | Work under the software lead to conceptualize frontend and backend components that meet requirements, assist the software lead in task definition and scheduling, implement the software, document the software work done.                                                                                                                           |
 
 ---
 
