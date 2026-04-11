@@ -1,6 +1,8 @@
 # ECSE321 Fashion store project: Team 18
 
-Welcome to Team 18's fashion store project for ECSE 321 at McGill University! In addition to this README, we have also compiled a [comprehensive wiki thoroughly documenting our development process and how the application works](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki) that we invite you to explore.
+Welcome to Team 18's fashion store project for ECSE 321 at McGill University! This project was built by Cyrus Fung, Qiuyu Huang, Flavie Qin, Kenneth Wang, Carolyn Wu, Jennifer You, and Aurore Zhang, with each person's contributions described [below](https://github.com/McGill-ECSE321-W26/ecse321-project-18?tab=readme-ov-file#team-introduction).
+
+In addition to this README, we have also compiled a [comprehensive wiki thoroughly documenting our development process and how the application works](https://github.com/McGill-ECSE321-W26/ecse321-project-18/wiki) that we invite you to explore.
 
 ## Table of contents
 
