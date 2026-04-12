@@ -28,12 +28,15 @@ class CustomerIntegrationTests {
     private static final String CUSTOMER_LOYALTY_PTS_URI =
             "/fashionstore/account/customer/{customerId}/loyalty";
     private static final String CUSTOMER_GET_URI = "/fashionstore/account/customer/{customerId}";
+    private static final String CUSTOMER_UPDATE_URI = "/fashionstore/account/customer/{customerId}";
     private static final String ERROR_LOC = "$.errors";
     private static final String RESPONSE_NULL_ERROR = "Response body is null.";
 
     private static final String CUSTOMER_EMAIL = "customer@example.com";
     private static final String CUSTOMER_PASSWORD = "canthackthis";
     private static final String CUSTOMER_ADDRESS = "29 Fashion Dr";
+    private static final String UPDATED_CUSTOMER_PASSWORD = "updatedpass123";
+    private static final String UPDATED_CUSTOMER_ADDRESS = "123 Turtleneck Avenue";
     private static final int CUSTOMER_LOYALTY_PTS = 15;
     private static final int LOYALTY_PTS_INVALID = -1;
 
@@ -226,5 +229,62 @@ class CustomerIntegrationTests {
                 .expectBody()
                 .jsonPath(ERROR_LOC)
                 .isEqualTo(String.format("Customer ID %d was not found.", invalidCustomerId));
+    }
+
+    /**
+     * Integration test to update a customer.
+     *
+     * @author Auore Zhang (ororio0)
+     */
+    @Test
+    @Order(5)
+    void testUpdateCustomer() {
+        // Arrange
+        Customer customerToUpdate = createUpdateCustomerTarget();
+
+        // Act
+        CustomerResponseDto response = updateCustomer(customerToUpdate);
+
+        // Assert
+        assertUpdatedCustomer(customerToUpdate, response);
+    }
+
+    private Customer createUpdateCustomerTarget() {
+        return createCustomer("customer-update@example.com", "customer123", "100 Original Street");
+    }
+
+    private CustomerResponseDto updateCustomer(Customer customerToUpdate) {
+        CustomerRequestDto body =
+                new CustomerRequestDto(
+                        customerToUpdate.getEmail(),
+                        UPDATED_CUSTOMER_PASSWORD,
+                        UPDATED_CUSTOMER_ADDRESS,
+                        CUSTOMER_LOYALTY_PTS);
+        return client.put()
+                .uri(CUSTOMER_UPDATE_URI, customerToUpdate.getId())
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(CustomerResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+    }
+
+    private void assertUpdatedCustomer(Customer customerToUpdate, CustomerResponseDto response) {
+        assertNotNull(response, RESPONSE_NULL_ERROR);
+        assertEquals(customerToUpdate.getEmail(), response.email(), "Wrong customer email.");
+        assertEquals(UPDATED_CUSTOMER_ADDRESS, response.address(), "Wrong customer address.");
+        assertEquals(0, (int) response.numOfLoyaltyPoints(), "Wrong customer loyalty points.");
+        Customer updatedCustomer = customerRepository.findCustomerById(customerToUpdate.getId());
+        assertNotNull(updatedCustomer, "Updated customer should exist in the database.");
+        assertEquals(
+                UPDATED_CUSTOMER_PASSWORD,
+                updatedCustomer.getPassword(),
+                "Customer password was not updated.");
+        assertEquals(
+                UPDATED_CUSTOMER_ADDRESS,
+                updatedCustomer.getAddress(),
+                "Customer address was not updated.");
     }
 }

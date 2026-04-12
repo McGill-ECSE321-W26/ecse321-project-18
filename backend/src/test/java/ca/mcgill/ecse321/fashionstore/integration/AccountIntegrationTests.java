@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import ca.mcgill.ecse321.fashionstore.dto.AccountListResponseDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountRequestDto;
 import ca.mcgill.ecse321.fashionstore.dto.AccountResponseDto;
+import ca.mcgill.ecse321.fashionstore.dto.OwnerRequestDto;
+import ca.mcgill.ecse321.fashionstore.dto.OwnerResponseDto;
 import ca.mcgill.ecse321.fashionstore.model.Customer;
 import ca.mcgill.ecse321.fashionstore.model.Employee;
 import ca.mcgill.ecse321.fashionstore.model.Owner;
@@ -44,6 +46,7 @@ class AccountIntegrationTests {
     private static final String accountLoginUri = "/fashionstore/account/login";
     private static final String accountCreateEmployeeUri = "/fashionstore/account/employee";
     private static final String accountCreateCustomerUri = "/fashionstore/account/customer";
+    private static final String accountUpdateOwnerUri = "/fashionstore/account/owner/{ownerId}";
     private static final String errorLoc = "$.errors";
 
     // Error messages
@@ -54,6 +57,7 @@ class AccountIntegrationTests {
     private static final String CUSTOMER_EMAIL = "customer@fashionstore.com";
     private static final String NEW_EMPLOYEE_EMAIL = "newemployee@fashionstore.com";
     private static final String NEW_CUSTOMER_EMAIL = "newcustomer@fashionstore.com";
+    private static final String UPDATED_OWNER_PASSWORD = "updatedowner123";
 
     /** Setup for accountService integration tests. */
     @BeforeAll
@@ -465,5 +469,56 @@ class AccountIntegrationTests {
                 .isNoContent()
                 .expectBody()
                 .isEmpty();
+    }
+
+    /**
+     * Integration test to update an owner.
+     *
+     * @author Auore Zhang (ororio0)
+     */
+    @Test
+    @Order(5)
+    void updateOwnerAccount() {
+        // Arrange
+        Owner ownerToUpdate = createUpdateOwnerTarget();
+
+        // Act
+        OwnerResponseDto response = updateOwner(ownerToUpdate);
+
+        // Assert
+        assertUpdatedOwner(ownerToUpdate, response);
+    }
+
+    private Owner createUpdateOwnerTarget() {
+        Owner ownerToUpdate = new Owner();
+        ownerToUpdate.setEmail("owner-update@fashionstore.com");
+        ownerToUpdate.setPassword("owner12345");
+        return ownerRepository.save(ownerToUpdate);
+    }
+
+    private OwnerResponseDto updateOwner(Owner ownerToUpdate) {
+        OwnerRequestDto body =
+                new OwnerRequestDto(ownerToUpdate.getEmail(), UPDATED_OWNER_PASSWORD);
+        return client.put()
+                .uri(accountUpdateOwnerUri, ownerToUpdate.getId())
+                .body(body)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(OwnerResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+    }
+
+    private void assertUpdatedOwner(Owner ownerToUpdate, OwnerResponseDto response) {
+        assertNotNull(response, responseNullError);
+        assertEquals(ownerToUpdate.getId(), response.id(), "Wrong owner ID.");
+        assertEquals(ownerToUpdate.getEmail(), response.email(), "Wrong owner email.");
+        Owner updatedOwner = ownerRepository.findOwnerById(ownerToUpdate.getId());
+        assertNotNull(updatedOwner, "Updated owner should exist in the database.");
+        assertEquals(
+                UPDATED_OWNER_PASSWORD,
+                updatedOwner.getPassword(),
+                "Owner password was not updated.");
     }
 }
