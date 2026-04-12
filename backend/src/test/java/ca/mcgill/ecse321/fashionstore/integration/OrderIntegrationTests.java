@@ -88,6 +88,9 @@ class OrderIntegrationTests {
     /** Setup method for Order integration tests. */
     @BeforeAll
     public void setup() {
+        // clear database before tests
+        clearDatabase();
+
         // Arrange
         ClothingProduct clothingProduct = createClothingProduct();
         clothingItem1 = createClothingItem(clothingProduct, CLOTHING_ITEM_1_QUANTITY);
@@ -159,9 +162,7 @@ class OrderIntegrationTests {
         return orderItemRepository.save(orderItem);
     }
 
-    /** Cleanup method for Order integration tests. */
-    @AfterAll
-    public void clearDatabase() {
+    private void clearDatabase() {
         orderItemRepository.deleteAll();
         orderRepository.deleteAll();
         shoppingCartItemRepository.deleteAll();
@@ -169,6 +170,12 @@ class OrderIntegrationTests {
         clothingProductRepository.deleteAll();
         employeeRepository.deleteAll();
         customerRepository.deleteAll();
+    }
+
+    /** Cleanup method for Order integration tests. */
+    @AfterAll
+    public void clearDatabaseAfterTests() {
+        clearDatabase();
     }
 
     /**
@@ -236,7 +243,7 @@ class OrderIntegrationTests {
             OrderItem orderItem, OrderItemResponseDto orderItemResponseDto) {
         assertEquals(
                 orderItem.getId(),
-                orderItemResponseDto.orderId(),
+                orderItemResponseDto.id(),
                 "Order item in order response DTO is incorrect.");
         assertEquals(
                 orderItem.getClothingItem().getId(),
